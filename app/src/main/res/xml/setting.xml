@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:overScrollMode="never"
+    app:iconSpaceReserved="false">
+
+    <PreferenceCategory
+        android:title="위험 경고"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="stop_front_car"
+            android:title="앞 차 급정거"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+        <ListPreference
+            android:key="sensitivity"
+            app:iconSpaceReserved="false"
+            android:title="위험 민감도"
+            android:summary="%s"
+            android:entries="@array/sensitivity"
+            android:entryValues="@array/sensitivity"
+            android:defaultValue="보통"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="네비게이션"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="speed"
+            android:title="속도"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="스마트폰 알림"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreference
+            android:key="call"
+            android:title="전화"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+        <SwitchPreference
+            android:key="sms"
+            android:title="문자"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+        <SwitchPreference
+            android:key="kakao"
+            android:title="카카오"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioButton
+    android:id="@+id/RadioButton_setting_detail_menu_rbtn"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="15dp"
+    android:background="@drawable/rbtn_setting_subtitle_selector"
+    android:button="@null"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="10dp"
+    android:text="None"
+    android:textColor="@drawable/rbtn_setting_subtitle_textcolor_selector"/>

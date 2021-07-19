@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Application</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--  Team  -->
+    <string name="team_name">HUDuck</string>
+    <string name="team_member">박유천, 이정우, 정용훈</string>
+    <string name="team_call_number">010-0000-0000</string>
+</resources>
