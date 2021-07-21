@@ -1,9 +1,7 @@
-# AVOIDuck
-
-Avoid + Duck = **AVOIDuck**
+# AVOID
 
 HUDuck팀의 애플리케이션, 
-AVOIDuck(가제)을 찾아주셔서 감사합니다.
+AVOID를 찾아주셔서 감사합니다.
 
 본 애플리케이션은 총 4개의 기능으로 이뤄져 있습니다.
  1. [내비게이션](#내비게이션)
