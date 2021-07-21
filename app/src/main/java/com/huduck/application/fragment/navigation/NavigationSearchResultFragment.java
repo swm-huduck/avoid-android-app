@@ -3,6 +3,7 @@ package com.huduck.application.fragment.navigation;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,10 +29,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.huduck.application.Navigation.NavigationFeatureParser;
+import com.huduck.application.Navigation.NavigationLineString;
+import com.huduck.application.Navigation.NavigationPoint;
+import com.huduck.application.NetworkTask;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.fragment.PageFragment;
 import com.huduck.application.service.NavigationService;
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.MapView;
+import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.overlay.Marker;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
@@ -40,14 +51,21 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import lombok.SneakyThrows;
 
 public class NavigationSearchResultFragment extends PageFragment {
-
     NavigationSearchResultListViewAdapter listViewAdapter;
     String searchWord;
-    TMapView tMapView;
-    TMapMarkerItem marker = new TMapMarkerItem();
 
+    private MapView mapView = null;
+    private NaverMap naverMap = null;
+    private Marker marker = new Marker();
+
+    private ArrayList<Integer> navigationSequence = new ArrayList<>();
+    private HashMap<Integer, NavigationPoint> navigationPointHashMap = new HashMap<>();
+    private HashMap<Integer, NavigationLineString> navigationLineStringHashMap = new HashMap<>();
 
     public NavigationSearchResultFragment() {
         // Required empty public constructor
@@ -61,44 +79,48 @@ public class NavigationSearchResultFragment extends PageFragment {
         }
     }
 
+    private void initNaverMap(NaverMap naverMap_) {
+        naverMap = naverMap_;
+        marker.setPosition(new LatLng(0,0));
+        marker.setMap(naverMap);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation_search_result, container, false);
-        tMapView = new TMapView(getActivity().getApplicationContext());
-        marker.setPosition(0.5f, 1f);
-        marker.setVisible(TMapMarkerItem.VISIBLE);
-        tMapView.addMarkerItem("target_point_marker", marker);
 
-        LinearLayout mapView = view.findViewWithTag("map");
-        mapView.addView(tMapView);
+        mapView = view.findViewWithTag("map_view");
+        mapView.getMapAsync(naverMap_ -> initNaverMap(naverMap_));
 
+        // 검색어 표시
         TextView searchInput = view.findViewWithTag("search_input");
         searchInput.setText(searchWord);
 
+        // 검색창 클릭 이벤트 등록
         searchInput.setOnClickListener(view_ -> {
             ((MainActivity)getActivity()).changeFragment(NavigationSearchFragment.class);
             return;
         });
 
+        // 뒤로가기 버튼 클릭 이벤트 등록
         ImageButton backButton = view.findViewWithTag("back_button");
         backButton.setOnClickListener(view_ -> {
             ((MainActivity)getActivity()).changeFragment(NavigationMainFragment.class);
             return;
         });
 
+        // 결과 리스트 어댑터 연결
         listViewAdapter = new NavigationSearchResultListViewAdapter(getActivity());
         ListView resultListView = view.findViewWithTag("result_list_view");
         resultListView.setAdapter(listViewAdapter);
 
-        TMapData tMapData = new TMapData();
-
-
+        // 리스트 아이템 클릭 이벤트 등록
         resultListView.setOnItemClickListener((parent, view1, position, id) -> {
             getActivity().runOnUiThread(() -> {
                 TMapPOIItem targetPoi = (TMapPOIItem) listViewAdapter.getItem(position);
-                changeTMapViewByTargetPoi(targetPoi);
+                updateNaverMapByTargetPoi(targetPoi);
 
                 listViewAdapter.selectItem(position);
                 resultListView.setSelection(position);
@@ -109,6 +131,8 @@ public class NavigationSearchResultFragment extends PageFragment {
             });
         });
 
+        // 경로 검색 및 리스트에 이템 추가
+        TMapData tMapData = new TMapData();
         tMapData.findAroundKeywordPOI(NavigationService.GetNavigationInfo().getCurrentPoint(), searchWord, Integer.MAX_VALUE, 30, new TMapData.FindAroundKeywordPOIListenerCallback() {
             @Override
             public void onFindAroundKeywordPOI(ArrayList<TMapPOIItem> arrayList) {
@@ -141,7 +165,7 @@ public class NavigationSearchResultFragment extends PageFragment {
                                 if(firstItem == null) return;
 
                                 TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
-                                changeTMapViewByTargetPoi(targetPoi);
+                                updateNaverMapByTargetPoi(targetPoi);
 
                             }
                         });
@@ -164,7 +188,7 @@ public class NavigationSearchResultFragment extends PageFragment {
                     if(firstItem == null) return;
 
                     TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
-                    changeTMapViewByTargetPoi(targetPoi);
+                    updateNaverMapByTargetPoi(targetPoi);
                 });
             }
         });
@@ -206,10 +230,21 @@ public class NavigationSearchResultFragment extends PageFragment {
         return view;
     }
 
-    private void changeTMapViewByTargetPoi(TMapPOIItem targetPoi) {
+    private void updateNaverMapByTargetPoi(TMapPOIItem targetPoi) {
+        if (naverMap == null) {
+            mapView.getMapAsync(naverMap_ -> {
+                initNaverMap(naverMap_);
+                updateNaverMapByTargetPoi(targetPoi);
+            });
+            return;
+        }
+
         TMapPoint targetPoint = targetPoi.getPOIPoint();
-        marker.setTMapPoint(targetPoint);
-        tMapView.setCenterPoint(targetPoint.getLongitude(), targetPoint.getLatitude());
+        LatLng latLng = new LatLng(targetPoint.getLatitude(), targetPoint.getLongitude());
+
+        marker.setPosition(latLng);
+        CameraUpdate cameraUpdate = CameraUpdate.scrollTo(latLng);
+        naverMap.moveCamera(cameraUpdate);
     }
 
     @Override
@@ -276,20 +311,20 @@ public class NavigationSearchResultFragment extends PageFragment {
                 name.setTypeface(null, Typeface.NORMAL);
 
             // 거리
-            TextView distanceView = item.findViewWithTag("poi_distance");
-            TMapPoint currentPoint = NavigationService.GetNavigationInfo().getCurrentPoint();
-            if(currentPoint != null) {
-                double distance = poi.getDistance(currentPoint);
-
-                if(distance >= 1000.0) {
-                    distance /= 1000.0;
-                    distance = Math.round(distance * 10) / 10.0;
-                    distanceView.setText(distance + "km");
-                }
-                else {
-                    distanceView.setText((int)distance + "m");     // !!단위 확인하자
-                }
-            }
+//            TextView distanceView = item.findViewWithTag("poi_distance");
+//            TMapPoint currentPoint = NavigationService.GetNavigationInfo().getCurrentPoint();
+//            if(currentPoint != null) {
+//                double distance = poi.getDistance(currentPoint);
+//
+//                if(distance >= 1000.0) {
+//                    distance /= 1000.0;
+//                    distance = Math.round(distance * 10) / 10.0;
+//                    distanceView.setText(distance + "km");
+//                }
+//                else {
+//                    distanceView.setText((int)distance + "m");     // !!단위 확인하자
+//                }
+//            }
 
             // 업종
             TextView business = item.findViewWithTag("poi_business");

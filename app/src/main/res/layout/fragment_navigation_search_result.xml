@@ -52,10 +52,10 @@
         android:layout_width="match_parent"
         android:visibility="gone"
         android:layout_height="200dp">
-        <LinearLayout
-            android:tag="map"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp" />
+        <com.naver.maps.map.MapView
+            android:tag="map_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
         <Button
             android:tag="decide_destination_btn"
             android:layout_width="wrap_content"
