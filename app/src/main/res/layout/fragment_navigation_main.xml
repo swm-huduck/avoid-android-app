@@ -4,10 +4,16 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/LinearLayout_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"/>
+
+    <com.naver.maps.map.MapView
+        android:tag="map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <TextView
         android:id="@+id/search_input"
