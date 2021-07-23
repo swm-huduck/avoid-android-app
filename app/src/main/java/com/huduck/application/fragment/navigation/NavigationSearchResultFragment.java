@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -16,14 +17,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.ListFragment;
 
+import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,11 +40,13 @@ import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.NetworkTask;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
+import com.huduck.application.activity.NavigationRoutesActivity;
 import com.huduck.application.fragment.PageFragment;
 import com.huduck.application.service.NavigationService;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.overlay.Marker;
@@ -49,6 +56,8 @@ import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,9 +72,7 @@ public class NavigationSearchResultFragment extends PageFragment {
     private NaverMap naverMap = null;
     private Marker marker = new Marker();
 
-    private ArrayList<Integer> navigationSequence = new ArrayList<>();
-    private HashMap<Integer, NavigationPoint> navigationPointHashMap = new HashMap<>();
-    private HashMap<Integer, NavigationLineString> navigationLineStringHashMap = new HashMap<>();
+    private TMapPOIItem selectedPoi = null;
 
     public NavigationSearchResultFragment() {
         // Required empty public constructor
@@ -82,7 +89,9 @@ public class NavigationSearchResultFragment extends PageFragment {
     private void initNaverMap(NaverMap naverMap_) {
         naverMap = naverMap_;
         marker.setPosition(new LatLng(0,0));
-        marker.setMap(naverMap);
+        new Handler().post(() -> {
+            marker.setMap(naverMap);
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -92,6 +101,14 @@ public class NavigationSearchResultFragment extends PageFragment {
         View view = inflater.inflate(R.layout.fragment_navigation_search_result, container, false);
 
         mapView = view.findViewWithTag("map_view");
+
+//        FragmentManager fm = getChildFragmentManager();
+//        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag("map_view");
+//        if(mapFragment == null) {
+//            mapFragment = MapFragment.newInstance();
+//            fm.beginTransaction().add(R.id.map_view_result, mapFragment).commit();
+//        }
+
         mapView.getMapAsync(naverMap_ -> initNaverMap(naverMap_));
 
         // 검색어 표시
@@ -118,8 +135,10 @@ public class NavigationSearchResultFragment extends PageFragment {
 
         // 리스트 아이템 클릭 이벤트 등록
         resultListView.setOnItemClickListener((parent, view1, position, id) -> {
+            TMapPOIItem targetPoi = (TMapPOIItem) listViewAdapter.getItem(position);
+            selectedPoi = targetPoi;
+
             getActivity().runOnUiThread(() -> {
-                TMapPOIItem targetPoi = (TMapPOIItem) listViewAdapter.getItem(position);
                 updateNaverMapByTargetPoi(targetPoi);
 
                 listViewAdapter.selectItem(position);
@@ -131,7 +150,7 @@ public class NavigationSearchResultFragment extends PageFragment {
             });
         });
 
-        // 경로 검색 및 리스트에 이템 추가
+        // 경로 검색 및 리스트에 아이템 추가
         TMapData tMapData = new TMapData();
         tMapData.findAroundKeywordPOI(NavigationService.GetNavigationInfo().getCurrentPoint(), searchWord, Integer.MAX_VALUE, 30, new TMapData.FindAroundKeywordPOIListenerCallback() {
             @Override
@@ -165,6 +184,7 @@ public class NavigationSearchResultFragment extends PageFragment {
                                 if(firstItem == null) return;
 
                                 TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
+                                selectedPoi = targetPoi;
                                 updateNaverMapByTargetPoi(targetPoi);
 
                             }
@@ -188,11 +208,19 @@ public class NavigationSearchResultFragment extends PageFragment {
                     if(firstItem == null) return;
 
                     TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
+                    selectedPoi = targetPoi;
                     updateNaverMapByTargetPoi(targetPoi);
                 });
             }
         });
 
+        Button decideDestinationBtn = view.findViewWithTag("decide_destination_btn");
+        decideDestinationBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity().getApplicationContext(), NavigationRoutesActivity.class);
+            intent.putExtra("target_poi_lat", selectedPoi.getPOIPoint().getLatitude()+"");
+            intent.putExtra("target_poi_lng", selectedPoi.getPOIPoint().getLongitude()+"");
+            getActivity().startActivity(intent);
+        });
 
 //        tMapData.findAroundNamePOI(NavigationService.GetNavigationInfo().getCurrentPoint(), searchWord, Integer.MAX_VALUE, 10, new TMapData.FindAroundNamePOIListenerCallback() {
 //            @Override

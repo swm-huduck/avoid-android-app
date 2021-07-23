@@ -52,10 +52,19 @@
         android:layout_width="match_parent"
         android:visibility="gone"
         android:layout_height="200dp">
-        <com.naver.maps.map.MapView
+<!--        <com.naver.maps.map.MapView-->
+<!--            android:tag="map_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="200dp"/>-->
+        <fragment
             android:tag="map_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp"/>
+            android:layout_height="200dp"
+            android:name="com.naver.maps.map.MapFragment"/>
+<!--        <FrameLayout-->
+<!--            android:id="@+id/map_view_result"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="200dp"/>-->
         <Button
             android:tag="decide_destination_btn"
             android:layout_width="wrap_content"

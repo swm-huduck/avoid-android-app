@@ -13,6 +13,10 @@ public class NavigationFeatureParser {
                                          HashMap<Integer, NavigationPoint> navigationPointHashMap,
                                          HashMap<Integer, NavigationLineString> navigationLineStringHashMap) throws JSONException {
 
+        navigationSequence.clear();
+        navigationPointHashMap.clear();
+        navigationLineStringHashMap.clear();
+
         JSONObject json  = new JSONObject(jsonString);
         JSONArray featuresJson = json.getJSONArray("features");
 
