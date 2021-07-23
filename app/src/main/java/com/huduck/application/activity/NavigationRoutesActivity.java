@@ -25,6 +25,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.huduck.application.Navigation.NavigationFeatureParser;
 import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
+import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.NetworkTask;
 import com.huduck.application.R;
 import com.huduck.application.service.NavigationService;
@@ -73,9 +74,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
         put("이륜차도로우선", "12");
     }};
 
-    private ArrayList<Integer> navigationSequence = new ArrayList<>();
-    private HashMap<Integer, NavigationPoint> navigationPointHashMap = new HashMap<>();
-    private HashMap<Integer, NavigationLineString> navigationLineStringHashMap = new HashMap<>();
+    private NavigationRoutes navigationRoutes = new NavigationRoutes();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +164,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                NavigationFeatureParser.parserTruckRoutes(s, navigationSequence, navigationPointHashMap, navigationLineStringHashMap);
+                navigationRoutes = NavigationFeatureParser.parserTruckRoutes(s);
                 drawRoutes();
                 loadingLayout.setVisibility(View.GONE);
             }
@@ -183,6 +182,12 @@ public class NavigationRoutesActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void drawRoutes() {
+        ArrayList<Integer>
+                navigationSequence = navigationRoutes.getNavigationSequence();
+        HashMap<Integer, NavigationPoint>
+                navigationPointHashMap = navigationRoutes.getNavigationPointHashMap();
+        HashMap<Integer, NavigationLineString>
+                navigationLineStringHashMap = navigationRoutes.getNavigationLineStringHashMap();
 
         ArrayList<LatLng> latLngs = new ArrayList<>();
 

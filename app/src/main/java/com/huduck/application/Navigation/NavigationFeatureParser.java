@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NavigationFeatureParser {
-    public static void parserTruckRoutes(String jsonString,
-                                         ArrayList<Integer> navigationSequence,
-                                         HashMap<Integer, NavigationPoint> navigationPointHashMap,
-                                         HashMap<Integer, NavigationLineString> navigationLineStringHashMap) throws JSONException {
+    public static NavigationRoutes parserTruckRoutes(String jsonString) throws JSONException {
 
-        navigationSequence.clear();
-        navigationPointHashMap.clear();
-        navigationLineStringHashMap.clear();
+        NavigationRoutes routes = new NavigationRoutes();
+        ArrayList<Integer>
+                navigationSequence = routes.getNavigationSequence();
+        HashMap<Integer, NavigationPoint>
+                navigationPointHashMap = routes.getNavigationPointHashMap();
+        HashMap<Integer, NavigationLineString>
+                navigationLineStringHashMap = routes.getNavigationLineStringHashMap();
 
         JSONObject json  = new JSONObject(jsonString);
         JSONArray featuresJson = json.getJSONArray("features");
@@ -94,5 +95,7 @@ public class NavigationFeatureParser {
                 navigationLineStringHashMap.put(index, lineString);
             }
         }
+
+        return routes;
     }
 }
