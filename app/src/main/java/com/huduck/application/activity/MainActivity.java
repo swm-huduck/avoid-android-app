@@ -63,16 +63,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 권한 얻기
-        requestPermissions(
-                new String[]
-                {Manifest.permission.ACCESS_COARSE_LOCATION,
-                 Manifest.permission.ACCESS_FINE_LOCATION},
-                1000
-        );
-
-        Intent navigationServiceIntent = new Intent(this, NavigationService.class);
-        startService(navigationServiceIntent);
 
         // 바인딩
         binding = ActivityMainBinding.inflate(getLayoutInflater());
