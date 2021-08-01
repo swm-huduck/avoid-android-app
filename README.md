@@ -87,8 +87,6 @@ C --> |사용자 확인| D[길 안내 시작]
 
 [Fake GPS Location - GPS JoyStick](https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick&hl=ko&gl=US)
 
-<br/>
-
 
 ## 3.2. 내 차 설정
 
