@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NavigationFeatureParser {
+public class NavigationRoutesParser {
     public static NavigationRoutes parserTruckRoutes(String jsonString) throws JSONException {
 
         NavigationRoutes routes = new NavigationRoutes();

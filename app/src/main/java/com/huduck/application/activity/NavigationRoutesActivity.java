@@ -164,7 +164,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                navigationRoutes = NavigationFeatureParser.parserTruckRoutes(s);
+                routes = NavigationRoutesParser.parserTruckRoutes(s);
                 drawRoutes();
                 loadingLayout.setVisibility(View.GONE);
             }
