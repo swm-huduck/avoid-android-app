@@ -136,7 +136,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
     private void searchRoutes(String searchOption) {
         loadingLayout.setVisibility(View.VISIBLE);
 
-        String url = "https://apis.openapi.sk.com/tmap/truck/routes?version=1&format=json&callback=result&appKey=l7xxf21cc9e0068d4fbbb7c939aa6bda5a25";
+        String url = "https://apis.openapi.sk.com/tmap/truck/routes?version=1&format=json&callback=result&appKey=" + getString(R.string.skt_map_api_key);
 
         // AsyncTask를 통해 HttpURLConnection 수행.
 

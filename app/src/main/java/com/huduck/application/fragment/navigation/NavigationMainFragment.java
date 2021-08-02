@@ -82,7 +82,7 @@ public class NavigationMainFragment extends PageFragment {
 
         // T MAP API KEY 등록
         TMapView tMapView = new TMapView(view.getContext());
-        tMapView.setSKTMapApiKey( "l7xxf21cc9e0068d4fbbb7c939aa6bda5a25" );
+        tMapView.setSKTMapApiKey( getString(R.string.skt_map_api_key) );
 
         // 네이버 지도 현 위치 표시
         MapView mapView = view.findViewWithTag("map_view");
