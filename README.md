@@ -1,14 +1,19 @@
 # 1. AVOID
 
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/img_logo.png" style="filter: bright(150%)" width="300px">
+
 HUDuck팀의 애플리케이션, **AVOID**입니다.
+
+**AVOID**는 HUD(Head up display) 디바이스와 블루투스 통신을 통해, 사용자 편의에 맞는 HUD 환경을 구축해줍니다.
 
 # 2. 기능
 
-본 애플리케이션은 총 4개의 기능으로 이뤄져 있습니다.
- 1. 내비게이션
- 2. 내 차 설정
- 3. 디바이스 연결
- 4. HUD 표시 항목 설정
+**AVOID**는 총 4개의 기능으로 이뤄져 있습니다.
+
+1. 내비게이션
+2. 내 차 설정
+3. 디바이스 연결
+4. HUD 표시 항목 설정
 
 ## 2.1. 내비게이션
 
@@ -17,7 +22,7 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ### 2.1.1. 플로우 차트
 
-![System_architecture-Final_of_Android-Navigation](https://git.swmgit.org/swm-12/12_swm35/application/uploads/92d3151f1693cf1dd44383f5797b3680/System_architecture-Final_of_Android-Navigation.png)
+![System_architecture-Final_of_Android-Navigation](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/System%20architecture-Final%20of%20Android-Navigation.png)
 
 ### 2.1.2. GPS 테스트 방법
 
@@ -28,15 +33,43 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ## 2.2. 내 차 설정
 
-다양한 기능에 기반이 되는 사용자의 화물차 정보를 입력할 수 있습니다.
+경로 검색에 필요한 사용자의 화물차 정보를 입력할 수 있습니다.
+
+기본값이 있어, 사용자의 필요에 맞게 입력을 선택할 수 있습니다.
+
+입력되는 정보는 다음과 같습니다.
+
+1. 차량 너비
+2. 차량 높이
+3. 차량 길이
+4. 차량 무게
+5. 화물 무게
+6. 총 무게 (자동 계산, 차량 무게 + 화물 무게)
+
 
 ## 2.3. 디바이스 연결
 
 블루투스를 통해 HUD 디바이스와 스마트폰의 연결을 돕습니다.
 
-## 2.4. HUD 표시 항목 설정
+애플리케이션의 사용에서 HUD 디바이스와의 연결이 필수이기 때문에, 블루투스 미연결 상태일 경우 본 기능(디바이스 연결)으로 이동됩니다.
 
-사용자가 HUD 디바이스에 표시하고자 하는 항목을 지정할 수 있습니다.
+## 2.4. 옵션 설정
+
+사용자가 HUD에 표시하고자 하는 옵션을 지정할 수 있습니다.
+
+지정 가능한 옵션은 다음과 같습니다.
+
+1. 위험 경고
+    1. 앞 차 급정거 (ON/OFF)
+    2. 위험 민감도  (민감/보통/둔감)
+    3. [기능 추가 예정]
+2. 내비게이션
+    1. 속도 (ON/OFF)
+    2. 회전 정보 (ON/OFF)
+3. 스마트폰 알림
+    1. 전화 (ON/OFF)
+    2. 문자 (ON/OFF)
+    3. 카카오톡 (ON/OFF)
 
 # 3. 프로젝트 시작하기
 
