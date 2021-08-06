@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.navigation.NavigationSearchResultFragment">
+    android:background="@color/white"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/rbtn_setting_subtitle_selector"
+        style="@style/SEARCHBOX_LAYOUT"
+        android:background="@drawable/bg_search_box_selected"
         android:padding="10dp">
 
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_marginRight="10dp"
             android:background="@null"
@@ -29,8 +30,8 @@
             android:layout_gravity="center"
             android:background="@null"
             android:tag="search_input"
-            android:text="장소 검색"
-            android:textSize="20sp" />
+            style="@style/SEARCHBOX_TEXT"
+            android:text="장소 검색"/>
     </LinearLayout>
 
 
@@ -60,24 +61,20 @@
             android:tag="map_view"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:name="com.naver.maps.map.MapFragment"/>
+            android:name="com.naver.maps.map.MapFragment" />
 <!--        <FrameLayout-->
 <!--            android:id="@+id/map_view_result"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="200dp"/>-->
-        <Button
-            android:tag="decide_destination_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:text="목적지로"/>
+
     </RelativeLayout>
 
     <ListView
+        android:tag="result_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8"
-        android:tag="result_list_view" />
+        android:divider="@color/white"
+        android:dividerHeight="0dp"
+    />
 </LinearLayout>

@@ -6,42 +6,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
 
-import com.huduck.application.NavigationSearchItem;
-import com.huduck.application.NavigationSearchResultItemFragment;
+import com.huduck.application.Navigation.NavigationSearchItem;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.fragment.PageFragment;
 import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapPOIItem;
-import com.skt.Tmap.TMapPoint;
-import com.skt.Tmap.TMapView;
 
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-public class NavigationSearchFragment extends PageFragment {
+public class NavigationSearchFragment extends PageFragment implements TextWatcher{
     ListView listView;
     NavigationSearchListViewAdapter adapter;
 
@@ -80,39 +66,21 @@ public class NavigationSearchFragment extends PageFragment {
         },30);
 
         // 검색어 바뀔때 마다 연관 검색어 자동 생성
-        searchInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                TMapData tMapData = new TMapData();
-                tMapData.autoComplete(s.toString(), arrayList -> getActivity().runOnUiThread(() -> {
-                    adapter.removeAllItem();
-
-                    if(arrayList == null) return;
-                    arrayList.forEach(item -> {
-                        adapter.addItem(item);
-                    });
-
-                    adapter.notifyDataSetChanged();
-                }));
-            }
-        });
+        searchInput.addTextChangedListener(this);
 
         // 연관 검색어 클릭 이벤트
+        NavigationSearchFragment it = this;
         adapter = new NavigationSearchListViewAdapter(getActivity());
         listView = view.findViewById(R.id.navigation_search_list_view);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((parent, view, position, id) -> {
             NavigationSearchItem item = adapter.getSearchItem(position);
             String poiName = item.getPoiName();
+
+            // 검색
+            searchInput.removeTextChangedListener(it);
             searchInput.setText(poiName);
             searchInput.setSelection(searchInput.length());
-            // 검색
             search(poiName);
         });
 
@@ -144,9 +112,9 @@ public class NavigationSearchFragment extends PageFragment {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
         if (!hidden) {
             EditText searchInput = view.findViewWithTag("search_input");
+            searchInput.addTextChangedListener(this);
             view.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -156,7 +124,30 @@ public class NavigationSearchFragment extends PageFragment {
 
                 }
             },30);
+        super.onHiddenChanged(hidden);
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void afterTextChanged(Editable s) {
+        TMapData tMapData = new TMapData();
+        tMapData.autoComplete(s.toString(), arrayList -> getActivity().runOnUiThread(() -> {
+            adapter.removeAllItem();
+
+            if(arrayList == null) return;
+            arrayList.forEach(item -> {
+                adapter.addItem(item);
+            });
+
+            adapter.notifyDataSetChanged();
+        }));
     }
 
     // 검색어 리스트 어댑터

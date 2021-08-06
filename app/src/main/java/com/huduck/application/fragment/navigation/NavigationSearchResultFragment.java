@@ -1,32 +1,26 @@
 package com.huduck.application.fragment.navigation;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.ListFragment;
 
 import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,35 +28,25 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huduck.application.Navigation.NavigationFeatureParser;
-import com.huduck.application.Navigation.NavigationLineString;
-import com.huduck.application.Navigation.NavigationPoint;
-import com.huduck.application.NetworkTask;
+import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.activity.NavigationRoutesActivity;
 import com.huduck.application.fragment.PageFragment;
-import com.huduck.application.service.NavigationService;
+import com.mapbox.navigation.core.trip.session.LocationObserver;
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
-import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
 import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapGpsManager;
-import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import lombok.SneakyThrows;
+import java.util.List;
 
 public class NavigationSearchResultFragment extends PageFragment {
     NavigationSearchResultListViewAdapter listViewAdapter;
@@ -91,7 +75,10 @@ public class NavigationSearchResultFragment extends PageFragment {
 
     private void initNaverMap(NaverMap naverMap_) {
         naverMap = naverMap_;
-        marker.setPosition(new LatLng(0,0));
+        UiSettings uiSettings = naverMap.getUiSettings();
+        uiSettings.setZoomControlEnabled(false);
+        uiSettings.setLocationButtonEnabled(false);
+        marker.setPosition(new LatLng(0, 0));
         new Handler().post(() -> {
             marker.setMap(naverMap);
         });
@@ -120,14 +107,14 @@ public class NavigationSearchResultFragment extends PageFragment {
 
         // 검색창 클릭 이벤트 등록
         searchInput.setOnClickListener(view_ -> {
-            ((MainActivity)getActivity()).changeFragment(NavigationSearchFragment.class);
+            ((MainActivity) getActivity()).changeFragment(NavigationSearchFragment.class);
             return;
         });
 
         // 뒤로가기 버튼 클릭 이벤트 등록
         ImageButton backButton = view.findViewWithTag("back_button");
         backButton.setOnClickListener(view_ -> {
-            ((MainActivity)getActivity()).changeFragment(NavigationMainFragment.class);
+            ((MainActivity) getActivity()).changeFragment(NavigationMainFragment.class);
             return;
         });
 
@@ -155,108 +142,70 @@ public class NavigationSearchResultFragment extends PageFragment {
 
         // 경로 검색 및 리스트에 아이템 추가
         TMapData tMapData = new TMapData();
-        tMapData.findAroundKeywordPOI(NavigationService.GetNavigationInfo().getCurrentPoint(), searchWord, Integer.MAX_VALUE, 30, new TMapData.FindAroundKeywordPOIListenerCallback() {
-            @Override
-            public void onFindAroundKeywordPOI(ArrayList<TMapPOIItem> arrayList) {
-                if(arrayList == null) {
-                    Log.d("NavigationSearchResultFragment", "검색 결과 없음");
-                    return;
-                }
+        Location currentLocation = NavigationManager.getInstance().getCurrentRowLocation();
+        tMapData.findAroundKeywordPOI(
+                new TMapPoint(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                searchWord, Integer.MAX_VALUE, 30,
+                new TMapData.FindAroundKeywordPOIListenerCallback() {
+                    @Override
+                    public void onFindAroundKeywordPOI(ArrayList<TMapPOIItem> arrayList) {
+                        if (arrayList == null) {
+                            Log.d("NavigationSearchResultFragment", "검색 결과 없음");
+                            return;
+                        }
 
-                if(arrayList.size() == 0) {
-                    tMapData.findAllPOI(searchWord, 30, arrayList1 -> {
-                        getActivity().runOnUiThread(() -> {
+                        if (arrayList.size() == 0) {
+                            tMapData.findAllPOI(searchWord, 30, arrayList1 -> {
+                                getActivity().runOnUiThread(() -> {
 
-                            if(arrayList1 == null) return;
-                            if(arrayList1.size() == 0) {
-                                view.findViewWithTag("none_result_layout").setVisibility(View.VISIBLE);
-                                view.findViewWithTag("destination_map_layout").setVisibility(View.GONE);
-                            }
-                            else {
-                                view.findViewWithTag("destination_map_layout").setVisibility(View.VISIBLE);
-                                view.findViewWithTag("none_result_layout").setVisibility(View.GONE);
+                                    if (arrayList1 == null) return;
+                                    if (arrayList1.size() == 0) {
+                                        view.findViewWithTag("none_result_layout").setVisibility(View.VISIBLE);
+                                        view.findViewWithTag("destination_map_layout").setVisibility(View.GONE);
+                                    } else {
+                                        view.findViewWithTag("destination_map_layout").setVisibility(View.VISIBLE);
+                                        view.findViewWithTag("none_result_layout").setVisibility(View.GONE);
 
-                                arrayList1.forEach(poi -> {
-                                    listViewAdapter.addItem(poi);
+                                        arrayList1.forEach(poi -> {
+                                            listViewAdapter.addItem(poi);
+                                        });
+
+                                        listViewAdapter.notifyDataSetChanged();
+
+                                        // init first item
+                                        Object firstItem = listViewAdapter.getItem(0);
+                                        if (firstItem == null) return;
+
+                                        TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
+                                        selectedPoi = targetPoi;
+                                        updateNaverMapByTargetPoi(targetPoi);
+
+                                    }
                                 });
+                            });
+                            return;
+                        }
 
-                                listViewAdapter.notifyDataSetChanged();
+                        getActivity().runOnUiThread(() -> {
+                            view.findViewWithTag("destination_map_layout").setVisibility(View.VISIBLE);
+                            view.findViewWithTag("none_result_layout").setVisibility(View.GONE);
 
-                                // init first item
-                                Object firstItem = listViewAdapter.getItem(0);
-                                if(firstItem == null) return;
+                            arrayList.forEach(poi -> {
+                                listViewAdapter.addItem(poi);
+                            });
 
-                                TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
-                                selectedPoi = targetPoi;
-                                updateNaverMapByTargetPoi(targetPoi);
+                            listViewAdapter.notifyDataSetChanged();
 
-                            }
+                            // init first item
+                            Object firstItem = listViewAdapter.getItem(0);
+                            if (firstItem == null) return;
+
+                            TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
+                            selectedPoi = targetPoi;
+                            updateNaverMapByTargetPoi(targetPoi);
                         });
-                    });
-                    return;
-                }
-
-                getActivity().runOnUiThread(() -> {
-                    view.findViewWithTag("destination_map_layout").setVisibility(View.VISIBLE);
-                    view.findViewWithTag("none_result_layout").setVisibility(View.GONE);
-
-                    arrayList.forEach(poi -> {
-                        listViewAdapter.addItem(poi);
-                    });
-
-                    listViewAdapter.notifyDataSetChanged();
-
-                    // init first item
-                    Object firstItem = listViewAdapter.getItem(0);
-                    if(firstItem == null) return;
-
-                    TMapPOIItem targetPoi = (TMapPOIItem) firstItem;
-                    selectedPoi = targetPoi;
-                    updateNaverMapByTargetPoi(targetPoi);
+                    }
                 });
-            }
-        });
-
-        Button decideDestinationBtn = view.findViewWithTag("decide_destination_btn");
-        decideDestinationBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity().getApplicationContext(), NavigationRoutesActivity.class);
-            intent.putExtra("target_poi_lat", selectedPoi.getPOIPoint().getLatitude()+"");
-            intent.putExtra("target_poi_lng", selectedPoi.getPOIPoint().getLongitude()+"");
-            getActivity().startActivity(intent);
-        });
-
-//        tMapData.findAroundNamePOI(NavigationService.GetNavigationInfo().getCurrentPoint(), searchWord, Integer.MAX_VALUE, 10, new TMapData.FindAroundNamePOIListenerCallback() {
-//            @Override
-//            public void onFindAroundNamePOI(ArrayList<TMapPOIItem> arrayList) {
-//                if(arrayList == null) return;
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        arrayList.forEach(poi -> {
-//                            listViewAdapter.addItem(poi);
-//                        });
-//
-//                        listViewAdapter.notifyDataSetChanged();
-//                    }
-//                });
-//            }
-//        });
-
-//        tMapData.findAllPOI(searchWord, new TMapData.FindAllPOIListenerCallback() {
-//            @Override
-//            public void onFindAllPOI(ArrayList<TMapPOIItem> arrayList) {
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        arrayList.forEach(poi -> {
-//                            listViewAdapter.addItem(poi);
-//                        });
-//
-//                        listViewAdapter.notifyDataSetChanged();
-//                    }
-//                });
-//            }
-//        });
 
         return view;
     }
@@ -285,7 +234,7 @@ public class NavigationSearchResultFragment extends PageFragment {
         Log.d("SearchWord: ", searchWord);
     }
 
-    public static class NavigationSearchResultListViewAdapter extends BaseAdapter {
+    public class NavigationSearchResultListViewAdapter extends BaseAdapter {
 
         private ArrayList<TMapPOIItem> poiItems = new ArrayList<>();
         private int selectedItemPosition = 0;
@@ -304,7 +253,7 @@ public class NavigationSearchResultFragment extends PageFragment {
 
         @Override
         public Object getItem(int position) {
-            if(poiItems.size() == 0) return null;
+            if (poiItems.size() == 0) return null;
             return poiItems.get(position);
         }
 
@@ -321,79 +270,69 @@ public class NavigationSearchResultFragment extends PageFragment {
             selectedItemPosition = position;
         }
 
-        //@SuppressLint("SetTextI18n")
+        @SuppressLint("ResourceAsColor")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView == null) {
+            View item;
+            TextView name;
+            LinearLayout decideDestinationBtn;
+
+            if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.fragment_navigation_search_result_item, parent, false);
+
+                TMapPOIItem poi = poiItems.get(position);
+
+                item = convertView.findViewWithTag("navigation_search_result_item");
+
+                // 이름
+                name = item.findViewWithTag("poi_name");
+                name.setText(poi.getPOIName());
+
+                // 업종
+                TextView business = item.findViewWithTag("poi_business");
+                business.setText(poi.lowerBizName);
+
+                // 주소
+                TextView addressView = item.findViewWithTag("poi_address");
+                String address =
+                        poi.upperAddrName
+                                + ((poi.middleAddrName != null) ? (" " + poi.middleAddrName) : "")
+                                + ((poi.roadName != null) ? (" " + poi.roadName
+                                + ((poi.buildingNo1 != null) ? (" " + poi.buildingNo1
+                                + ((poi.buildingNo2 != null && !poi.buildingNo2.equals("0")) ? ("-" + poi.buildingNo2) : "")
+                        ) : "")
+                        ) : "");
+                addressView.setText(address);
+
+                // 목적지 버튼
+                decideDestinationBtn = item.findViewWithTag("decide_destination_btn");
+                decideDestinationBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity().getApplicationContext(), NavigationRoutesActivity.class);
+                    intent.putExtra("target_poi_lat", poi.getPOIPoint().getLatitude() + "");
+                    intent.putExtra("target_poi_lng", poi.getPOIPoint().getLongitude() + "");
+                    getActivity().startActivity(intent);
+                });
+            }
+            else {
+                item = convertView.findViewWithTag("navigation_search_result_item");
+                name = item.findViewWithTag("poi_name");
+                decideDestinationBtn = item.findViewWithTag("decide_destination_btn");
             }
 
-            TMapPOIItem poi = poiItems.get(position);
 
-            View item = convertView.findViewWithTag("navigation_search_result_item");
-
-            // 이름
-            TextView name = item.findViewWithTag("poi_name");
-            name.setText(poi.getPOIName());
-            if(selectedItemPosition == position)
+            if (selectedItemPosition == position) {
+                item.setBackgroundResource(R.drawable.border_bottom_gray_1px);
                 name.setTypeface(null, Typeface.BOLD);
-            else
+                name.setTextColor(getResources().getColor(R.color.indigo700));
+                decideDestinationBtn.setVisibility(View.VISIBLE);
+            }
+            else {
+                item.setBackgroundResource(R.drawable.bg_navigation_search_result_item_layout_idle);
                 name.setTypeface(null, Typeface.NORMAL);
-
-            // 거리
-//            TextView distanceView = item.findViewWithTag("poi_distance");
-//            TMapPoint currentPoint = NavigationService.GetNavigationInfo().getCurrentPoint();
-//            if(currentPoint != null) {
-//                double distance = poi.getDistance(currentPoint);
-//
-//                if(distance >= 1000.0) {
-//                    distance /= 1000.0;
-//                    distance = Math.round(distance * 10) / 10.0;
-//                    distanceView.setText(distance + "km");
-//                }
-//                else {
-//                    distanceView.setText((int)distance + "m");     // !!단위 확인하자
-//                }
-//            }
-
-            // 업종
-            TextView business = item.findViewWithTag("poi_business");
-            business.setText(poi.lowerBizName);
-
-            // 주소
-            TextView addressView = item.findViewWithTag("poi_address");
-            String address =
-                    poi.upperAddrName
-                    + ( (poi.middleAddrName != null) ? (" " + poi.middleAddrName) : "" )
-                    + ( (poi.roadName != null) ? (" " + poi.roadName
-                        + ( (poi.buildingNo1 != null) ? (" " + poi.buildingNo1
-                            + ( (poi.buildingNo2 != null && !poi.buildingNo2.equals("0")) ? ("-" + poi.buildingNo2) : "" )
-                        ) : "" )
-                    ) : "" );
-            addressView.setText(address);
-
-
-//            // Map
-//            if(selectedItemPosition == position) {
-//                LinearLayout mapView = item.findViewWithTag("map");
-////                TMapView tMapView = new TMapView(activity.getApplicationContext());
-////                tMapView.setSKTMapApiKey( "l7xxf21cc9e0068d4fbbb7c939aa6bda5a25" );
-//
-//                if(map.getParent() != null)
-//                    ((ViewGroup) map.getParent()).removeViewInLayout(map);
-//                mapView.addView( map );
-//
-////
-////                Bitmap markerBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.icon_location);
-////                TMapPoint selectedPoint = poi.getPOIPoint();
-////
-
-////
-////                tMapView.removeAllMarkerItem();
-////                tMapView.addMarkerItem("myMarker", mapMarker);
-////                tMapView.setCenterPoint(selectedPoint.getLongitude(), selectedPoint.getLatitude());
-//            }
+                name.setTextColor(getResources().getColor(R.color.default_text));
+                decideDestinationBtn.setVisibility(View.GONE);
+            }
 
             return convertView;
         }

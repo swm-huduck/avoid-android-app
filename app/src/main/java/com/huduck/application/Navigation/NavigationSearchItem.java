@@ -1,4 +1,4 @@
-package com.huduck.application;
+package com.huduck.application.Navigation;
 
 public class NavigationSearchItem {
     private String poiName;
