@@ -1,4 +1,4 @@
-package com.huduck.application;
+package com.huduck.application.common;
 
 import android.content.ContentValues;
 

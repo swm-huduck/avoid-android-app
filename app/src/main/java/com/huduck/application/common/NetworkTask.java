@@ -1,12 +1,10 @@
-package com.huduck.application;
+package com.huduck.application.common;
 
 import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-
-import org.json.JSONException;
 
 public class NetworkTask extends AsyncTask<Void, Void, String> {
 
