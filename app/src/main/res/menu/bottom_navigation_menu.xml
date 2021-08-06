@@ -22,5 +22,5 @@
         android:id="@+id/page_setting"
         android:enabled="true"
         android:icon="@drawable/icon_settings"
-        android:title="설정"/>
+        android:title="옵션 설정"/>
 </menu>
