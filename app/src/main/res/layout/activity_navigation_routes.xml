@@ -6,29 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.NavigationRoutesActivity">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:padding="20dp">
+        style="@style/TOPBAR_LAYOUT">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/TOPBAR_TITLE"
             android:layout_centerInParent="true"
-            android:text="경로 안내"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:text="경로 안내" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="d"
-            android:textSize="20dp"
-            android:textStyle="bold" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -41,53 +28,95 @@
             android:orientation="vertical"
             android:weightSum="1">
 
-<!--            <com.naver.maps.map.MapView-->
-<!--                android:id="@+id/map_view"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"/>-->
-            <fragment
-                android:id="@+id/map_view"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:name="com.naver.maps.map.MapFragment"/>
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="10">
+                <fragment
+                    android:id="@+id/map_view"
+                    android:name="com.naver.maps.map.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-                <Spinner
-                    android:id="@+id/search_option_spinner"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="6"
-                    android:padding="10dp" />
-
-                <Button
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:text="길 안내" />
+                    android:orientation="horizontal"
+                    android:layout_alignParentBottom="true"
+                    android:padding="10dp"
+                    android:clipToPadding="false"
+                    android:weightSum="1">
 
-            </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:elevation="20dp"
+                        android:background="@drawable/bg_search_box"
+                        android:layout_marginBottom="-10dp"
+                        android:layout_marginTop="-10dp"
+                        android:layout_marginLeft="-10dp"
+                        android:layout_marginRight="0dp"
+                        android:padding="10dp"
+                        android:layout_weight="1">
+
+                        <Spinner
+                            android:id="@+id/search_option_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:background="@drawable/bg_round_white_box"
+                            android:popupBackground="@drawable/bg_round_white_box"
+                            />
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_spinner_dropdown"
+                            app:tint="@color/gray200" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/start_guide_btn"
+                        style="@style/DECIDE_DESTINATION_BTN"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:clickable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:text="길 안내"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_direction"
+                            android:tint="@color/white"
+                            android:tintMode="src_in"
+                            tools:ignore="UseAppTint" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/loading_layout"
+        <fragment
+            android:tag="loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#DA222222">
+            android:name="com.huduck.application.fragment.LoadingFragment"/>
 
-            <ImageView
-                android:id="@+id/logo_loading"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
     </RelativeLayout>
 
 

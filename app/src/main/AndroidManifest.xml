@@ -29,11 +29,6 @@
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/naver_maps_client_id" />
 
-        <service
-            android:name=".service.NavigationService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"

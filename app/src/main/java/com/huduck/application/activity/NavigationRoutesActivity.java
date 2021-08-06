@@ -1,6 +1,5 @@
 package com.huduck.application.activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,35 +11,34 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.huduck.application.Navigation.NavigationFeatureParser;
+import com.huduck.application.fragment.LoadingFragment;
+import com.huduck.application.Navigation.NavigationRoutesParser;
 import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationRoutes;
-import com.huduck.application.NetworkTask;
+import com.huduck.application.manager.NavigationManager;
+import com.huduck.application.common.NetworkTask;
 import com.huduck.application.R;
-import com.huduck.application.service.NavigationService;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraUpdate;
-import com.naver.maps.map.LocationSource;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
-import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.util.MarkerIcons;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,9 +46,9 @@ import java.util.List;
 
 import lombok.SneakyThrows;
 
-public class NavigationRoutesActivity extends AppCompatActivity {
+public class NavigationRoutesActivity extends AppCompatActivity implements Runnable{
     private Handler handler = new Handler(Looper.getMainLooper());
-    private RelativeLayout loadingLayout;
+    private LoadingFragment loadingFragment;
     private Bundle routeBundle;
     private NaverMap naverMap;
 
@@ -74,7 +72,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
         put("이륜차도로우선", "12");
     }};
 
-    private NavigationRoutes navigationRoutes = new NavigationRoutes();
+    private NavigationRoutes routes = new NavigationRoutes();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,36 +81,15 @@ public class NavigationRoutesActivity extends AppCompatActivity {
 
         Intent routeIntent = getIntent();
         routeBundle = routeIntent.getExtras();
+        loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
 
-        // Loading
-        ImageView logoLoading = (ImageView) findViewById(R.id.logo_loading);
-        Glide.with(this)
-                .asGif()    // GIF 로딩
-                .load(R.raw.logo_loading)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)    // Glide에서 캐싱한 리소스와 로드할 리소스가 같을때 캐싱된 리소스 사용
-                .into(logoLoading);
-
-        loadingLayout = findViewById(R.id.loading_layout);
-        loadingLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-
-        // 지도 활성화 이벤트 등록
-        MapView mapView = findViewById(R.id.map_view);
-        mapView.getMapAsync(naverMap_ -> {
-            naverMap = naverMap_;
-            initActivity();
-        });
+        Thread th = new Thread(this::run);
+        th.start();
     }
 
     private void initActivity() {
         // 스피너
         Spinner searchOptionSpinner = findViewById(R.id.search_option_spinner);
-
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
@@ -126,15 +103,21 @@ public class NavigationRoutesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
-
         searchOptionSpinner.setSelection(0);
+
+        // 길 안내 시작 버튼
+        LinearLayout startGuideBtn = findViewById(R.id.start_guide_btn);
+        startGuideBtn.setOnClickListener(v -> {
+            NavigationManager.getInstance().setRoutes(routes);
+            Intent intent = new Intent(this, NavigationGuideActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void searchRoutes(String searchOption) {
-        loadingLayout.setVisibility(View.VISIBLE);
+        loadingFragment.isVisible(true);
 
         String url = "https://apis.openapi.sk.com/tmap/truck/routes?version=1&format=json&callback=result&appKey=" + getString(R.string.skt_map_api_key);
 
@@ -142,8 +125,10 @@ public class NavigationRoutesActivity extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
 
-        values.put("startX", NavigationService.GetNavigationInfo().getCurrentPoint().getLongitude());
-        values.put("startY", NavigationService.GetNavigationInfo().getCurrentPoint().getLatitude());
+        Location currentLocation = NavigationManager.getInstance().getCurrentRowLocation();
+
+        values.put("startX", currentLocation.getLongitude());
+        values.put("startY", currentLocation.getLatitude());
         values.put("endX", routeBundle.getString("target_poi_lng"));
         values.put("endY", routeBundle.getString("target_poi_lat"));
         values.put("reqCoordType", "WGS84GEO");
@@ -164,9 +149,10 @@ public class NavigationRoutesActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
+                if(paused) return;
                 routes = NavigationRoutesParser.parserTruckRoutes(s);
                 drawRoutes();
-                loadingLayout.setVisibility(View.GONE);
+                loadingFragment.isVisible(false);
             }
         };
         networkTask.execute();
@@ -180,16 +166,22 @@ public class NavigationRoutesActivity extends AppCompatActivity {
     double minLng = 999999;
     double maxLng = -999999;
 
+    JSONArray jsonArray =  new JSONArray();
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void drawRoutes() {
+        jsonArray = new JSONArray();
+
         ArrayList<Integer>
-                navigationSequence = navigationRoutes.getNavigationSequence();
+                navigationSequence = routes.getNavigationSequence();
         HashMap<Integer, NavigationPoint>
-                navigationPointHashMap = navigationRoutes.getNavigationPointHashMap();
+                navigationPointHashMap = routes.getNavigationPointHashMap();
         HashMap<Integer, NavigationLineString>
-                navigationLineStringHashMap = navigationRoutes.getNavigationLineStringHashMap();
+                navigationLineStringHashMap = routes.getNavigationLineStringHashMap();
 
         ArrayList<LatLng> latLngs = new ArrayList<>();
+
+        List<InfoWindow> infoWindows = new ArrayList<>();
 
         navigationSequence.forEach(integer -> {
             if (navigationPointHashMap.containsKey(integer)) {
@@ -217,11 +209,33 @@ public class NavigationRoutesActivity extends AppCompatActivity {
                     endMarker.setIcon(MarkerIcons.BLACK);
                     endMarker.setIconTintColor(Color.GREEN);
                 }
+
+                /*InfoWindow infoWindow = new InfoWindow();
+                infoWindow.setPosition(position);
+                infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
+                    @NonNull
+                    @Override
+                    public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                        return NavigationPoint.TurnType.get(point.getProperties().getTurnType());
+                    }
+                });
+                infoWindows.add(infoWindow);*/
             } else if (navigationLineStringHashMap.containsKey(integer)) {
                 navigationLineStringHashMap.get(integer).getGeometry().getCoordinates().forEach(doubles -> {
                     double lat = doubles.get(0);
                     double lng = doubles.get(1);
                     LatLng position = new LatLng(lat, lng);
+
+
+                    JSONArray a =new JSONArray() {{
+                        try {
+                            put(lat);
+                            put(lng);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }};
+                    jsonArray.put(a);
 
 //                   InfoWindow infoWindow = new InfoWindow();
 //                   infoWindow.setVisible(true);
@@ -250,6 +264,7 @@ public class NavigationRoutesActivity extends AppCompatActivity {
             }
         });
 
+        if(latLngs.size() < 2) return;
         currentPath.setCoords((List<LatLng>) latLngs);
         currentPath.setWidth(20);
         currentPath.setColor(Color.BLUE);
@@ -261,10 +276,46 @@ public class NavigationRoutesActivity extends AppCompatActivity {
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(new LatLngBounds(southWest, northEast), 200);
 
         handler.post(() -> {
+            /*for(int i = 0; i < infoWindows.size(); i++)
+                infoWindows.get(i).setMap(naverMap);*/
+
             currentPath.setMap(naverMap);
             startMarker.setMap(naverMap);
             endMarker.setMap(naverMap);
             naverMap.moveCamera(cameraUpdate);
+        });
+
+//        CLog.d("", jsonArray.toString());
+    }
+
+    private boolean paused = false;
+    @Override
+    protected void onPause() {
+        paused = true;
+        Log.d("RoutesActivity", "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        paused = false;
+        Log.d("RoutesActivity", "onResume");
+        super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+//        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void run() {
+        // 지도 활성화 이벤트 등록
+        MapView mapView = findViewById(R.id.map_view);
+        mapView.getMapAsync(naverMap_ -> {
+            naverMap = naverMap_;
+            initActivity();
         });
     }
 }
