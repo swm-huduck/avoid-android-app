@@ -4,19 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:padding="20dp">
+    <RelativeLayout style="@style/TOPBAR_LAYOUT">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="HUD"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            style="@style/TOPBAR_TITLE"
+            android:text="HUD" />
     </RelativeLayout>
 
     <LinearLayout
