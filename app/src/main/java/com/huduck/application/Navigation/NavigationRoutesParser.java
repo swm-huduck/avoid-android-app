@@ -18,7 +18,16 @@ public class NavigationRoutesParser {
         HashMap<Integer, NavigationLineString>
                 navigationLineStringHashMap = routes.getNavigationLineStringHashMap();
 
-        JSONObject json  = new JSONObject(jsonString);
+        JSONObject json;
+        try {
+            json = new JSONObject(jsonString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return routes;
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return routes;
+        }
         JSONArray featuresJson = json.getJSONArray("features");
 
         for(int i = 0; i < featuresJson.length(); i++) {
