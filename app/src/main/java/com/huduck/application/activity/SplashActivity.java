@@ -21,8 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.R;
-import com.huduck.application.service.NavigationService;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -31,7 +31,10 @@ public class SplashActivity extends AppCompatActivity {
     private boolean paused = false;
     private String[] essentialPermissions = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_NETWORK_STATE,
+            Manifest.permission.READ_PHONE_STATE
     };
     static final int PERMISSION_REQUEST_CODE = 1000;
 
@@ -42,15 +45,16 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Init Manager
+        NavigationManager.getInstance().initNavigationManager(getApplicationContext(), getString(R.string.mapbox_access_token));
+
         // 권한 확인
         needEssentialPermissions = checkNeedEssentialPermission();
         if (needEssentialPermissions.size() == 0) {
@@ -68,10 +72,6 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goNextPage() {
-        Log.d("aa","goNextPage");
-        Intent navigationServiceIntent = new Intent(this, NavigationService.class);
-        startService(navigationServiceIntent);
-
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
