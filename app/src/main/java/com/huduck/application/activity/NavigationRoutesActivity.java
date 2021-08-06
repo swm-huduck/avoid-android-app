@@ -51,6 +51,7 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
     private LoadingFragment loadingFragment;
     private Bundle routeBundle;
     private NaverMap naverMap;
+    private List<NetworkTask> networkTasks = new ArrayList<>();
 
     private String[] searchOptionList = {
             "교통최적+추천",
@@ -144,17 +145,22 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         values.put("truckLength", "200");
 
         NetworkTask networkTask = new NetworkTask(url, values) {
-            @SneakyThrows
+//            @SneakyThrows
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             protected void onPostExecute(String s) {
-                super.onPostExecute(s);
+//                super.onPostExecute(s);
                 if(paused) return;
-                routes = NavigationRoutesParser.parserTruckRoutes(s);
-                drawRoutes();
-                loadingFragment.isVisible(false);
+                try {
+                    routes = NavigationRoutesParser.parserTruckRoutes(s);
+                    drawRoutes();
+                    loadingFragment.isVisible(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         };
+        networkTasks.add(networkTask);
         networkTask.execute();
     }
 
@@ -289,10 +295,12 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
     }
 
     private boolean paused = false;
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onPause() {
         paused = true;
         Log.d("RoutesActivity", "onPause");
+        networkTasks.forEach(networkTask -> networkTask.cancel(true));
         super.onPause();
     }
 
@@ -303,9 +311,19 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         super.onResume();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    protected void onDestroy() {
+        Log.d("RoutesActivity", "onDestroy");
+        networkTasks.forEach(networkTask -> networkTask.cancel(true));
+        super.onDestroy();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBackPressed() {
 //        finish();
+        networkTasks.forEach(networkTask -> networkTask.cancel(true));
         super.onBackPressed();
     }
 

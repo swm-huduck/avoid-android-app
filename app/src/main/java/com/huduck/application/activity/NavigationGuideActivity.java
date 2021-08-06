@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 
 import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
@@ -46,6 +47,7 @@ import com.mapbox.common.HttpServiceInterface;
 import com.mapbox.core.constants.Constants;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.navigation.base.internal.VoiceUnit;
 import com.mapbox.navigation.base.options.NavigationOptions;
 import com.mapbox.navigation.base.trip.model.RouteLegProgress;
 import com.mapbox.navigation.base.trip.model.RouteProgress;
@@ -53,6 +55,9 @@ import com.mapbox.navigation.base.trip.model.RouteStepProgress;
 import com.mapbox.navigation.core.MapboxNavigation;
 import com.mapbox.navigation.core.MapboxNavigationProvider;
 import com.mapbox.navigation.core.directions.session.RoutesRequestCallback;
+import com.mapbox.navigation.core.replay.MapboxReplayer;
+import com.mapbox.navigation.core.replay.history.ReplayEventBase;
+import com.mapbox.navigation.core.replay.history.ReplayEventsObserver;
 import com.mapbox.navigation.core.reroute.RerouteController;
 import com.mapbox.navigation.core.reroute.RerouteState;
 import com.mapbox.navigation.core.trip.session.LocationObserver;
@@ -72,6 +77,7 @@ import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
@@ -102,9 +108,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
 
     Handler handler = new Handler();
 
-    private LocationEngine locationEngine;
-
-    private MapboxNavigation mapboxNavigation;
+    private MapboxNavigation mapboxNavigation = NavigationManager.getInstance().getNavigation();
     private LocationObserver locationObserver;
     private RouteProgressObserver routeProgressObserver;
     private OffRouteObserver offRouteObserver;
@@ -114,7 +118,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
     private Point currentPoint;
 
     // Naver Map
-    private MapView mapView;
+    private MapFragment mapFragment;
+//    private MapView mapView;
     private NaverMap naverMap;
     private LocationOverlay locationOverlay;
     private boolean locationOverlayPositionInit = false;
@@ -133,10 +138,16 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_navigation_guide);
 
-
         speedTextView = findViewById(R.id.speed);
         stateTextView = findViewById(R.id.state);
         offRouteTextView = findViewById(R.id.off_route);
+
+        FragmentManager fm = getSupportFragmentManager();
+        mapFragment = (MapFragment) fm.findFragmentById(R.id.map_view_guide);
+        if(mapFragment == null) {
+            mapFragment = MapFragment.newInstance();
+            fm.beginTransaction().add(R.id.map_view_guide, mapFragment).commit();
+        }
 
         Thread th = new Thread(this::run);
         th.start();
@@ -144,22 +155,17 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
 
     @Override
     public void run() {
-        try {
-            initMapboxApi();
-            initNaverMapApi();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        initNaverMapApi();
     }
 
     private void initMapboxApi() throws JSONException {
-        NavigationOptions navigationOptions = MapboxNavigation
-                .defaultNavigationOptionsBuilder(getApplicationContext(), getString(R.string.mapbox_access_token))
-//                .locationEngine(locationEngine)
-                .build();
-
-        // MapboxNavigation
-        mapboxNavigation = MapboxNavigationProvider.create(navigationOptions);
+//        NavigationOptions navigationOptions = MapboxNavigation
+//                .defaultNavigationOptionsBuilder(getApplicationContext(), getString(R.string.mapbox_access_token))
+////                .locationEngine(locationEngine)
+//                .build();
+//
+//        // MapboxNavigation
+//        mapboxNavigation = MapboxNavigationProvider.create(navigationOptions);
 
         // LocationObserver
         locationObserver = new LocationObserver() {
@@ -207,11 +213,9 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
                 locationOverlay.setBearing(location.getBearing());
 
                 handler.post(() -> {
-                    naverMap.moveCamera(cameraUpdate);
+                    if(naverMap != null)
+                        naverMap.moveCamera(cameraUpdate);
                 });
-
-
-//                Log.d("", location.getBearing() + "");
             }
         };
         mapboxNavigation.registerLocationObserver(locationObserver);
@@ -222,7 +226,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
             @Override
             public void onRouteProgressChanged(@NonNull RouteProgress routeProgress) {
 
-                stateTextView.setText(routeProgress.getCurrentState().toString());
+                /*stateTextView.setText(routeProgress.getCurrentState().toString());
 
                 RouteLegProgress legProgress = routeProgress.getCurrentLegProgress();
                 if(legProgress == null) return;
@@ -251,35 +255,19 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
                 Point targetDir = Point.fromLngLat(
                         (nextIntersectionPoint.longitude() - currentIntersectionPoint.longitude()),
                         (nextIntersectionPoint.latitude() - currentIntersectionPoint.latitude())
-                );
-
-                double angle = Math.atan2(targetDir.latitude() - 360, targetDir.longitude()-360);
-//                double angle =(double)((Math.atan2(targetDir.longitude(), targetDir.latitude()) / Math.PI) * 180f);
-                double cameraAngle = Math.toDegrees(Math.atan2(targetDir.latitude(), targetDir.longitude()));
-
-                CameraPosition cameraPosition = new CameraPosition(
-                        new LatLng(currentPoint.latitude(), currentPoint.longitude()),
-                        10,
-                        0,
-                        angle
-                );
-
-//                Log.d("", angle+"");
-//                Log.d("", targetDir.latitude() +", "+ targetDir.longitude());
-//                naverMap.setCameraPosition(cameraPosition);
+                );*/
             }
         };
         mapboxNavigation.registerRouteProgressObserver(routeProgressObserver);
 
+        // OffRouteObserver
         offRouteObserver = new OffRouteObserver() {
             @Override
             public void onOffRouteStateChanged(boolean b) {
-                if(b) {
+                if(b)
                     offRouteTextView.setText("벗어남");
-                }
                 else
                     offRouteTextView.setText("잘가는중");
-
             }
         };
         mapboxNavigation.registerOffRouteObserver(offRouteObserver);
@@ -305,7 +293,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
                         && ActivityCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                mapboxNavigation.startTripSession();
+//                mapboxNavigation.startTripSession();
 
                 // Draw Origin Route
                 List<LatLng> latLngs = new ArrayList<>();
@@ -342,7 +330,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
         List<Point> pointList = points.get(pointListIdx);
         MapboxMapMatching mapboxMapMatching = MapboxMapMatching.builder()
                 .accessToken(getString(R.string.mapbox_access_token))
-                .language("ko")
+                .language(Locale.KOREA)
                 .coordinates(pointList)
                 .steps(true)
                 .voiceInstructions(true)
@@ -354,6 +342,9 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
                 .geometries(DirectionsCriteria.GEOMETRY_POLYLINE6)
                 .annotations(
                         DirectionsCriteria.ANNOTATION_CONGESTION,
+                        DirectionsCriteria.ANNOTATION_DURATION,
+                        DirectionsCriteria.ANNOTATION_MAXSPEED,
+                        DirectionsCriteria.ANNOTATION_SPEED,
                         DirectionsCriteria.ANNOTATION_DISTANCE
                 )
                 .overview("full")
@@ -422,8 +413,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
     }
 
     private void initNaverMapApi() {
-        mapView = findViewById(R.id.map_view_guide);
-        mapView.getMapAsync(this);
+//        mapView = findViewById(R.id.map_view_guide);
+        mapFragment.getMapAsync(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -444,6 +435,12 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
             locationOverlay.setIcon(OverlayImage.fromResource(R.drawable.mapbox_ic_user_puck));
             locationOverlay.setIconWidth(100);
             locationOverlay.setIconHeight(100);
+
+            try {
+                initMapboxApi();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -454,9 +451,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
         mapboxNavigation.unregisterRouteProgressObserver(routeProgressObserver);
         mapboxNavigation.unregisterOffRouteObserver(offRouteObserver);
         mapboxNavigation.unregisterVoiceInstructionsObserver(voiceInstructionsObserver);
-        mapboxNavigation.stopTripSession();
-        if(locationEngine != null) {
-        }
+//        mapboxNavigation.stopTripSession();
     }
 
     private List<List<Point>> points() throws JSONException {
@@ -575,7 +570,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
         mapboxNavigation.unregisterRouteProgressObserver(routeProgressObserver);
         mapboxNavigation.unregisterOffRouteObserver(offRouteObserver);
         mapboxNavigation.unregisterVoiceInstructionsObserver(voiceInstructionsObserver);
-        mapboxNavigation.stopTripSession();
+//        mapboxNavigation.stopTripSession();
 //        finish();
         super.onBackPressed();
     }
