@@ -7,6 +7,15 @@ import androidx.fragment.app.Fragment;
 public class PageFragment extends Fragment {
     protected Bundle initBundle = null;
 
+    public PageFragment() {
+
+    }
+
+    public static PageFragment newInstance() {
+        PageFragment fragment = new PageFragment();
+        return fragment;
+    }
+
     public final void init(Bundle bundle) {
         initBundle = bundle;
         onInit(bundle);

@@ -24,6 +24,13 @@ public class SettingFragment extends PageFragment {
     Preference preference;
     View view;
 
+    public SettingFragment() {}
+
+    public static SettingFragment newInstance() {
+        SettingFragment fragment = new SettingFragment();
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

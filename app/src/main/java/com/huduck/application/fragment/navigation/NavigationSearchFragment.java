@@ -47,8 +47,11 @@ public class NavigationSearchFragment extends PageFragment {
 
     private View view;
 
-    public NavigationSearchFragment() {
-        // Required empty public constructor
+    public NavigationSearchFragment() {}
+
+    public static NavigationSearchFragment newInstance() {
+        NavigationSearchFragment fragment = new NavigationSearchFragment();
+        return fragment;
     }
 
     @Override

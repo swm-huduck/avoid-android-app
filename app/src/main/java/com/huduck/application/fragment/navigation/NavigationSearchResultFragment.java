@@ -74,8 +74,11 @@ public class NavigationSearchResultFragment extends PageFragment {
 
     private TMapPOIItem selectedPoi = null;
 
-    public NavigationSearchResultFragment() {
-        // Required empty public constructor
+    public NavigationSearchResultFragment() {}
+
+    public static NavigationSearchResultFragment newInstance() {
+        NavigationSearchResultFragment fragment = new NavigationSearchResultFragment();
+        return fragment;
     }
 
     @Override

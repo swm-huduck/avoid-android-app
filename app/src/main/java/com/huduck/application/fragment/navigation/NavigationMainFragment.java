@@ -47,20 +47,10 @@ public class NavigationMainFragment extends PageFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public NavigationMainFragment() {
-        // Required empty public constructor
-    }
+    public NavigationMainFragment() {}
 
     public static NavigationMainFragment newInstance(/*String param1, String param2*/) {
         NavigationMainFragment fragment = new NavigationMainFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
