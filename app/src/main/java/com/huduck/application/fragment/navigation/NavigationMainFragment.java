@@ -43,7 +43,7 @@ public class NavigationMainFragment extends PageFragment {
         View view = inflater.inflate(R.layout.fragment_navigation_main, container, false);
 
         // T MAP API KEY 등록
-        TMapView tMapView = new TMapView(view.getContext());
+        TMapView tMapView = new TMapView(getActivity().getApplicationContext());
         tMapView.setSKTMapApiKey( getString(R.string.skt_map_api_key) );
 
         // 네이버 지도 현 위치 표시

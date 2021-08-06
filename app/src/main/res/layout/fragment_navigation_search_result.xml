@@ -74,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8"
-        android:divider="@color/white"
-        android:dividerHeight="0dp"
+        android:divider="#00FFFFFF"
+        android:dividerHeight="1dp"
     />
 </LinearLayout>

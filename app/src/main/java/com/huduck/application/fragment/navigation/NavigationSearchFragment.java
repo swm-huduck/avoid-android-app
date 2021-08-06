@@ -32,6 +32,7 @@ public class NavigationSearchFragment extends PageFragment implements TextWatche
     NavigationSearchListViewAdapter adapter;
 
     private View view;
+    TMapData tMapData = new TMapData();
 
     public NavigationSearchFragment() {}
 
@@ -137,7 +138,7 @@ public class NavigationSearchFragment extends PageFragment implements TextWatche
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void afterTextChanged(Editable s) {
-        TMapData tMapData = new TMapData();
+
         tMapData.autoComplete(s.toString(), arrayList -> getActivity().runOnUiThread(() -> {
             adapter.removeAllItem();
 

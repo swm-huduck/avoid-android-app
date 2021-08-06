@@ -55,6 +55,7 @@ public class NavigationSearchResultFragment extends PageFragment {
     private MapView mapView = null;
     private NaverMap naverMap = null;
     private Marker marker = new Marker();
+    TMapData tMapData = new TMapData();
 
     private TMapPOIItem selectedPoi = null;
 
@@ -78,6 +79,7 @@ public class NavigationSearchResultFragment extends PageFragment {
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setZoomControlEnabled(false);
         uiSettings.setLocationButtonEnabled(false);
+
         marker.setPosition(new LatLng(0, 0));
         new Handler().post(() -> {
             marker.setMap(naverMap);
@@ -141,7 +143,6 @@ public class NavigationSearchResultFragment extends PageFragment {
         });
 
         // 경로 검색 및 리스트에 아이템 추가
-        TMapData tMapData = new TMapData();
         Location currentLocation = NavigationManager.getInstance().getCurrentRowLocation();
         tMapData.findAroundKeywordPOI(
                 new TMapPoint(currentLocation.getLatitude(), currentLocation.getLongitude()),
