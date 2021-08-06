@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragment.myCar.MyCarFragment">
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:padding="20dp">
+    <RelativeLayout style="@style/TOPBAR_LAYOUT">
 
         <TextView
+            style="@style/TOPBAR_TITLE"
+            android:text="내 차" />
+
+        <ImageView
+            android:tag="success_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="내 차"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:src="@drawable/ic_outline_cancel_24"
+            android:tint="@color/gray700"
+            android:tintMode="src_in"
+            tools:ignore="UseAppTint" />
     </RelativeLayout>
 
     <ScrollView
@@ -31,55 +34,59 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <fragment
+                android:id="@+id/my_car_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
+            <fragment
+                android:id="@+id/my_car_height"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
+            <fragment
+                android:id="@+id/my_car_length"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
+            <fragment
+                android:id="@+id/my_car_truck_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
+            <fragment
+                android:id="@+id/my_car_load_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
+            <fragment
+                android:id="@+id/my_car_total_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/holo_green_light"
-                android:orientation="horizontal"
-                android:padding="20dp"
-                android:weightSum="10">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="차체 높이"
-                    android:textSize="20sp"
-                    android:layout_weight="10"/>
-
+                android:background="@drawable/border_bottom_gray_1px"
+                android:orientation="vertical">
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="@drawable/border_bottom_gray_1px"/>
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rbtn_setting_subtitle_selector"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_vertical"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp">
-
-                    <EditText
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:background="@null"
-                        android:hint="높이"
-                        android:imeOptions="actionSearch"
-                        android:inputType="number"
-                        android:maxLength="2"
-                        android:privateImeOptions="defaultInputmode=korea;"
-                        android:tag="search_input"
-                        android:textAlignment="textEnd"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="m"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-
+                    android:layout_gravity="center"
+                    android:paddingVertical="15dp"
+                    android:textAlignment="center"
+                    android:text="모든 항목이 정상적으로 입력되면\n자동으로 저장 됩니다."/>
             </LinearLayout>
-
         </LinearLayout>
 
     </ScrollView>
