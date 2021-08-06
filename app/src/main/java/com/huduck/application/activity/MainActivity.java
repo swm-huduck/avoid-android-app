@@ -32,7 +32,6 @@ import com.huduck.application.fragment.myCar.MyCarFragment;
 import com.huduck.application.fragment.navigation.NavigationMainFragment;
 import com.huduck.application.fragment.navigation.NavigationSearchFragment;
 import com.huduck.application.fragment.navigation.NavigationSearchResultFragment;
-import com.huduck.application.service.NavigationService;
 import com.huduck.application.setting.Setting;
 import com.huduck.application.setting.detail.SettingDetail;
 import com.huduck.application.setting.detail.item.SettingDetailItem;
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(DeviceFragment.class);
                     break;
                 case R.id.page_setting:
-                    changeFragment(SettingFragment.class, true);
+                    changeFragment(SettingFragment.class);
                     break;
                 default:
                     return false;
@@ -187,13 +186,13 @@ public class MainActivity extends AppCompatActivity {
             changeFragment(NavigationSearchFragment.class);
         }
         else if(currentFragmentClass.equals(MyCarFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else if(currentFragmentClass.equals(DeviceFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else if(currentFragmentClass.equals(SettingFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else {
             changeFragment(NavigationMainFragment.class);
