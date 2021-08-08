@@ -41,20 +41,20 @@
         android:layout_gravity="center_vertical"
         android:background="@drawable/bg_my_car_info_danger"
         android:orientation="horizontal"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp">
+        android:paddingRight="20dp">
 
         <EditText
             android:tag="input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
             android:background="@null"
             android:hint="hint"
             android:imeOptions="actionNext"
             android:inputType="number"
-            android:privateImeOptions="defaultInputmode=korea;"
             android:textAlignment="textEnd"
+            android:paddingLeft="20dp"
+            android:paddingRight="10dp"
+            android:paddingVertical="10dp"
             android:textSize="16sp" />
 
         <TextView

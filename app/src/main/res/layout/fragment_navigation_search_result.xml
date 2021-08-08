@@ -53,19 +53,11 @@
         android:layout_width="match_parent"
         android:visibility="gone"
         android:layout_height="200dp">
-<!--        <com.naver.maps.map.MapView-->
-<!--            android:tag="map_view"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="200dp"/>-->
         <fragment
             android:tag="map_view"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:name="com.naver.maps.map.MapFragment" />
-<!--        <FrameLayout-->
-<!--            android:id="@+id/map_view_result"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="200dp"/>-->
 
     </RelativeLayout>
 
@@ -74,7 +66,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8"
-        android:divider="#00FFFFFF"
+        android:divider="#EFF0F1"
         android:dividerHeight="1dp"
+        android:overScrollMode="never"
     />
 </LinearLayout>
