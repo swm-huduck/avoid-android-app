@@ -208,12 +208,16 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
                 // 시작, 끝 지점 마커 생성
                 if (point.getProperties().getPointType().equals("S")) {
                     startMarker.setPosition(position);
-                    startMarker.setIcon(MarkerIcons.BLACK);
-                    startMarker.setIconTintColor(Color.RED);
+                    startMarker.setFlat(true);
+                    startMarker.setIcon(OverlayImage.fromResource(R.drawable.ic_navi_start));
+                    startMarker.setWidth(70);
+                    startMarker.setHeight(100);
                 } else if (point.getProperties().getPointType().equals("E")) {
                     endMarker.setPosition(position);
-                    endMarker.setIcon(MarkerIcons.BLACK);
-                    endMarker.setIconTintColor(Color.GREEN);
+                    endMarker.setFlat(true);
+                    endMarker.setIcon(OverlayImage.fromResource(R.drawable.ic_navi_end));
+                    endMarker.setWidth(70);
+                    endMarker.setHeight(100);
                 }
 
                 /*InfoWindow infoWindow = new InfoWindow();
