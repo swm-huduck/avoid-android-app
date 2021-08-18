@@ -31,6 +31,15 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 [Fake GPS Location - GPS JoyStick](https://play.google.com/store/apps/details?id=com.theappninjas.fakegpsjoystick&hl=ko&gl=US)
 
 
+### 2.1.3. 구동 화면
+
+|메인|검색|검색 결과|경로 추천|
+|:--:|:--:|:--:|:--:|
+|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%A9%94%EC%9D%B8.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89%20%EA%B2%B0%EA%B3%BC.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%BD%EB%A1%9C%20%EC%B6%94%EC%B2%9C.png)|
+
+#### 2.1.3.1. 길 안내 구동 영상
+![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%E1%84%82%E1%85%A2%E1%84%87%E1%85%B5%E1%84%80%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%20%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A7%E1%86%AB.mov)
+
 ## 2.2. 내 차 설정 🚚
 
 경로 검색에 필요한 사용자의 화물차 정보를 입력할 수 있습니다.
