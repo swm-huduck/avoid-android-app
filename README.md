@@ -36,9 +36,12 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 |메인|검색|검색 결과|경로 추천|
 |:--:|:--:|:--:|:--:|
 |![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%A9%94%EC%9D%B8.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89%20%EA%B2%B0%EA%B3%BC.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%BD%EB%A1%9C%20%EC%B6%94%EC%B2%9C.png)|
+|현재 위치를 표시한다.|목적지를 검색할 수 있다.<br/>추천 검색어와 자음 검색을 지원한다.|검색된 목적지의 이름, 업종, 주소, 지도상 위치를 표시한다.|7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.|
 
-#### 2.1.3.1. 길 안내 구동 영상
-![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%E1%84%82%E1%85%A2%E1%84%87%E1%85%B5%E1%84%80%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%20%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A7%E1%86%AB.mov)
+|길 안내 구동 영상 (개발 중)|
+|:-|
+|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%E1%84%82%E1%85%A2%E1%84%87%E1%85%B5%E1%84%80%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%20%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A7%E1%86%AB.mov)|
+|현재 개발 중인 기능으로 좌측에 사용자 차의 속도, 하단의 현재 위치, 상단에 목표 지점을 표시한다.<br/>좌회전, 우회전과 같은 회전 이벤트들을 잘 받아오는 것도 확인할 수 있다.|
 
 ## 2.2. 내 차 설정 🚚
 
@@ -55,12 +58,45 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 5. 화물 무게
 6. 총 무게 (자동 계산, 차량 무게 + 화물 무게)
 
+### 2.2.1. 구동 화면
+
+<table>
+    <thead>
+        <th>내 차 설정 前</th>
+        <th>내 차 설정 後</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%82%B4%EC%B0%A8%20%EC%A0%84.png"/></td>
+            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%82%B4%EC%B0%A8.png"/></td>
+        </tr>
+        <tr>
+            <td colspan="2">사용자 화물차의 정보를 입력하여, 내비게이션에서 화물차가 원활히 지날 수 있는 경로를 추천한다.<br/>설정 내용은 자동 저장되어 화물이 변경될 경우, 화물 중량만 변경하면 된다.</td>
+        </tr>
+    </tbody>
+</table>
+
 
 ## 2.3. 디바이스 연결 📱
 
 블루투스를 통해 HUD 디바이스와 스마트폰의 연결을 돕습니다.
 
 애플리케이션의 사용에서 HUD 디바이스와의 연결이 필수이기 때문에, 블루투스 미연결 상태일 경우 본 기능(디바이스 연결)으로 이동됩니다.
+
+### 2.3.1. 구동 화면
+<table>
+    <thead>
+        <th>HUD 디바이스 연결 확인</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%EC%97%B0%EA%B2%B0.png"/></td>
+        </tr>
+        <tr>
+            <td>스마트폰과 HUD의 블루투스 통신 상태를 확인할 수 있다.<br/>(본 기능 구현은 중간 발표 이후 진행될 예정)</td>
+        </tr>
+    </tbody>
+</table>
 
 ## 2.4. 옵션 설정 ⚙
 
@@ -80,6 +116,21 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
     2. 문자 (ON/OFF)
     3. 카카오톡 (ON/OFF)
 
+### 2.4.1. 구동 화면
+<table>
+    <thead>
+        <th>HUD 표시 옵션 설정</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%ED%91%9C%EC%8B%9C%20%EC%98%B5%EC%85%98.png"/></td>
+        </tr>
+        <tr>
+            <td>HUD에 표시될 기능을 제어할 수 있다.<br/>이를 통해 운전자의 전방 주시를 최대화한다.</td>
+        </tr>
+    </tbody>
+</table>
+
 # 3. 프로젝트 시작하기
 
 ## 3.1. 개발 환경
@@ -96,7 +147,6 @@ Gradle Version `7.0`
 
 [NAVER MAPS API]()<br/>
 [T map API]()<br/>
-[Mapbox Navigation SDK]()
 
 ## 3.3. API Key 설정
 
@@ -121,18 +171,3 @@ API Key 발급 방법은 API Document를 참고하시면 됩니다.
 ```xml
 <string name="skt_map_api_key">API Key</string>
 ```
-
-### 3.3.3. Mapbox Navigation SDK
-
-[Mapbox Navigation SDK Document](https://docs.mapbox.com/android/navigation/guides/)
-
-`res/values/api_keys.xml` 파일 내부에 엑세스 토큰을 입력합니다.
-```xml
-<string name="mapbox_access_token">엑세스 토큰</string>
-```
-
-`gradle.properties` 파일 내부에 다운로드 토큰을 입력합니다.
-```gradle
-MAPBOX_DOWNLOADS_TOKEN=다운로드 토큰
-```
-
