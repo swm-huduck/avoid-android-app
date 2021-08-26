@@ -41,6 +41,7 @@
             android:exported="true">
 
         </activity>
+
         <activity
             android:name=".activity.NavigationRoutesActivity"
             android:configChanges="orientation|screenSize"
@@ -49,10 +50,12 @@
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" />
-        <activity
-            android:name=".activity.NavigationGuideActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="true"></activity>
+
+<!--        <activity-->
+<!--            android:name=".activity.NavigationGuideActivity"-->
+<!--            android:configChanges="orientation|screenSize"-->
+<!--            android:exported="true"></activity>-->
+
         <activity
             android:name=".activity.SplashActivity"
             android:configChanges="orientation|screenSize"

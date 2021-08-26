@@ -28,12 +28,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.activity.NavigationRoutesActivity;
 import com.huduck.application.fragment.PageFragment;
-import com.mapbox.navigation.core.trip.session.LocationObserver;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapView;
@@ -143,7 +141,7 @@ public class NavigationSearchResultFragment extends PageFragment {
         });
 
         // 경로 검색 및 리스트에 아이템 추가
-        Location currentLocation = NavigationManager.getInstance().getCurrentRowLocation();
+        Location currentLocation = null; // 현재위치 // NavigationManager.getInstance().getCurrentRowLocation();
         tMapData.findAroundKeywordPOI(
                 new TMapPoint(currentLocation.getLatitude(), currentLocation.getLongitude()),
                 searchWord, Integer.MAX_VALUE, 30,

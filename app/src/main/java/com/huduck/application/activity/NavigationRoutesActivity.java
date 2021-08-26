@@ -18,12 +18,12 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.huduck.application.NavigationTestActivity;
 import com.huduck.application.fragment.LoadingFragment;
 import com.huduck.application.Navigation.NavigationRoutesParser;
 import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationRoutes;
-import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.common.NetworkTask;
 import com.huduck.application.R;
 import com.naver.maps.geometry.LatLng;
@@ -111,8 +111,7 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         // 길 안내 시작 버튼
         LinearLayout startGuideBtn = findViewById(R.id.start_guide_btn);
         startGuideBtn.setOnClickListener(v -> {
-            NavigationManager.getInstance().setRoutes(routes);
-            Intent intent = new Intent(this, NavigationGuideActivity.class);
+            Intent intent = new Intent(this, NavigationTestActivity.class);
             startActivity(intent);
         });
     }
@@ -126,7 +125,7 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
 
         ContentValues values = new ContentValues();
 
-        Location currentLocation = NavigationManager.getInstance().getCurrentRowLocation();
+        Location currentLocation = null; //현재 위치 넣어줘야함 //NavigationManager.getInstance().getCurrentRowLocation();
 
         values.put("startX", currentLocation.getLongitude());
         values.put("startY", currentLocation.getLatitude());

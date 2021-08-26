@@ -1,3 +1,4 @@
+/*
 package com.huduck.application.activity;
 
 import android.Manifest;
@@ -224,7 +225,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
             @Override
             public void onRouteProgressChanged(@NonNull RouteProgress routeProgress) {
 
-                /*stateTextView.setText(routeProgress.getCurrentState().toString());
+                */
+/*stateTextView.setText(routeProgress.getCurrentState().toString());
 
                 RouteLegProgress legProgress = routeProgress.getCurrentLegProgress();
                 if(legProgress == null) return;
@@ -253,7 +255,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
                 Point targetDir = Point.fromLngLat(
                         (nextIntersectionPoint.longitude() - currentIntersectionPoint.longitude()),
                         (nextIntersectionPoint.latitude() - currentIntersectionPoint.latitude())
-                );*/
+                );*//*
+
             }
         };
         mapboxNavigation.registerRouteProgressObserver(routeProgressObserver);
@@ -502,7 +505,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
             }
         }
 
-        /*
+        */
+/*
         navigationRoutes.getNavigationSequence().forEach(integer -> {
             if(navigationRoutes.getNavigationPointHashMap().containsKey(integer)) {
                 double lat = navigationRoutes.getNavigationPointHashMap().get(integer).getGeometry().getCoordinates().get(0);
@@ -557,7 +561,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
 
             result.add(pointList);
         }
-*/
+*//*
+
 
         return result;
     }
@@ -572,4 +577,4 @@ public class NavigationGuideActivity extends AppCompatActivity implements Runnab
 //        finish();
         super.onBackPressed();
     }
-}
+}*/

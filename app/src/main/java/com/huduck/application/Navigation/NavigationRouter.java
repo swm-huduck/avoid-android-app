@@ -9,20 +9,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.huduck.application.R;
-import com.huduck.application.activity.NavigationGuideActivity;
 import com.huduck.application.common.NetworkTask;
-import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.myCar.TruckInformation;
-import com.mapbox.api.directions.v5.DirectionsCriteria;
-import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.directions.v5.models.LegStep;
-import com.mapbox.api.directions.v5.models.RouteLeg;
-import com.mapbox.api.matching.v5.MapboxMapMatching;
-import com.mapbox.api.matching.v5.models.MapMatchingMatching;
-import com.mapbox.api.matching.v5.models.MapMatchingResponse;
-import com.mapbox.core.constants.Constants;
-import com.mapbox.geojson.Point;
 import com.naver.maps.geometry.LatLng;
 
 import org.json.JSONException;
@@ -36,10 +24,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.SneakyThrows;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class NavigationRouter{
     @NonNull @Getter @Setter
@@ -122,7 +106,7 @@ public class NavigationRouter{
         public void OnSuccess(NavigationRoutes navigationRoutes);
     }
 
-    // 맵 매칭 뷰분 만들어야함
+  /*  // 맵 매칭 뷰분 만들어야함
     private List<List<Point>> points;
     private List<Point> point100List;
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -213,5 +197,5 @@ public class NavigationRouter{
 
     public static interface OnFoundMapMatchingRoutesCallback{
         public void OnSuccess(List<DirectionsRoute> directionsRoutes);
-    }
+    }*/
 }

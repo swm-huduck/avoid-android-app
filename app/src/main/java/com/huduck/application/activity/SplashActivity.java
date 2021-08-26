@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.huduck.application.manager.NavigationManager;
 import com.huduck.application.R;
 
 import java.util.ArrayList;
@@ -51,9 +50,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        // Init Manager
-        NavigationManager.getInstance().initNavigationManager(getApplicationContext(), getString(R.string.mapbox_access_token));
 
         // 권한 확인
         needEssentialPermissions = checkNeedEssentialPermission();

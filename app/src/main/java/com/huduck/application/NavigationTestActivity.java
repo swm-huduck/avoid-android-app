@@ -28,7 +28,6 @@ import com.huduck.application.common.CommonMethod;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
 import com.huduck.application.kalmanLoacationLib.KalmanLocationManager;
 import com.huduck.application.myCar.TruckInformation;
-import com.mapbox.maps.CameraOptions;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraPosition;
