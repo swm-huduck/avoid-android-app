@@ -60,7 +60,7 @@ public class NavigationManager implements LocationObserver{
         this.accessToken = accessToken;
 
         NavigationOptions navigationOption
-                = MapboxNavigation.defaultNavigationOptionsBuilder(context, accessToken).build();
+                =new NavigationOptions.Builder(context.getApplicationContext()).build();
 
         navigation = MapboxNavigationProvider.create(navigationOption);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

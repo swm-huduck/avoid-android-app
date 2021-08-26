@@ -7,4 +7,8 @@ public class CommonMethod {
         float density = res.getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
+
+    public static double lerp(double a, double b, double t) {
+        return a * (1-t) + b * t;
+    }
 }
