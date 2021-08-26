@@ -20,13 +20,8 @@
         android:theme="@style/Theme.Application"
         android:usesCleartextTraffic="true"
         tools:targetApi="n">
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="@string/naver_maps_client_id" />
-
-
         <activity
-            android:name=".activity.MapboxTest"
+            android:name=".NavigationTestActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
             <intent-filter>
@@ -34,14 +29,22 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="@string/naver_maps_client_id" />
+
+        <activity
+            android:name=".activity.MapboxTest"
+            android:configChanges="orientation|screenSize"
+            android:exported="true">
 
         </activity>
         <activity
             android:name=".activity.NavigationRoutesActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" />
-
-
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
@@ -49,14 +52,11 @@
         <activity
             android:name=".activity.NavigationGuideActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".activity.SplashActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>

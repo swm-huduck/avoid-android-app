@@ -1,10 +1,12 @@
 package com.huduck.application.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -12,18 +14,27 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.huduck.application.Navigation.NavigationRouter;
+import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityMapboxTestBinding;
+import com.huduck.application.myCar.TruckInformation;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.directions.v5.models.RouteOptions;
 import com.mapbox.api.directions.v5.models.VoiceInstructions;
+import com.mapbox.api.matching.v5.MapboxMapMatching;
+import com.mapbox.api.matching.v5.models.MapMatchingMatching;
+import com.mapbox.api.matching.v5.models.MapMatchingResponse;
 import com.mapbox.bindgen.Expected;
+import com.mapbox.core.constants.Constants;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.EdgeInsets;
@@ -33,9 +44,12 @@ import com.mapbox.maps.StyleManagerInterface;
 import com.mapbox.maps.extension.localization.LocalizationKt;
 import com.mapbox.maps.plugin.LocationPuck;
 import com.mapbox.maps.plugin.LocationPuck2D;
+import com.mapbox.maps.plugin.animation.CameraAnimationsLifecycleListener;
 import com.mapbox.maps.plugin.animation.CameraAnimationsPlugin;
 import com.mapbox.maps.plugin.animation.CameraAnimationsPluginImpl;
 import com.mapbox.maps.plugin.animation.CameraAnimationsPluginImplKt;
+import com.mapbox.maps.plugin.animation.CameraAnimatorChangeListener;
+import com.mapbox.maps.plugin.animation.CameraAnimatorType;
 import com.mapbox.maps.plugin.gestures.GesturesPlugin;
 import com.mapbox.maps.plugin.gestures.GesturesPluginImpl;
 import com.mapbox.maps.plugin.gestures.OnMapLongClickListener;
@@ -45,14 +59,21 @@ import com.mapbox.navigation.base.TimeFormat;
 import com.mapbox.navigation.base.formatter.DistanceFormatterOptions;
 import com.mapbox.navigation.base.formatter.UnitType;
 import com.mapbox.navigation.base.options.NavigationOptions;
+import com.mapbox.navigation.base.route.RouteRefreshOptions;
 import com.mapbox.navigation.base.route.RouterCallback;
 import com.mapbox.navigation.base.route.RouterFailure;
 import com.mapbox.navigation.base.route.RouterOrigin;
+import com.mapbox.navigation.base.trip.model.RouteLegProgress;
 import com.mapbox.navigation.base.trip.model.RouteProgress;
 import com.mapbox.navigation.core.MapboxNavigation;
+import com.mapbox.navigation.core.arrival.ArrivalObserver;
 import com.mapbox.navigation.core.directions.session.RoutesObserver;
 import com.mapbox.navigation.core.formatter.MapboxDistanceFormatter;
+import com.mapbox.navigation.core.reroute.MapboxRerouteController;
+import com.mapbox.navigation.core.reroute.RerouteController;
+import com.mapbox.navigation.core.reroute.RerouteState;
 import com.mapbox.navigation.core.trip.session.LocationObserver;
+import com.mapbox.navigation.core.trip.session.OffRouteObserver;
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
 import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver;
 import com.mapbox.navigation.ui.base.util.MapboxNavigationConsumer;
@@ -61,11 +82,15 @@ import com.mapbox.navigation.ui.maneuver.model.Maneuver;
 import com.mapbox.navigation.ui.maneuver.model.ManeuverError;
 import com.mapbox.navigation.ui.maps.camera.NavigationCamera;
 import com.mapbox.navigation.ui.maps.camera.data.MapboxNavigationViewportDataSource;
+import com.mapbox.navigation.ui.maps.camera.data.ViewportData;
+import com.mapbox.navigation.ui.maps.camera.data.ViewportDataSourceUpdateObserver;
+import com.mapbox.navigation.ui.maps.camera.data.debugger.MapboxNavigationViewportDataSourceDebugger;
 import com.mapbox.navigation.ui.maps.camera.lifecycle.NavigationBasicGesturesHandler;
 import com.mapbox.navigation.ui.maps.camera.state.NavigationCameraState;
 import com.mapbox.navigation.ui.maps.camera.state.NavigationCameraStateChangedObserver;
 import com.mapbox.navigation.ui.maps.camera.transition.MapboxNavigationCameraStateTransition;
 import com.mapbox.navigation.ui.maps.camera.transition.MapboxNavigationCameraTransition;
+import com.mapbox.navigation.ui.maps.camera.transition.NavigationCameraTransitionOptions;
 import com.mapbox.navigation.ui.maps.location.NavigationLocationProvider;
 import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi;
 import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView;
@@ -90,6 +115,13 @@ import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement;
 import com.mapbox.navigation.ui.voice.model.SpeechError;
 import com.mapbox.navigation.ui.voice.model.SpeechValue;
 import com.mapbox.navigation.ui.voice.model.SpeechVolume;
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.MapFragment;
+import com.naver.maps.map.MapView;
+import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,6 +132,9 @@ import java.util.Locale;
 import kotlin.coroutines.CoroutineContext;
 import kotlinx.coroutines.CoroutineScope;
 import kotlinx.coroutines.Dispatchers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapboxTest extends AppCompatActivity {
     private ActivityMapboxTestBinding binding;
@@ -152,6 +187,9 @@ public class MapboxTest extends AppCompatActivity {
     private MapboxRouteArrowView routeArrowView;
     private MapboxRouteArrowApi routeArrowAPI = new MapboxRouteArrowApi();
 
+    private Location currentLocation = null;
+    private Location passedLocation = null;
+
     private VoiceInstructionsObserver voiceInstructionsObserver = new VoiceInstructionsObserver() {
         @Override
         public void onNewVoiceInstructions(@NonNull VoiceInstructions voiceInstructions) {
@@ -197,17 +235,30 @@ public class MapboxTest extends AppCompatActivity {
 
         @Override
         public void onEnhancedLocationChanged(@NonNull Location location, @NonNull List<? extends Location> keyPoints) {
+            passedLocation = currentLocation;
+            currentLocation = location;
+
             navigationLocationProvider.changePosition(
                     location, keyPoints, null, null
             );
+            viewportDataSource.onLocationChanged(location);
+            viewportDataSource.setFollowingPadding(landscapeFollowingPadding);
+            viewportDataSource.evaluate();
+            viewportDataSource.registerUpdateObserver(new ViewportDataSourceUpdateObserver() {
+                @Override
+                public void viewportDataSourceUpdated(@NonNull ViewportData viewportData) {
+//                    Log.d("DataSourceUpdated",viewportData.getCameraForFollowing().getCenter().toString());
+                }
+            });
+            navigationCamera.requestNavigationCameraToFollowing();
         }
     };
 
     private RouteProgressObserver routeProgressObserver = new RouteProgressObserver() {
         @Override
         public void onRouteProgressChanged(@NonNull RouteProgress routeProgress) {
-            viewportDataSource.onRouteProgressChanged(routeProgress);
-            viewportDataSource.evaluate();
+//            viewportDataSource.onRouteProgressChanged(routeProgress);
+//            viewportDataSource.evaluate();
 
             Expected<InvalidPointError, UpdateManeuverArrowValue> maneuverArrowResult
                     = routeArrowAPI.addUpcomingManeuverArrow(routeProgress);
@@ -246,14 +297,16 @@ public class MapboxTest extends AppCompatActivity {
         public void onRoutesChanged(@NonNull List<? extends DirectionsRoute> routes) {
             if(!routes.isEmpty()) {
                 new Handler().post(() -> {
+                    routeLineAPI.clearRouteLine(routeLineErrorRouteLineClearValueExpected -> {}); // 추가하니까 검정색으로 안변함
                     routeLineAPI.setRoutes(
                         Arrays.asList(new RouteLine(routes.get(0), null)),
                         new MapboxNavigationConsumer<Expected<RouteLineError, RouteSetValue>>() {
                             @Override
                             public void accept(Expected<RouteLineError, RouteSetValue> result) {
                                 Style style = mapboxMap.getStyle();
-                                if(style != null)
+                                if(style != null) {
                                     routeLineView.renderRouteDrawData(style, result);
+                                }
                             }
                         }
                     );
@@ -280,6 +333,12 @@ public class MapboxTest extends AppCompatActivity {
         }
     };
 
+
+    private Point destination = null;
+    private NaverMap naverMap = null;
+    private Marker naverMarker = new Marker();
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private double bearing = 0;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     @SuppressLint("MissingPermission")
@@ -287,9 +346,16 @@ public class MapboxTest extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMapboxTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        MapFragment naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
+        naverMapFragment.getMapAsync(naverMap_ -> {
+            naverMap = naverMap_;
+            naverMarker.setPosition(new LatLng(0,0));
+            naverMarker.setMap(naverMap);
+        });
         mapboxMap = binding.mapView.getMapboxMap();
 
-        // initialize the location puck
+        // puck 초기화
         LocationComponentPlugin locationComponentPlugin
                 = binding.mapView.getPlugin(LocationComponentPluginImpl.class);
         locationComponentPlugin.setLocationPuck (
@@ -306,14 +372,14 @@ public class MapboxTest extends AppCompatActivity {
         locationComponentPlugin.setLocationProvider(navigationLocationProvider);
         locationComponentPlugin.setEnabled(true);
 
-        // initialize Mapbox Navigation
+        // 내비게이션 초기화
         mapboxNavigation = new MapboxNavigation(
             new NavigationOptions.Builder(this)
                 .accessToken(getMapboxAccessTokenFromResources())
                 .build()
         );
 
-        // move the camera to current location on the first update
+        // 첫 위치 업데이트때 카메라 이동
         mapboxNavigation.registerLocationObserver(
             new LocationObserver() {
                 @Override
@@ -321,15 +387,21 @@ public class MapboxTest extends AppCompatActivity {
                     Point point = Point.fromLngLat(location.getLongitude(), location.getLatitude());
                     CameraOptions cameraOptions = new CameraOptions.Builder()
                             .center(point)
-                            .zoom(13.0)
+                            .zoom(20.0)
                             .build();
                     mapboxMap.setCamera(cameraOptions);
                     mapboxNavigation.unregisterLocationObserver(this);
+
+                    if(naverMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(new CameraPosition(
+                                new LatLng(point.latitude(), point.longitude()), naverMap.getCameraPosition().zoom
+                        ));
+                        naverMap.moveCamera(cameraUpdate);
+                    }
                 }
 
                 @Override
                 public void onEnhancedLocationChanged(@NonNull Location location, @NonNull List<? extends Location> list) {
-
                 }
         });
 
@@ -348,9 +420,39 @@ public class MapboxTest extends AppCompatActivity {
                         new MapboxNavigationCameraTransition(mapboxMap, cameraPlugin)
                 )
         );
+
+
+        cameraPlugin.addCameraCenterChangeListener(new CameraAnimatorChangeListener<Point>() {
+            @Override
+            public void onChanged(Point point) {
+                LatLng pointLatLng = new LatLng(point.latitude(), point.longitude());
+                if(naverMap != null) {
+                    CameraPosition oriCamPos = naverMap.getCameraPosition();
+                    CameraPosition cameraPosition = new CameraPosition(
+                            pointLatLng,
+                            oriCamPos.zoom,
+                            oriCamPos.tilt,
+                            bearing
+                    );
+                    CameraUpdate cameraUpdate = CameraUpdate.toCameraPosition(cameraPosition);
+                    naverMarker.setPosition(pointLatLng);
+                    naverMap.moveCamera(cameraUpdate);
+                }
+            }
+        });
+
+        cameraPlugin.addCameraBearingChangeListener(new CameraAnimatorChangeListener<Double>() {
+            @Override
+            public void onChanged(Double aDouble) {
+                bearing = aDouble;
+            }
+        });
+
         cameraPlugin.addCameraAnimationsLifecycleListener(
                 new NavigationBasicGesturesHandler(navigationCamera)
         );
+
+
         navigationCamera.registerNavigationCameraStateChangeObserver(
                 new NavigationCameraStateChangedObserver() {
                     @Override
@@ -423,15 +525,20 @@ public class MapboxTest extends AppCompatActivity {
         RouteArrowOptions routeArrowOptions = new RouteArrowOptions.Builder(this).build();
         routeArrowView = new MapboxRouteArrowView(routeArrowOptions);
 
-        // load map style
+        // 꾹 누르면 목적지 설정
         mapboxMap.loadStyleUri(
             Style.MAPBOX_STREETS,
-            style -> binding.mapView.getPlugin(GesturesPluginImpl.class).addOnMapLongClickListener(
-                point -> {
-                    findRoute(point);
-                    return true;
-                }
-            )
+            style -> {
+                // 한글 지도로 변경
+                style.setStyleURI("mapbox://styles/parkyucheon/cks4dprdx52oy17ovko14p5b1");
+                binding.mapView.getPlugin(GesturesPluginImpl.class).addOnMapLongClickListener(
+                    point -> {
+                        destination = point;
+                        findRoute(point);
+                        return true;
+                    }
+                );
+            }
         );
 
         // initialize view interactions
@@ -440,7 +547,9 @@ public class MapboxTest extends AppCompatActivity {
         );
 
         binding.recenter.setOnClickListener(
-                v -> navigationCamera.requestNavigationCameraToFollowing()
+                v -> {
+                    navigationCamera.requestNavigationCameraToFollowing();
+                }
         );
 
         binding.routeOverview.setOnClickListener(
@@ -469,6 +578,37 @@ public class MapboxTest extends AppCompatActivity {
         mapboxNavigation.startTripSession();
     }
 
+    private class MyRerouteController implements RerouteController {
+
+        @NonNull
+        @Override
+        public RerouteState getState() {
+            return null;
+        }
+
+        @Override
+        public void interrupt() {
+
+        }
+
+        @Override
+        public boolean registerRerouteStateObserver(@NonNull RerouteStateObserver rerouteStateObserver) {
+            return false;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public void reroute(@NonNull RoutesCallback routesCallback) {
+            interrupt();
+            findRoute(destination);
+        }
+
+        @Override
+        public boolean unregisterRerouteStateObserver(@NonNull RerouteStateObserver rerouteStateObserver) {
+            return false;
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -477,6 +617,15 @@ public class MapboxTest extends AppCompatActivity {
         mapboxNavigation.registerRouteProgressObserver(routeProgressObserver);
         mapboxNavigation.registerLocationObserver(locationObserver);
         mapboxNavigation.registerVoiceInstructionsObserver(voiceInstructionsObserver);
+
+        //aa
+        mapboxNavigation.setRerouteController(new MyRerouteController());
+        mapboxNavigation.registerOffRouteObserver(new OffRouteObserver() {
+            @Override
+            public void onOffRouteStateChanged(boolean b) {
+                Log.d("OffRoute",b?"!OFFROUTE":"NONOFF");
+            }
+        });
     }
 
     @Override
@@ -506,11 +655,36 @@ public class MapboxTest extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void findRoute(Point destination) {
-        Location originLocation = navigationLocationProvider.getLastLocation();
+        Location originLocation = currentLocation;//navigationLocationProvider.getLastLocation();
         if(originLocation == null) return;
         Point origin = Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
 
-        mapboxNavigation.requestRoutes(
+        NavigationRouter router = NavigationRouter.builder()
+                .currentLocation(new LatLng(origin.latitude(), origin.longitude()))
+                .targetLocation(new LatLng(destination.latitude(), destination.longitude()))
+                .searchOption("0")
+                .truckInformation(TruckInformation.builder().build())
+                .build();
+
+        LatLng lastLastLocation = null;
+        if(passedLocation != null) {
+            lastLastLocation = new LatLng(passedLocation.getLatitude(), passedLocation.getLongitude());
+        }
+        router.findRoutes(getString(R.string.skt_map_api_key), lastLastLocation, new NavigationRouter.OnFoundRoutesCallback() {
+            @Override
+            public void OnSuccess(NavigationRoutes navigationRoutes) {
+                router.findMapMatchingRoutesByNavigationRoutes(getString(R.string.mapbox_access_token),
+                        navigationRoutes,
+                        new NavigationRouter.OnFoundMapMatchingRoutesCallback() {
+                            @Override
+                            public void OnSuccess(List<DirectionsRoute> directionsRoutes) {
+                                setRouteAndStartNavigation(directionsRoutes, null);
+                            }
+                        });
+            }
+        });
+
+     /*   mapboxNavigation.requestRoutes(
                 RouteOptions.builder()
                         .profile(DirectionsCriteria.PROFILE_DRIVING)
                         .overview(DirectionsCriteria.OVERVIEW_FULL)
@@ -538,7 +712,7 @@ public class MapboxTest extends AppCompatActivity {
                 new RouterCallback() {
                     @Override
                     public void onRoutesReady(@NonNull List<? extends DirectionsRoute> routes, @NonNull RouterOrigin routerOrigin) {
-                        setRouteAndStartNavigation(routes.get(0), routerOrigin);
+                        setRouteAndStartNavigation(Arrays.asList(routes.get(0)), routerOrigin);
                     }
 
                     @Override
@@ -551,12 +725,13 @@ public class MapboxTest extends AppCompatActivity {
 
                     }
                 }
-        );
+        );*/
+
     }
 
-    private void setRouteAndStartNavigation(DirectionsRoute route, RouterOrigin routerOrigin) {
+    private void setRouteAndStartNavigation(List<DirectionsRoute> routes, RouterOrigin routerOrigin) {
         // set route
-        mapboxNavigation.setRoutes(Arrays.asList(route));
+        mapboxNavigation.setRoutes(routes);
 
         // show UI elements
         binding.soundButton.setVisibility(View.VISIBLE);

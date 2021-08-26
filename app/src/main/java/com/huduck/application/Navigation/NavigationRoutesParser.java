@@ -37,6 +37,7 @@ public class NavigationRoutesParser {
             String type = geometryJson.getString("type");
 
             JSONObject propertiesJson = featureJson.getJSONObject("properties");
+            if(!propertiesJson.has("index")) continue;
             int index = propertiesJson.getInt("index");
             String name = propertiesJson.getString("name");
             String description = propertiesJson.getString("description");

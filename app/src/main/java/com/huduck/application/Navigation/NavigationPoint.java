@@ -20,7 +20,7 @@ public class NavigationPoint extends NavigationFeature {
     @SuperBuilder
     public static class Geometry extends NavigationFeature.Geometry {
         private final String type = "Point";
-        private ArrayList<Double> coordinates;
+        private ArrayList<Double> coordinates; // Lat, Lng
     }
 
     @Getter
