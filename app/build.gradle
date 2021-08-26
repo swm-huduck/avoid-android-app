@@ -53,17 +53,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     // annotationProcessor : annotation processor classpath 에서 compile processor classpath를 분리하여 빌드 성능개선
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-    // Mapbox
-    implementation "com.mapbox.navigation:ui:1.5.1"
-    implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:5.8.0"
-    implementation 'androidx.annotation:annotation:1.0.0'
-
-    // Mapbox Navigation v2
-    implementation ("com.mapbox.navigation:android:2.0.0-beta.21") {
-        transitive = true
-    }
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
-//    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-localization-v9:0.12.0'
 }
