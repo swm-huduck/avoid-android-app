@@ -18,14 +18,17 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.huduck.application.NavigationTestActivity;
+import com.huduck.application.Navigation.LatLngTool;
+import com.huduck.application.Navigation.LocationProvider;
+import com.huduck.application.Navigation.NavigationProvider;
+import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.fragment.LoadingFragment;
-import com.huduck.application.Navigation.NavigationRoutesParser;
 import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.common.NetworkTask;
 import com.huduck.application.R;
+import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraUpdate;
@@ -46,7 +49,7 @@ import java.util.List;
 
 import lombok.SneakyThrows;
 
-public class NavigationRoutesActivity extends AppCompatActivity implements Runnable{
+public class NavigationRoutesActivity extends AppCompatActivity{
     private Handler handler = new Handler(Looper.getMainLooper());
     private LoadingFragment loadingFragment;
     private Bundle routeBundle;
@@ -84,8 +87,12 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         routeBundle = routeIntent.getExtras();
         loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
 
-        Thread th = new Thread(this::run);
-        th.start();
+        // 지도 활성화 이벤트 등록
+        MapView mapView = findViewById(R.id.map_view);
+        mapView.getMapAsync(naverMap_ -> {
+            naverMap = naverMap_;
+            initActivity();
+        });
     }
 
     private void initActivity() {
@@ -97,6 +104,7 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
                 searchOptionList);
         searchOptionSpinner.setAdapter(adapter);
         searchOptionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String searchOption = searchOptionCodeHashMap.get(searchOptionList[position]);
@@ -111,56 +119,33 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         // 길 안내 시작 버튼
         LinearLayout startGuideBtn = findViewById(R.id.start_guide_btn);
         startGuideBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(this, NavigationTestActivity.class);
+            Intent intent = new Intent(this, NavigationGuideActivity.class);
             startActivity(intent);
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void searchRoutes(String searchOption) {
         loadingFragment.isVisible(true);
 
-        String url = "https://apis.openapi.sk.com/tmap/truck/routes?version=1&format=json&callback=result&appKey=" + getString(R.string.skt_map_api_key);
+        NavigationProvider.setSearchOption(searchOption);
 
-        // AsyncTask를 통해 HttpURLConnection 수행.
+        NavigationRouter router = NavigationRouter.builder()
+                .currentLocation(
+                        LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation())
+                )
+                .targetLocation(new LatLng(routeBundle.getDouble("target_poi_lat"), routeBundle.getDouble("target_poi_lng")))
+                .searchOption(searchOption)
+                .truckInformation(NavigationProvider.getTruckInformation())
+                .build();
 
-        ContentValues values = new ContentValues();
 
-        Location currentLocation = null; //현재 위치 넣어줘야함 //NavigationManager.getInstance().getCurrentRowLocation();
-
-        values.put("startX", currentLocation.getLongitude());
-        values.put("startY", currentLocation.getLatitude());
-        values.put("endX", routeBundle.getString("target_poi_lng"));
-        values.put("endY", routeBundle.getString("target_poi_lat"));
-        values.put("reqCoordType", "WGS84GEO");
-        values.put("resCoordType", "WGS84GEO");
-        values.put("angle", "172");
-        values.put("searchOption", searchOption);
-        values.put("trafficInfo", "Y");
-        values.put("truckType", "1");
-        values.put("truckWidth", "100");
-        values.put("truckHeight", "100");
-        values.put("truckWeight", "35000");
-        values.put("truckTotalWeight", "35000");
-        values.put("truckLength", "200");
-
-        NetworkTask networkTask = new NetworkTask(url, values) {
-//            @SneakyThrows
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            protected void onPostExecute(String s) {
-//                super.onPostExecute(s);
-                if(paused) return;
-                try {
-                    routes = NavigationRoutesParser.parserTruckRoutes(s);
-                    drawRoutes();
-                    loadingFragment.isVisible(false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        networkTasks.add(networkTask);
-        networkTask.execute();
+        router.findRoutes(getString(R.string.skt_map_api_key), null, navigationRoutes -> {
+            routes = navigationRoutes;
+            NavigationProvider.setNavigationRoute(routes);
+            drawRoutes();
+            loadingFragment.isVisible(false);
+        });
     }
 
     private PathOverlay currentPath = new PathOverlay();
@@ -246,20 +231,6 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
                     }};
                     jsonArray.put(a);
 
-//                   InfoWindow infoWindow = new InfoWindow();
-//                   infoWindow.setVisible(true);
-//                   infoWindow.setPosition(position);
-//                   infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
-//                       @NonNull
-//                       @Override
-//                       public CharSequence getText(@NonNull InfoWindow infoWindow) {
-//                           return lat + ", " + lng;
-//                       }
-//                   });
-//                    handler.post(() -> {
-//                        infoWindow.setMap(naverMap);
-//                    });
-
                     latLngs.add(position);
                     if(lat < minLat)
                         minLat = lat;
@@ -285,23 +256,16 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
         CameraUpdate cameraUpdate = CameraUpdate.fitBounds(new LatLngBounds(southWest, northEast), 200);
 
         handler.post(() -> {
-            /*for(int i = 0; i < infoWindows.size(); i++)
-                infoWindows.get(i).setMap(naverMap);*/
-
             currentPath.setMap(naverMap);
             startMarker.setMap(naverMap);
             endMarker.setMap(naverMap);
             naverMap.moveCamera(cameraUpdate);
         });
-
-//        CLog.d("", jsonArray.toString());
     }
 
-    private boolean paused = false;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onPause() {
-        paused = true;
         Log.d("RoutesActivity", "onPause");
         networkTasks.forEach(networkTask -> networkTask.cancel(true));
         super.onPause();
@@ -309,7 +273,6 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
 
     @Override
     protected void onResume() {
-        paused = false;
         Log.d("RoutesActivity", "onResume");
         super.onResume();
     }
@@ -328,15 +291,5 @@ public class NavigationRoutesActivity extends AppCompatActivity implements Runna
 //        finish();
         networkTasks.forEach(networkTask -> networkTask.cancel(true));
         super.onBackPressed();
-    }
-
-    @Override
-    public void run() {
-        // 지도 활성화 이벤트 등록
-        MapView mapView = findViewById(R.id.map_view);
-        mapView.getMapAsync(naverMap_ -> {
-            naverMap = naverMap_;
-            initActivity();
-        });
     }
 }

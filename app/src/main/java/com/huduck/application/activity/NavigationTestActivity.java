@@ -1,16 +1,11 @@
-package com.huduck.application;
+package com.huduck.application.activity;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.graphics.Path;
 import android.graphics.PointF;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,41 +13,29 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.huduck.application.Navigation.LatLngTool;
-import com.huduck.application.Navigation.NavigationLineString;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
-import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.Navigation.Navigator;
+import com.huduck.application.R;
 import com.huduck.application.common.CommonMethod;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
-import com.huduck.application.kalmanLoacationLib.KalmanLocationManager;
 import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.CameraAnimation;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationSource;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
-import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
-import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
-import com.naver.maps.map.overlay.OverlayImage;
-import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Timer;
+
 import java.util.TimerTask;
 
 public class NavigationTestActivity extends AppCompatActivity implements NaverMap.OnLocationChangeListener, NaverMap.OnMapLongClickListener, Navigator.OnProgressChangedCallback
@@ -145,7 +128,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setCompassEnabled(false);
         uiSettings.setZoomControlEnabled(false);
-        uiSettings.setScaleBarEnabled(false);
+//        uiSettings.setScaleBarEnabled(false);
     }
 
 
@@ -362,9 +345,41 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
         }
     }
 
+    private LatLng pos1 = new LatLng(0, 0);
+    private LatLng pos2 = new LatLng(0, 0);
+
+    private Marker mar1 = new Marker(new LatLng(0, 0));
+    private Marker mar2 = new Marker(new LatLng(0, 0));
+
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onMapLongClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
+       /* if(mar1.getMap() == null) {
+            handler.post(()-> {
+                mar1.setMap(naverMap);
+                mar2.setMap(naverMap);
+                mar2.setIconTintColor(Color.RED);
+            });
+        }
+
+
+        pos2 = pos1;
+        pos1 = latLng;
+
+        double deg = LatLngTool.deg(LatLngTool.sub(pos2, pos1));
+
+        handler.post(() -> {
+            mar1.setPosition(pos1);
+            mar2.setPosition(pos2);
+            naverMap.moveCamera(CameraUpdate.toCameraPosition(new CameraPosition(pos1, 17, 0 , deg)));
+        });
+
+        Log.d("Deg", deg+"");
+
+
+
+        if(true) return;*/
         startNavigation(latLng);
 
         // 목적지 상단 표

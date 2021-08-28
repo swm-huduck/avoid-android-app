@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.huduck.application.Navigation.LocationProvider;
 import com.huduck.application.common.CommonMethod;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
@@ -57,6 +58,8 @@ public class NavigationMainFragment extends PageFragment {
             locationSource = new FusedLocationSource(this, 1000);
             naverMap.setLocationSource(locationSource);
             naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+
+            naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
         });
 
         // 검색창 클릭 이벤트 등록

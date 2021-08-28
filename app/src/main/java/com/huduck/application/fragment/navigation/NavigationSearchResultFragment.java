@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.huduck.application.Navigation.LocationProvider;
+import com.huduck.application.Navigation.NavigationProvider;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.activity.NavigationRoutesActivity;
@@ -57,7 +59,8 @@ public class NavigationSearchResultFragment extends PageFragment {
 
     private TMapPOIItem selectedPoi = null;
 
-    public NavigationSearchResultFragment() {}
+    public NavigationSearchResultFragment() {
+    }
 
     public static NavigationSearchResultFragment newInstance() {
         NavigationSearchResultFragment fragment = new NavigationSearchResultFragment();
@@ -91,13 +94,6 @@ public class NavigationSearchResultFragment extends PageFragment {
         View view = inflater.inflate(R.layout.fragment_navigation_search_result, container, false);
 
         mapView = view.findViewWithTag("map_view");
-
-//        FragmentManager fm = getChildFragmentManager();
-//        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag("map_view");
-//        if(mapFragment == null) {
-//            mapFragment = MapFragment.newInstance();
-//            fm.beginTransaction().add(R.id.map_view_result, mapFragment).commit();
-//        }
 
         mapView.getMapAsync(naverMap_ -> initNaverMap(naverMap_));
 
@@ -141,7 +137,7 @@ public class NavigationSearchResultFragment extends PageFragment {
         });
 
         // 경로 검색 및 리스트에 아이템 추가
-        Location currentLocation = null; // 현재위치 // NavigationManager.getInstance().getCurrentRowLocation();
+        Location currentLocation = LocationProvider.getLastRowLocation(); // 현재위치 // NavigationManager.getInstance().getCurrentRowLocation();
         tMapData.findAroundKeywordPOI(
                 new TMapPoint(currentLocation.getLatitude(), currentLocation.getLongitude()),
                 searchWord, Integer.MAX_VALUE, 30,
@@ -308,12 +304,12 @@ public class NavigationSearchResultFragment extends PageFragment {
                 decideDestinationBtn = item.findViewWithTag("decide_destination_btn");
                 decideDestinationBtn.setOnClickListener(v -> {
                     Intent intent = new Intent(getActivity().getApplicationContext(), NavigationRoutesActivity.class);
-                    intent.putExtra("target_poi_lat", poi.getPOIPoint().getLatitude() + "");
-                    intent.putExtra("target_poi_lng", poi.getPOIPoint().getLongitude() + "");
+                    intent.putExtra("target_poi_lat", poi.getPOIPoint().getLatitude());
+                    intent.putExtra("target_poi_lng", poi.getPOIPoint().getLongitude());
+                    NavigationProvider.setDestination(poi);
                     getActivity().startActivity(intent);
                 });
-            }
-            else {
+            } else {
                 item = convertView.findViewWithTag("navigation_search_result_item");
                 name = item.findViewWithTag("poi_name");
                 decideDestinationBtn = item.findViewWithTag("decide_destination_btn");
@@ -325,8 +321,7 @@ public class NavigationSearchResultFragment extends PageFragment {
                 name.setTypeface(null, Typeface.BOLD);
                 name.setTextColor(getResources().getColor(R.color.indigo700));
                 decideDestinationBtn.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 item.setBackgroundResource(R.drawable.bg_navigation_search_result_item_layout_idle);
                 name.setTypeface(null, Typeface.NORMAL);
                 name.setTextColor(getResources().getColor(R.color.default_text));

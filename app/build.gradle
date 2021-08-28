@@ -53,7 +53,5 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     // annotationProcessor : annotation processor classpath 에서 compile processor classpath를 분리하여 빌드 성능개선
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-
-    // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+    
 }

@@ -32,7 +32,7 @@ public class NavigationRouter{
     private LatLng targetLocation;
     @NonNull @Getter @Setter
     private TruckInformation truckInformation;
-    @Builder.Default @NonNull @Getter
+    @NonNull @Getter
     private String searchOption = "0";
 
     @Builder
@@ -40,7 +40,7 @@ public class NavigationRouter{
         this.currentLocation = currentLocation;
         this.targetLocation = targetLocation;
         this.truckInformation = truckInformation;
-        this.searchOption = searchOption;
+        setSearchOption(searchOption);
     }
 
     public void setSearchOption(String searchOption) {
@@ -49,6 +49,8 @@ public class NavigationRouter{
                 searchOption.equals("12")) {
             this.searchOption = searchOption;
         }
+        else
+            this.searchOption = "0";
     }
 
     public void findRoutes(String sktMapApiKey, @Nullable LatLng lastLastLocation, OnFoundRoutesCallback onFoundRoutesCallback) {
@@ -105,97 +107,4 @@ public class NavigationRouter{
     public static interface OnFoundRoutesCallback {
         public void OnSuccess(NavigationRoutes navigationRoutes);
     }
-
-  /*  // 맵 매칭 뷰분 만들어야함
-    private List<List<Point>> points;
-    private List<Point> point100List;
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void findMapMatchingRoutesByNavigationRoutes(String mapboxApiKey, NavigationRoutes navigationRoutes, OnFoundMapMatchingRoutesCallback callback) {
-        points = new ArrayList<>();
-        point100List = new ArrayList<>();
-
-        points.add(point100List);
-
-        navigationRoutes.getNavigationLineStringHashMap().forEach((integer, navigationLineString) -> {
-            navigationLineString.getGeometry().getCoordinates().forEach(doubles -> {
-                if(point100List.size() == 100) {
-                    point100List = new ArrayList<>();
-                    points.add(point100List);
-                }
-
-                Point point = Point.fromLngLat(doubles.get(1), doubles.get(0));
-                point100List.add(point);
-            });
-        });
-
-        findMapMatchingRoutesByPoints(mapboxApiKey, points, callback);
-    }
-
-    private void findMapMatchingRoutesByPoints(String mapboxApiKey,
-                                               List<List<Point>> points,
-                                               OnFoundMapMatchingRoutesCallback callback) {
-        List<DirectionsRoute> directionsRoutes = new ArrayList<>();
-        findMapMatchingRoutesByPointsRoutine(mapboxApiKey, 0, points, directionsRoutes, callback);
-    }
-
-    private void findMapMatchingRoutesByPointsRoutine(String mapboxApiKey,
-                                                      int idx, List<List<Point>> points,
-                                                      List<DirectionsRoute> directionsRoutes,
-                                                      OnFoundMapMatchingRoutesCallback callback) {
-        List<Point> point100List = points.get(idx);
-        MapboxMapMatching mapboxMapMatching = MapboxMapMatching.builder()
-                .accessToken(mapboxApiKey)
-                .profile(DirectionsCriteria.PROFILE_DRIVING)
-                .overview(DirectionsCriteria.OVERVIEW_FULL)
-                .steps(true)
-                .roundaboutExits(true)
-                .annotations(
-                        DirectionsCriteria.ANNOTATION_CONGESTION,
-                        DirectionsCriteria.ANNOTATION_DURATION,
-                        DirectionsCriteria.ANNOTATION_MAXSPEED,
-                        DirectionsCriteria.ANNOTATION_SPEED,
-                        DirectionsCriteria.ANNOTATION_DISTANCE
-                )
-                .voiceInstructions(true)
-                .bannerInstructions(true)
-                .language(Locale.KOREA)
-                .voiceUnits(DirectionsCriteria.METRIC)
-                .coordinates(point100List)
-                .baseUrl(Constants.BASE_API_URL)
-                .user(Constants.MAPBOX_USER)
-                .geometries(DirectionsCriteria.GEOMETRY_POLYLINE6)
-                .build();
-
-        mapboxMapMatching.enqueueCall(new Callback<MapMatchingResponse>() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onResponse(Call<MapMatchingResponse> call, Response<MapMatchingResponse> response) {
-                if(!response.isSuccessful())
-                    return;
-
-                List<MapMatchingMatching> matchings = response.body().matchings();
-                if(matchings.size() == 0)
-                    return;
-
-                DirectionsRoute directionsRoute = matchings.get(0).toDirectionRoute();
-                directionsRoutes.add(directionsRoute);
-
-                int nextIdx = idx + 1;
-                if(nextIdx < points.size())
-                    findMapMatchingRoutesByPointsRoutine(mapboxApiKey, nextIdx, points, directionsRoutes, callback);
-                else {
-                    callback.OnSuccess(directionsRoutes);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MapMatchingResponse> call, Throwable t) {
-
-            }
-        });
-    }
-
-    public static interface OnFoundMapMatchingRoutesCallback{
-        public void OnSuccess(List<DirectionsRoute> directionsRoutes);
-    }*/
 }

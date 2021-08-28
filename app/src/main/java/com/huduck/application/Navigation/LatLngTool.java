@@ -3,8 +3,17 @@ package com.huduck.application.Navigation;
 import android.location.Location;
 
 import com.naver.maps.geometry.LatLng;
+import com.skt.Tmap.TMapPoint;
 
 public class LatLngTool {
+    public static LatLng locationToLatlng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+    public static LatLng tMapPointToLatlng(TMapPoint tMapPoint) {
+        return new LatLng(tMapPoint.getLatitude(), tMapPoint.getLongitude());
+    }
+
     public static LatLng add(LatLng a, LatLng b) {
         return new LatLng(a.latitude + b.latitude, a.longitude + b.longitude);
     }
@@ -73,9 +82,9 @@ public class LatLngTool {
     }
 
     public static double deg(LatLng latLng) {
-//        double ang = Math.atan2(latLng.longitude, latLng.latitude);
-//        double deg = 180 * ang / Math.PI;
-//        return (360.0+ deg) % 360.0;
+        double ang = Math.atan2(latLng.longitude, latLng.latitude);
+        double deg = ang * (180 / Math.PI);     // rad -> deg
+        return (360.0 + deg) % 360.0;
 
 //        Location zero = new Location("");
 //        zero.setLatitude(0);
@@ -87,12 +96,12 @@ public class LatLngTool {
 //
 //        return zero.bearingTo(target);
 
-        double y = Math.sin(latLng.longitude) * Math.cos(latLng.latitude);
+       /* double y = Math.sin(latLng.longitude) * Math.cos(latLng.latitude);
         double x = Math.cos(0) * Math.sin(latLng.latitude) - Math.sin(0) * Math.cos(latLng.latitude) * Math.cos(latLng.longitude);
 
         double ang = Math.atan2(y, x);
         double deg = (ang * 180 / Math.PI + 360) % 360;
-        return deg;
+        return deg;*/
     }
 
     public static final double latlngToMeterConst = new LatLng(0,0).distanceTo(new LatLng(0, 1));

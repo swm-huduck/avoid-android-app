@@ -35,9 +35,9 @@
 
                 <fragment
                     android:id="@+id/naver_map_view"
+                    android:name="com.naver.maps.map.MapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:name="com.naver.maps.map.MapFragment"/>
+                    android:layout_height="match_parent" />
 
                 <com.huduck.application.common.OutlineTextView
                     android:id="@+id/current_speed"
@@ -141,18 +141,11 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- <RelativeLayout
-             android:id="@+id/loading_layout"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="#DA222222">
-
-             <ImageView
-                 android:id="@+id/logo_loading"
-                 android:layout_width="200dp"
-                 android:layout_height="wrap_content"
-                 android:layout_centerInParent="true" />
-         </RelativeLayout>-->
+        <fragment
+            android:tag="loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.huduck.application.fragment.LoadingFragment"/>
     </RelativeLayout>
 
 </LinearLayout>

@@ -3,14 +3,10 @@ package com.huduck.application.Navigation;
 import android.content.Context;
 import android.graphics.PointF;
 import android.os.Handler;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.huduck.application.R;
 import com.huduck.application.common.CommonMethod;
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.geometry.MathUtils;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.NaverMap;
@@ -18,7 +14,6 @@ import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +28,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
     private NaverMap naverMap;
     private Context context;
 
+    private Timer timer = null;
+
     private NavigationGraphicResources graphicResources = new NavigationGraphicResources();
 
     public NavigationRenderer(Context context, Handler handler, NaverMap naverMap) {
@@ -42,7 +39,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
 
         initNavigationGraphicResources();
 
-        new Timer().schedule(rendererTimerTask, 0, 33);
+        this.timer = new Timer();
+        timer.schedule(rendererTimerTask, 0, 33);
     }
 
     private void initNavigationGraphicResources() {
@@ -172,7 +170,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         }
 
         private void calcPuckPosition() {
-            Log.d("passedDist", targetSegPassedDist+"");
+//            Log.d("passedDist", targetSegPassedDist+"");
 
             if(currentSegIdx >= lineStringSegmentList.size()) return;
 
@@ -180,10 +178,10 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             double mag = LatLngTool.mag(seg.getEndPoint(), seg.getStartPoint());
 
             double leftDistance = moveSpeed * deltaTime;
-            Log.d("leftDist", leftDistance + " " + ((leftDistance > 0) ? "true" : "false"));
+//            Log.d("leftDist", leftDistance + " " + ((leftDistance > 0) ? "true" : "false"));
             while (leftDistance > 0) {
                 if(currentSegIdx == targetSegIdx && currentSegPassedDist < targetSegPassedDist) {
-                    Log.d("PPPPP", targetSegPassedDist +" "+  currentSegPassedDist + " " +leftDistance + " " + moveDir);
+//                    Log.d("PPPPP", targetSegPassedDist +" "+  currentSegPassedDist + " " +leftDistance + " " + moveDir);
                     leftDistance = (currentSegPassedDist + leftDistance > targetSegPassedDist)
                             ? targetSegPassedDist - currentSegPassedDist : leftDistance;
 
@@ -209,7 +207,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 }
             }
 
-            Log.d("currentPos", currentPuckPosition.toString());
+//            Log.d("currentPos", currentPuckPosition.toString());
         }
 
         private void calcBearing() {
@@ -237,7 +235,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 }
             }
 
-            Log.d("bearing", currentPuckBearing + ", " + targetPuckBearing);
+//            Log.d("bearing", currentPuckBearing + ", " + targetPuckBearing);
         }
 
         private void calcProgress() {
@@ -263,7 +261,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                     .pivot(new PointF(0.5f, 0.8f));
 
             handler.post(() -> {
-                Log.d("moveDir", LatLngTool.mag(moveDir) + "  " + moveDir.toString());
+//                Log.d("moveDir", LatLngTool.mag(moveDir) + "  " + moveDir.toString());
 //                currentPuckPosition = LatLngTool.add(lineStringSegmentList.get(currentSegIdx).getStartPoint(), LatLngTool.mul(moveDir , currentSegPassedDist));
                 graphicResources.getPuckMarker().setPosition(currentPuckPosition);
                 graphicResources.getPuckMarker().setAngle((float) targetPuckBearing);
@@ -328,12 +326,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         rendererTimerTask.setTargetPuckTransform(currentLineStringSegIdx, currentLineStringSegPassedDistance, currentPosition, currentBearing);
     }
 
-
     @Override
     public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
-//        handler.post(() -> {
-//            graphicResources.routePathOverlay.setProgress(totalProgress);
-//        });
     }
 
     private class NavigationGraphicResources {
@@ -341,5 +335,10 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         private Marker puckMarker = new Marker(new LatLng(0, 0));
         @Getter
         private PathOverlay routePathOverlay = new PathOverlay();
+    }
+
+    public void destroy() {
+        timer.cancel();
+        rendererTimerTask.cancel();
     }
 }
