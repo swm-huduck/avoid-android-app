@@ -4,25 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Dimension;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import android.os.Handler;
 import android.util.Log;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +27,7 @@ import com.huduck.application.Navigation.NavigationProvider;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.activity.NavigationRoutesActivity;
+import com.huduck.application.activity.NavigationRoadViewActivity;
 import com.huduck.application.fragment.PageFragment;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
@@ -46,7 +41,8 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import lombok.Getter;
 
 public class NavigationSearchResultFragment extends PageFragment {
     NavigationSearchResultListViewAdapter listViewAdapter;
@@ -203,6 +199,16 @@ public class NavigationSearchResultFragment extends PageFragment {
                     }
                 });
 
+        // 로드뷰 버튼 클릭 이벤트 등록
+        LinearLayout roadViewBtn = view.findViewById(R.id.road_view_btn);
+        roadViewBtn.setOnClickListener(v -> {
+            TMapPOIItem poi = (TMapPOIItem)listViewAdapter.getItem(listViewAdapter.getSelectedItemPosition());
+            if(poi == null) return;
+            Intent intent = new Intent(getActivity().getApplicationContext(), NavigationRoadViewActivity.class);
+            intent.putExtra("target_poi_lat", poi.getPOIPoint().getLatitude());
+            intent.putExtra("target_poi_lng", poi.getPOIPoint().getLongitude());
+            getActivity().startActivity(intent);
+        });
         return view;
     }
 
@@ -233,7 +239,7 @@ public class NavigationSearchResultFragment extends PageFragment {
     public class NavigationSearchResultListViewAdapter extends BaseAdapter {
 
         private ArrayList<TMapPOIItem> poiItems = new ArrayList<>();
-        private int selectedItemPosition = 0;
+        @Getter private int selectedItemPosition = 0;
         private Activity activity;
         private TMapView map;
 

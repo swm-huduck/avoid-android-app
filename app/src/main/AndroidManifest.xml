@@ -55,6 +55,11 @@
             android:exported="true" />
 
         <activity
+            android:name=".activity.NavigationRoadViewActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true" />
+
+        <activity
             android:name=".activity.NavigationRoutesActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" />

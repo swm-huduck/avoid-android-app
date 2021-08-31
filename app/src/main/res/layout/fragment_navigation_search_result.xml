@@ -59,6 +59,32 @@
             android:layout_height="match_parent"
             android:name="com.naver.maps.map.MapFragment" />
 
+        <LinearLayout
+            android:id="@+id/road_view_btn"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:orientation="vertical"
+            android:background="@drawable/btn_road_view"
+            android:clickable="true">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_streetview_24"
+                app:tint="@color/naver_green" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/naver_green"
+                android:textSize="10dp"
+                android:textStyle="bold"
+                android:text="거리뷰"/>
+        </LinearLayout>
     </RelativeLayout>
 
     <ListView
