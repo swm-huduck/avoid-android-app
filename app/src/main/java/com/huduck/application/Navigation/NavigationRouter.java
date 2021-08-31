@@ -34,7 +34,7 @@ public class NavigationRouter{
     private TruckInformation truckInformation;
     @NonNull @Getter
     private String searchOption = "0";
-
+    private NetworkTask networkTask = null;
     @Builder
     public NavigationRouter(@NonNull LatLng currentLocation, @NonNull LatLng targetLocation, @NonNull TruckInformation truckInformation, @NonNull String searchOption) {
         this.currentLocation = currentLocation;
@@ -89,20 +89,29 @@ public class NavigationRouter{
 
 
 
-        NetworkTask networkTask = new NetworkTask(url, values) {
-            @SuppressLint("StaticFieldLeak")
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            protected void onPostExecute(String s) {
-                try {
-                    NavigationRoutes routes = NavigationRoutesParser.parserTruckRoutes(s);
-                    onFoundRoutesCallback.OnSuccess(routes);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
+        networkTask = new RouterNetworkTask(url, values, onFoundRoutesCallback);
         networkTask.execute();
+    }
+
+    private static class RouterNetworkTask extends NetworkTask {
+        private OnFoundRoutesCallback onFoundRoutesCallback;
+
+        public RouterNetworkTask(String url, ContentValues values, OnFoundRoutesCallback onFoundRoutesCallback) {
+            super(url, values);
+            this.onFoundRoutesCallback = onFoundRoutesCallback;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                NavigationRoutes routes = NavigationRoutesParser.parserTruckRoutes(s);
+                onFoundRoutesCallback.OnSuccess(routes);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            super.onPostExecute(s);
+        }
     }
 
     public static interface OnFoundRoutesCallback {
