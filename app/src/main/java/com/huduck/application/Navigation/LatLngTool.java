@@ -81,28 +81,26 @@ public class LatLngTool {
         return div(latLng, len);
     }
 
-    public static double deg(LatLng latLng) {
-        double ang = Math.atan2(latLng.longitude, latLng.latitude);
-        double deg = ang * (180 / Math.PI);     // rad -> deg
-        return (360.0 + deg) % 360.0;
+    public static double deg(LatLng startLatLng, LatLng endLatLng) {
+        double deg2rad = Math.PI / 180;
+        LatLng radLatlng1 = new LatLng(startLatLng.latitude * deg2rad, startLatLng.longitude * deg2rad);
+        LatLng radLatlng2 = new LatLng(endLatLng.latitude * deg2rad, endLatLng.longitude * deg2rad);
 
-//        Location zero = new Location("");
-//        zero.setLatitude(0);
-//        zero.setLongitude(0);
-//
-//        Location target = new Location("");
-//        target.setLatitude(latLng.latitude);
-//        target.setLongitude(latLng.longitude);
-//
-//        return zero.bearingTo(target);
-
-       /* double y = Math.sin(latLng.longitude) * Math.cos(latLng.latitude);
-        double x = Math.cos(0) * Math.sin(latLng.latitude) - Math.sin(0) * Math.cos(latLng.latitude) * Math.cos(latLng.longitude);
-
-        double ang = Math.atan2(y, x);
-        double deg = (ang * 180 / Math.PI + 360) % 360;
-        return deg;*/
+        double x = Math.cos(radLatlng2.latitude) * Math.sin(radLatlng2.longitude - radLatlng1.longitude);
+        double y = Math.cos(radLatlng1.latitude) * Math.sin(radLatlng2.latitude)
+                - Math.sin(radLatlng1.latitude) * Math.cos(radLatlng2.latitude) * Math.cos(radLatlng2.longitude - radLatlng1.longitude);
+        double rad = Math.atan2(y, x);
+        double deg = rad * 180 / Math.PI;
+        deg = (deg + 360) % 360;
+        deg = (90 + (360 - deg)) % 360;
+        return deg;
     }
+
+    public static LatLng zero = new LatLng(0,0);
+
+//    public static double deg(LatLng latLng) {
+//        return deg(latLng, zero);
+//    }
 
     public static final double latlngToMeterConst = new LatLng(0,0).distanceTo(new LatLng(0, 1));
 

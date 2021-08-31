@@ -79,6 +79,7 @@ public class NavigationRouter{
         values.put("directionOption", "1");
         values.put("searchOption", searchOption);
         values.put("trafficInfo", "Y");
+        values.put("totalValue", "1");
         values.put("truckType", "1");
         values.put("truckWidth", truckInformation.getTruckWidth());
         values.put("truckHeight", truckInformation.getTruckHeight());

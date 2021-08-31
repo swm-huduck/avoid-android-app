@@ -138,6 +138,7 @@ public class NavigationSearchResultFragment extends PageFragment {
 
         // 경로 검색 및 리스트에 아이템 추가
         Location currentLocation = LocationProvider.getLastRowLocation(); // 현재위치 // NavigationManager.getInstance().getCurrentRowLocation();
+        if(currentLocation == null) return view;
         tMapData.findAroundKeywordPOI(
                 new TMapPoint(currentLocation.getLatitude(), currentLocation.getLongitude()),
                 searchWord, Integer.MAX_VALUE, 30,

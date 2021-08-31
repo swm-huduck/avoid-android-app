@@ -108,7 +108,13 @@ public class NavigationRoutesActivity extends AppCompatActivity{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String searchOption = searchOptionCodeHashMap.get(searchOptionList[position]);
-                searchRoutes(searchOption);
+                try {
+                    searchRoutes(searchOption);
+                }
+                catch (NullPointerException e) {
+                    e.printStackTrace();
+                    return;
+                }
             }
 
             @Override
@@ -171,8 +177,6 @@ public class NavigationRoutesActivity extends AppCompatActivity{
 
         ArrayList<LatLng> latLngs = new ArrayList<>();
 
-        List<InfoWindow> infoWindows = new ArrayList<>();
-
         navigationSequence.forEach(integer -> {
             if (navigationPointHashMap.containsKey(integer)) {
                 NavigationPoint point = navigationPointHashMap.get(integer);
@@ -192,14 +196,14 @@ public class NavigationRoutesActivity extends AppCompatActivity{
                 // 시작, 끝 지점 마커 생성
                 if (point.getProperties().getPointType().equals("S")) {
                     startMarker.setPosition(position);
-                    startMarker.setFlat(true);
                     startMarker.setIcon(OverlayImage.fromResource(R.drawable.ic_navi_start));
+                    startMarker.setIconPerspectiveEnabled(true);
                     startMarker.setWidth(70);
                     startMarker.setHeight(100);
                 } else if (point.getProperties().getPointType().equals("E")) {
                     endMarker.setPosition(position);
-                    endMarker.setFlat(true);
                     endMarker.setIcon(OverlayImage.fromResource(R.drawable.ic_navi_end));
+                    startMarker.setIconPerspectiveEnabled(true);
                     endMarker.setWidth(70);
                     endMarker.setHeight(100);
                 }
@@ -247,7 +251,7 @@ public class NavigationRoutesActivity extends AppCompatActivity{
         if(latLngs.size() < 2) return;
         currentPath.setCoords((List<LatLng>) latLngs);
         currentPath.setWidth(20);
-        currentPath.setColor(Color.BLUE);
+        currentPath.setColor(getColor(R.color.indigo500));
         currentPath.setPatternImage(OverlayImage.fromResource(R.drawable.ic_baseline_arrow_drop_up_24));
         currentPath.setPatternInterval(50);
 

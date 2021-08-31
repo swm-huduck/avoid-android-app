@@ -13,6 +13,7 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
+import com.naver.maps.map.util.GeometryUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,8 +50,9 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             Marker puck = graphicResources.getPuckMarker();
             puck.setIcon(OverlayImage.fromResource(R.drawable.navigation_puck));
             puck.setFlat(true);
-            puck.setWidth(200);
-            puck.setHeight(200);
+            int puckSize = CommonMethod.dpToPx(context.getResources(), 70);
+            puck.setWidth(puckSize);
+            puck.setHeight(puckSize);
             puck.setAnchor(new PointF(0.5f, 0.5f));
             puck.setMap(naverMap);
         });
@@ -83,12 +85,12 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         private boolean convertedBearing = false;
         private double bearingSpeed = 0;
 
-        private double totalDistance = 0;
-        private double totalPassedDistance = 0;
+        private double totalDistanceM = 0;
+        private double totalPassedDistanceM = 0;
 
         private void setMoveDir(LatLng moveDir, double targetPuckBearing) {
             this.moveDir = moveDir;
-            this.targetPuckBearing = targetPuckBearing;//LatLngTool.deg(moveDir);
+            this.targetPuckBearing = targetPuckBearing;
 
             bearingDirOrigin = 1;
             if (targetPuckBearing - currentPuckBearing < 0) bearingDirOrigin = -1;
@@ -121,9 +123,9 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             currentSegPassedDist = 0;
             setMoveDir(seg.getDirection(), seg.getDirectionBearing());
 
-            totalDistance = 0;
+            totalDistanceM = 0;
             for (Navigator.NavigatorLineStringSegment lineStringSegment : lineStringSegmentList)
-                totalDistance += lineStringSegment.getDistance();
+                totalDistanceM += lineStringSegment.getDistanceMeter();
         }
 
         private boolean started = false;
@@ -178,10 +180,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             double mag = LatLngTool.mag(seg.getEndPoint(), seg.getStartPoint());
 
             double leftDistance = moveSpeed * deltaTime;
-//            Log.d("leftDist", leftDistance + " " + ((leftDistance > 0) ? "true" : "false"));
             while (leftDistance > 0) {
                 if(currentSegIdx == targetSegIdx && currentSegPassedDist < targetSegPassedDist) {
-//                    Log.d("PPPPP", targetSegPassedDist +" "+  currentSegPassedDist + " " +leftDistance + " " + moveDir);
                     leftDistance = (currentSegPassedDist + leftDistance > targetSegPassedDist)
                             ? targetSegPassedDist - currentSegPassedDist : leftDistance;
 
@@ -217,8 +217,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 if (bearingDir == 1 && currentPuckBearing >= 360) {
                     currentPuckBearing = 0;
                     convertedBearing = true;
-                } else if (bearingDir == -1 && currentPuckBearing <= 0) {
-                    currentPuckBearing = 360;
+                } else if (bearingDir == -1 && currentPuckBearing < 0) {
+                    currentPuckBearing = 360 + currentPuckBearing;
                     convertedBearing = true;
                 }
 
@@ -234,26 +234,24 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                         currentPuckBearing = targetPuckBearing;
                 }
             }
-
-//            Log.d("bearing", currentPuckBearing + ", " + targetPuckBearing);
         }
 
         private void calcProgress() {
-            totalPassedDistance = 0;
+            totalPassedDistanceM = 0;
             for(int i = 0; i <= currentSegIdx; i++) {
+                Navigator.NavigatorLineStringSegment seg = lineStringSegmentList.get(i);
                 if(i == currentSegIdx)
-                    totalPassedDistance += currentSegPassedDist;
+                    totalPassedDistanceM += currentPuckPosition.distanceTo(seg.getStartPoint());
                 else
-                    totalPassedDistance += lineStringSegmentList.get(i).getDistance();
+                    totalPassedDistanceM += seg.getDistanceMeter();
             }
         }
 
         private void render() {
-            CameraPosition originCamPos = naverMap.getCameraPosition();
             CameraPosition cameraPosition = new CameraPosition(
                     currentPuckPosition,
-                    originCamPos.zoom,
-                    40,
+                    17,
+                    20,
                     currentPuckBearing
             );
             CameraUpdate cameraUpdate = CameraUpdate
@@ -262,10 +260,11 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
 
             handler.post(() -> {
 //                Log.d("moveDir", LatLngTool.mag(moveDir) + "  " + moveDir.toString());
-//                currentPuckPosition = LatLngTool.add(lineStringSegmentList.get(currentSegIdx).getStartPoint(), LatLngTool.mul(moveDir , currentSegPassedDist));
+
                 graphicResources.getPuckMarker().setPosition(currentPuckPosition);
-                graphicResources.getPuckMarker().setAngle((float) targetPuckBearing);
-                graphicResources.routePathOverlay.setProgress(totalPassedDistance / totalDistance);
+                double bearing = lineStringSegmentList.get(currentSegIdx).getDirectionBearing();
+                graphicResources.getPuckMarker().setAngle((float) bearing);
+                graphicResources.routePathOverlay.setProgress(/*GeometryUtils.getProgress(routeLatLngList, currentPuckPosition)*/totalPassedDistanceM / totalDistanceM);
                 naverMap.moveCamera(cameraUpdate);
 
 //                naverMap.setCameraPosition(cameraPosition);
@@ -288,6 +287,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         drawRoute(route);
     }
 
+    private List<LatLng> routeLatLngList = new ArrayList<>();
     private void drawRoute(NavigationRoutes route) {
         if (graphicResources.routePathOverlay.getMap() != null) {
             graphicResources.routePathOverlay.setMap(null);
@@ -299,7 +299,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         HashMap<Integer, NavigationLineString> lineStringHashMap = route.getNavigationLineStringHashMap();
         HashMap<Integer, NavigationPoint> pointHashMap = route.getNavigationPointHashMap();
 
-        List<LatLng> routeLatLngList = new ArrayList<>();
+        routeLatLngList = new ArrayList<>();
 
         for (Integer key : seq) {
             if (lineStringHashMap.containsKey(key)) {
@@ -314,8 +314,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             path.setColor(context.getColor(R.color.indigo500));
             path.setPatternImage(OverlayImage.fromResource(R.drawable.ic_baseline_arrow_drop_up_24));
             path.setPatternInterval(80);
-            path.setPassedColor(context.getColor(R.color.indigo500));
-            path.setWidth(50);
+            path.setPassedColor(context.getColor(R.color.gray500));
+            path.setWidth(30);
             path.setCoords(routeLatLngList);
             path.setMap(naverMap);
         });

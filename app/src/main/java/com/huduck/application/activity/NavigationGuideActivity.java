@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 
 import com.huduck.application.Navigation.LatLngTool;
 import com.huduck.application.Navigation.LocationProvider;
@@ -17,6 +18,7 @@ import com.huduck.application.Navigation.NavigationProvider;
 import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.Navigation.NavigationRoutes;
+import com.huduck.application.Navigation.NavigationSpeaker;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
 import com.huduck.application.fragment.LoadingFragment;
@@ -33,6 +35,9 @@ import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class NavigationGuideActivity extends AppCompatActivity implements NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback, Navigator.OnOffRouteCallback {
     private NavigationGuideActivity it = this;
     private ActivityNavigationTestBinding binding;
@@ -46,6 +51,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
 
     private Navigator navigator = new Navigator();
     private NavigationRenderer renderer = null;
+    private NavigationSpeaker speaker = null;
 
     private LatLng destination = null;
 
@@ -70,12 +76,19 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initActivity() {
         // renderer 초기화
         renderer = new NavigationRenderer(this, handler, naverMap);
         navigator.addOnRouteChangedCallback(renderer);
         navigator.addOnEnhancedLocationChangedCallback(renderer);
         navigator.addOnProgressChangedCallback(renderer);
+
+        // speaker 초기화
+        speaker = new NavigationSpeaker(this);
+        navigator.addOnProgressChangedCallback(speaker);
+//        navigator.addOnOffRouteCallback(speaker);
+
         navigator.addOnProgressChangedCallback(this);
         navigator.addOnOffRouteCallback(this);
 
@@ -86,6 +99,10 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         // 로딩 프레그먼트 가져오기
         loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
         loadingFragment.isVisible(false);
+
+        binding.refreshButton.setOnClickListener(v -> {
+            this.refreshRoute();
+        });
 
         // KalmanLocationManager 등록
         /*new KalmanLocationManager(this).requestLocationUpdates(
@@ -140,6 +157,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     private void startNavigation(NavigationRoutes navigationRoute) {
         navigator.setRoute(navigationRoute);
         navigator.startNavigator();
+        afterStartNavigation();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -157,8 +175,15 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
             navigator.setRoute(navigationRoute);
             navigator.startNavigator();
             offRoute = false;
-            loadingFragment.isVisible(false);
+            afterStartNavigation();
         });
+    }
+
+    private void afterStartNavigation() {
+        loadingFragment.isVisible(false);
+        Date arrivedDate = new Date(System.currentTimeMillis() + (navigator.getNavigationRoute().getTotalTime() * 1000));
+        SimpleDateFormat format = new SimpleDateFormat("a hh : mm");
+        binding.arrivedTime.setText(format.format(arrivedDate));
     }
 
     @Override
@@ -197,13 +222,25 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     }
 
     private boolean offRoute = false;
+    private double lastOffRouteTime = 0;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onOffRoute() {
+        double currentTime = System.currentTimeMillis();
+        double deltaTime = (currentTime - lastOffRouteTime) * 0.001;
+        if(deltaTime < 30) return;
         if(offRoute) return;
         offRoute = true;
+        lastOffRouteTime = currentTime;
+        refreshRoute();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void refreshRoute() {
+        lastOffRouteTime = System.currentTimeMillis();
         loadingFragment.isVisible(true);
         startNavigation(destination);
+        speaker.onOffRoute();
     }
 
     @Override

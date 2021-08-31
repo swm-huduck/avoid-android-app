@@ -28,6 +28,7 @@ import lombok.Setter;
 
 public class Navigator implements LocationListener, NaverMap.OnLocationChangeListener {
     /* Route */
+    @Getter
     private NavigationRoutes navigationRoute = null;
     private List<NavigatorLineStringSegment> lineStringSegmentList = new ArrayList<>();
 
@@ -54,6 +55,14 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     private List<OnProgressChangedCallback> progressChangedCallbackList = new ArrayList<>();
     private List<OnOffRouteCallback> offRouteCallbackList = new ArrayList<>();
 
+
+    // Speed
+    double currentSpeedKmH = 0;
+    double currentSpeedMS = 0;
+    double lastTime = -1;
+    double deltaTime = 0;
+
+
     public void startNavigator() {
         startedNavigator = true;
 
@@ -73,6 +82,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         // init lineStringSeg parm
         currentLineStringSegIdx = 0;
         currentLineStringSegPassedDistance = 0;
+        currentPositionOnRoute = lineStringSegmentList.get(0).getStartPoint();
 
         // init TotalDistance
         routeTotalDistance = 0;
@@ -129,8 +139,10 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
 
         int minDistIdx = -1;
         double minDist = Double.MAX_VALUE;
-        NavigatorLineStringSegment targetSeg = null;
-        LatLng positionOnRoute = null;
+        NavigatorLineStringSegment targetSeg = lineStringSegmentList.get(currentLineStringSegIdx);
+        LatLng positionOnRoute = currentPositionOnRoute;
+
+        double movedM = 0;
 
         for (int i = currentLineStringSegIdx; i < lineStringSegmentList.size(); i++) {
             NavigatorLineStringSegment seg = lineStringSegmentList.get(i);
@@ -145,9 +157,18 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
                 targetSeg = seg;
                 positionOnRoute = distanceAndPoint.point;
             }
+
+            if(i == currentLineStringSegIdx)
+                movedM += LatLngTool.mag(currentPositionOnRoute, seg.getEndPoint(), true);
+            else
+                movedM += seg.distanceMeter;
+
+            if(movedM >= maxMovableM)
+                break;
         }
 
         distanceBetweenRouteAndRowLocation = minDist;
+        Log.d("minDist", BigDecimal.valueOf(minDist).toString());
 
         double passedDistance = LatLngTool.mag(targetSeg.startPoint, positionOnRoute);  // Deg
 
@@ -177,7 +198,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
             NavigatorLineStringSegment seg = lineStringSegmentList.get(i);
 
             if (i == currentLineStringSegIdx) {
-                leftDistance += LatLngTool.mag(LatLngTool.sub(seg.endPoint, currentPositionOnRoute), true);
+                leftDistance += currentPositionOnRoute.distanceTo(seg.endPoint);
             } else {
                 leftDistance += seg.getDistanceMeter();
             }
@@ -192,11 +213,27 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         routeTotalLeftDistance = leftDistance;
     }
 
+    private double maxMovableM = 0;
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Log.d("Location", location.toString());
         if (location.getLongitude() < 0) return;
 
+        // Delta Time
+        if(lastTime < 0)
+            lastTime = System.currentTimeMillis();
+        double currentTime = System.currentTimeMillis();
+        deltaTime = (currentTime - lastTime) * 0.001;
+        lastTime = currentTime;
+
+        // Speed
+        currentSpeedMS = location.getSpeed();
+        currentSpeedKmH = currentSpeedMS * 3.6;
+
+        // Max movable M
+        maxMovableM = (currentSpeedMS + 30/3.6) * deltaTime;
+
+        // Location
         currentLocation = location;
 
         if (!startedNavigator || navigationRoute == null) return;
@@ -312,8 +349,8 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
             LatLng dir = LatLngTool.sub(endPoint, startPoint);
             this.distance = LatLngTool.mag(dir);
             this.direction = LatLngTool.normalize(dir);
-            this.directionBearing = LatLngTool.deg(dir);
-            this.distanceMeter = LatLngTool.mag(dir, true);
+            this.directionBearing = LatLngTool.deg(this.startPoint, this.endPoint);
+            this.distanceMeter = startPoint.distanceTo(endPoint);
         }
 
         public DistanceAndPoint getDistanceAndPoint(@NonNull LatLng point) {

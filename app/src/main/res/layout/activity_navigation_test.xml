@@ -56,26 +56,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:background="@color/indigo700"
                     android:minWidth="150dp"
                     android:orientation="vertical"
-                    android:padding="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp">
+                    android:padding="10dp">
 
                     <TextView
                         android:id="@+id/next_turn_event"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:textStyle="bold"
-                        android:textSize="30dp" />
+                        android:textSize="30dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/next_turn_event_left_distance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -84,13 +84,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-               <!-- <TextView
-                    android:id="@+id/off_route"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="이곳에는 현재 상세 주소를.."
-                    android:textAlignment="center" />-->
-
+                 <TextView
+                     android:id="@+id/current_address"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:text="현재 위치 검색 중.."
+                     android:textAlignment="center" />
 
 
                 <LinearLayout
@@ -99,9 +98,10 @@
                     android:orientation="horizontal">
 
                     <ImageButton
-                        android:background="@color/white"
+                        android:id="@+id/refresh_button"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+                        android:background="@color/white"
                         android:src="@drawable/icon_refresh"
                         app:tint="@color/indigo500" />
 
@@ -111,41 +111,23 @@
                         android:weightSum="10">
 
                         <TextView
-                            android:id="@+id/current_address"
+                            android:id="@+id/arrived_time"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="현재 위치 검색 중.."
+                            android:textSize="20sp"
+                            android:text="도착 시간 계산 중.."
                             android:textAlignment="center" />
-
-                        <!--<TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="5"
-                            android:text="오후 11:00"
-                            android:textAlignment="center"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/state"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="5"
-                            android:text="100km"
-                            android:textAlignment="center"
-                            android:textSize="20sp" />-->
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
         <fragment
-            android:tag="loading"
+            android:name="com.huduck.application.fragment.LoadingFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.huduck.application.fragment.LoadingFragment"/>
+            android:tag="loading" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Build;
@@ -20,6 +21,7 @@ import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
 import com.huduck.application.common.CommonMethod;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
+import com.huduck.application.fragment.LoadingFragment;
 import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
@@ -63,6 +65,10 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
         setContentView(binding.getRoot());
 
         new TMapView(this).setSKTMapApiKey(getString(R.string.skt_map_api_key));
+
+
+        LoadingFragment loadingFragment = (LoadingFragment)getSupportFragmentManager().findFragmentByTag("loading");
+        loadingFragment.isVisible(false);
 
         naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
         naverMapFragment.getMapAsync(naverMap_ -> {
@@ -286,7 +292,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
 //            targetPoint = routeLatLngList.get(routeIndex + 1);
             currentPoint = new LatLng(startPoint.latitude, startPoint.longitude);
             moveDir = LatLngTool.normalize(LatLngTool.sub(targetPoint, startPoint));
-            bearing = LatLngTool.deg(moveDir);
+//            bearing = LatLngTool.deg(moveDir);
 
             bearingDirOrigin = 1;
             if (bearing - currentBearing < 0) bearingDirOrigin = -1;
@@ -355,7 +361,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onMapLongClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
-       /* if(mar1.getMap() == null) {
+        if(mar1.getMap() == null) {
             handler.post(()-> {
                 mar1.setMap(naverMap);
                 mar2.setMap(naverMap);
@@ -367,7 +373,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
         pos2 = pos1;
         pos1 = latLng;
 
-        double deg = LatLngTool.deg(LatLngTool.sub(pos2, pos1));
+        double deg = LatLngTool.deg(pos1, pos2);
 
         handler.post(() -> {
             mar1.setPosition(pos1);
@@ -379,7 +385,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
 
 
 
-        if(true) return;*/
+        if(true) return;
         startNavigation(latLng);
 
         // 목적지 상단 표
