@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -24,16 +25,21 @@ import android.widget.Toast;
 import com.huduck.application.R;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SplashActivity extends AppCompatActivity {
     private boolean paused = false;
     private String[] essentialPermissions = {
+            Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_NETWORK_STATE,
-            Manifest.permission.READ_PHONE_STATE
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.RECEIVE_SMS
     };
     static final int PERMISSION_REQUEST_CODE = 1000;
 
@@ -50,6 +56,10 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+
+        if (!isNotificationPermissionAllowed())
+            startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
 
         // 권한 확인
         needEssentialPermissions = checkNeedEssentialPermission();
@@ -117,5 +127,14 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         return needPermission;
+    }
+
+    /**
+     * Notification 접근 권한 체크 메서드
+     * @return 접근권한이 있을 경우 true, 아니면 false
+     */
+    private boolean isNotificationPermissionAllowed() {
+        Set<String> packageNames =  NotificationManagerCompat.getEnabledListenerPackages(this);
+        return packageNames.contains("com.huduck.application");
     }
 }
