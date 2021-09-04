@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Handler;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.huduck.application.activity.NavigationRoadViewActivity;
 import com.huduck.application.fragment.PageFragment;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.UiSettings;
@@ -48,9 +50,9 @@ public class NavigationSearchResultFragment extends PageFragment {
     NavigationSearchResultListViewAdapter listViewAdapter;
     String searchWord;
 
-    private MapView mapView = null;
     private NaverMap naverMap = null;
     private Marker marker = new Marker();
+    MapFragment mapFragment = null;
     TMapData tMapData = new TMapData();
 
     private TMapPOIItem selectedPoi = null;
@@ -89,9 +91,14 @@ public class NavigationSearchResultFragment extends PageFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation_search_result, container, false);
 
-        mapView = view.findViewWithTag("map_view");
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment = (MapFragment)fm.findFragmentById(R.id.map_view);
+        if (mapFragment == null) {
+            mapFragment = MapFragment.newInstance();
+            fm.beginTransaction().add(R.id.map_view, mapFragment).commit();
+        }
 
-        mapView.getMapAsync(naverMap_ -> initNaverMap(naverMap_));
+        mapFragment.getMapAsync(naverMap_ -> initNaverMap(naverMap_));
 
         // 검색어 표시
         TextView searchInput = view.findViewWithTag("search_input");
@@ -214,7 +221,7 @@ public class NavigationSearchResultFragment extends PageFragment {
 
     private void updateNaverMapByTargetPoi(TMapPOIItem targetPoi) {
         if (naverMap == null) {
-            mapView.getMapAsync(naverMap_ -> {
+            mapFragment.getMapAsync(naverMap_ -> {
                 initNaverMap(naverMap_);
                 updateNaverMapByTargetPoi(targetPoi);
             });
@@ -234,6 +241,13 @@ public class NavigationSearchResultFragment extends PageFragment {
         super.onInit(bundle);
         searchWord = bundle.getString("search_word");
         Log.d("SearchWord: ", searchWord);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if(hidden)
+            getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
+        super.onHiddenChanged(hidden);
     }
 
     public class NavigationSearchResultListViewAdapter extends BaseAdapter {
