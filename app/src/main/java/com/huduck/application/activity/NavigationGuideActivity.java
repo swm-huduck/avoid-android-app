@@ -164,14 +164,22 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     private void startNavigation(LatLng destination) {
         this.destination = destination;
 
+        LatLng lastLocation = LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation());
+        LatLng lastLastLocation = null;
+
+        int lastLocSize = LocationProvider.getLastRowLocationSize();
+        if(lastLocSize > 2) {
+            lastLastLocation = LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation(lastLocSize - 2));
+        }
+
         NavigationRouter router = NavigationRouter.builder()
-                .currentLocation(LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation()))
+                .currentLocation(lastLocation)
                 .targetLocation(destination)
                 .truckInformation(NavigationProvider.getTruckInformation())
                 .searchOption(NavigationProvider.getSearchOption())
                 .build();
 
-        router.findRoutes(getString(R.string.skt_map_api_key), null, navigationRoute -> {
+        router.findRoutes(getString(R.string.skt_map_api_key), lastLastLocation, navigationRoute -> {
             navigator.setRoute(navigationRoute);
             navigator.startNavigator();
             offRoute = false;
@@ -228,7 +236,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     public void onOffRoute() {
         double currentTime = System.currentTimeMillis();
         double deltaTime = (currentTime - lastOffRouteTime) * 0.001;
-        if(deltaTime < 30) return;
+        if(deltaTime < 10) return;
         if(offRoute) return;
         offRoute = true;
         lastOffRouteTime = currentTime;

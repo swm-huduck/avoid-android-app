@@ -66,17 +66,18 @@ public class NavigationRouter{
             values.put("passList", currentLocation.longitude+","+currentLocation.latitude);
             values.put("startX", lastLastLocation.longitude);
             values.put("startY", lastLastLocation.latitude);
+            values.put("directionOption", "0");
         }
         else {
             values.put("startX", currentLocation.longitude);
             values.put("startY", currentLocation.latitude);
+            values.put("directionOption", "1");
         }
         values.put("endX", targetLocation.longitude);
         values.put("endY", targetLocation.latitude);
         values.put("reqCoordType", "WGS84GEO");
         values.put("resCoordType", "WGS84GEO");
         values.put("angle", "172");
-        values.put("directionOption", "1");
         values.put("searchOption", searchOption);
         values.put("trafficInfo", "Y");
         values.put("totalValue", "1");
