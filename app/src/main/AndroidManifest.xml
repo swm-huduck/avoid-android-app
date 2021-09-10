@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.huduck.application">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -45,20 +47,14 @@
 
         <receiver
             android:name=".notification.SMSReceiver"
-            android:enabled="true"
-            android:exported="true">
+            android:enabled="false"
+            android:exported="true"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".notification.CallReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"/>
-            </intent-filter>
-        </receiver>
-
-        <!--  ACTIVITY  -->
+        <!-- ACTIVITY -->
         <!--
         <activity
             android:name=".activity.NavigationTestActivity"
@@ -96,6 +92,10 @@
             android:name=".activity.NavigationGuideActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" />
+
+        <service
+            android:name=".device.DeviceService"
+            android:exported="false"/>
     </application>
 
 </manifest>

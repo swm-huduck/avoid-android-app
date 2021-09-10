@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 public class SplashActivity extends AppCompatActivity {
     private boolean paused = false;
     private String[] essentialPermissions = {
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -57,7 +59,10 @@ public class SplashActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        initPermissions();
+    }
 
+    private void initPermissions() {
         if (!isNotificationPermissionAllowed())
             startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
 
@@ -102,8 +107,7 @@ public class SplashActivity extends AppCompatActivity {
         // 허락된 권한만 리스트에서 삭제
         for(int i = 0; i < grantResults.length; i++) {
             if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                Log.d("Aa", "aaaaaaaaa");
-                Toast.makeText(getApplicationContext(),"앱권한설정하세요",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"앱 권한 설정하세요",Toast.LENGTH_LONG).show();
                 finish();
             }
         }
@@ -135,6 +139,6 @@ public class SplashActivity extends AppCompatActivity {
      */
     private boolean isNotificationPermissionAllowed() {
         Set<String> packageNames =  NotificationManagerCompat.getEnabledListenerPackages(this);
-        return packageNames.contains("com.huduck.application");
+        return packageNames != null && packageNames.contains("com.huduck.application");
     }
 }

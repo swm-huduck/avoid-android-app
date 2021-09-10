@@ -1,67 +1,140 @@
 package com.huduck.application.fragment.device;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.huduck.application.Navigation.NavigationProvider;
 import com.huduck.application.R;
+import com.huduck.application.activity.NavigationRoutesActivity;
+import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
+import com.skt.Tmap.TMapPOIItem;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DeviceFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class DeviceFragment extends PageFragment {
+    ListView deviceListView;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    DeviceService deviceService;
+    boolean isService = false;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private DeviceService.OnFinishedScanCallback onFinishedScanCallback = new DeviceService.OnFinishedScanCallback() {
+        @Override
+        public void onFinishedScan(Map<String, BluetoothDevice> scanResult) {
+            deviceListView.setAdapter(new DeviceListAdapter(getActivity(), scanResult));
+        }
+    };
 
-    public DeviceFragment() {
-        // Required empty public constructor
-    }
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+            deviceService = binder.getService();
+            deviceService.registerOnFinishedScanCallback(onFinishedScanCallback);
+            isService = true;
+        }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DeviceFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DeviceFragment newInstance(String param1, String param2) {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isService = false;
+        }
+    };
+
+    public DeviceFragment() { }
+
+    public static DeviceFragment newInstance() {
         DeviceFragment fragment = new DeviceFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_device, container, false);
+        View view = inflater.inflate(R.layout.fragment_device, container, false);
+
+        deviceListView = view.findViewById(R.id.device_list);
+
+        Intent intent = new Intent(
+                getActivity(),
+                DeviceService.class
+        );
+
+        getActivity().bindService(intent, conn, Context.BIND_AUTO_CREATE);
+
+        return view;
+    }
+
+    private class DeviceListAdapter extends BaseAdapter {
+        Context context;
+        Map<String, BluetoothDevice> deviceMap;
+        List<BluetoothDevice> deviceList = new ArrayList<>();
+
+        public DeviceListAdapter(Context context, Map<String, BluetoothDevice> deviceMap) {
+            this.context = context;
+            this.deviceMap = deviceMap;
+            for (String address : deviceMap.keySet()) {
+                deviceList.add(deviceMap.get(address));
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return deviceList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return deviceList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.view_device_list_item, parent, false);
+
+                TextView nameTextView = convertView.findViewWithTag("device_name");
+                nameTextView.setText(deviceList.get(position).getName());
+
+                TextView addressTextView = convertView.findViewWithTag("device_address");
+                addressTextView.setText(deviceList.get(position).getAddress());
+
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deviceService.registerDevice(deviceList.get(position));
+                    }
+                });
+            }
+
+            return convertView;
+        }
     }
 }
