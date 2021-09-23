@@ -5,49 +5,67 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
-
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huduck.application.Navigation.NavigationProvider;
 import com.huduck.application.R;
-import com.huduck.application.activity.NavigationRoutesActivity;
+import com.huduck.application.bleCentral.CentralCallback;
 import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
-import com.skt.Tmap.TMapPOIItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DeviceFragment extends PageFragment {
+    private ImageView deviceStateImageView;
+    private TextView deviceStateTextView;
+    private TextView deviceStateDescriptionTextView;
+
     ListView deviceListView;
 
     DeviceService deviceService;
     boolean isService = false;
 
-    private DeviceService.OnFinishedScanCallback onFinishedScanCallback = new DeviceService.OnFinishedScanCallback() {
-        @Override
-        public void onFinishedScan(Map<String, BluetoothDevice> scanResult) {
-            deviceListView.setAdapter(new DeviceListAdapter(getActivity(), scanResult));
-        }
-    };
+    DeviceListAdapter deviceListAdapter;
 
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
             deviceService = binder.getService();
-            deviceService.registerOnFinishedScanCallback(onFinishedScanCallback);
+
+            changeDeviceConnectionState(deviceService.isConnected());
+            deviceService.registerCentralCallback(centralCallback);
+            deviceListAdapter = new DeviceListAdapter(getActivity());
+            if(deviceService.isConnected()) {
+                List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
+
+                for (BluetoothDevice device : deviceService.getScanDeviceList())
+                    if(device.getAddress().equals(deviceService.getRegisteredDeviceAddress()))
+                        bluetoothDeviceList.add(device);
+
+                for (BluetoothDevice device : deviceService.getScanDeviceList())
+                    if(!bluetoothDeviceList.contains(device))
+                        bluetoothDeviceList.add(device);
+
+                deviceListAdapter.updateList(bluetoothDeviceList);
+            }
+            else
+                deviceListAdapter.updateList(deviceService.getScanDeviceList());
+            deviceListView.setAdapter(deviceListAdapter);
             isService = true;
         }
 
@@ -74,6 +92,29 @@ public class DeviceFragment extends PageFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_device, container, false);
 
+        deviceStateImageView = view.findViewWithTag("debug");
+        deviceStateTextView = view.findViewWithTag("device_state_textview");
+        deviceStateDescriptionTextView = view.findViewWithTag("device_state_description_textview");
+
+        view.findViewWithTag("debug").setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(deviceService == null) return;
+                deviceService.updateCall("010-6294-5186", 1);
+                deviceService.updateCall("테스트", 2);
+                deviceService.updateSpeed(123);
+                deviceService.updateSms("박유천입니다.", "문자입니다.이것은 문자입니다. 문자입니다. 문자야.문자문자문자문자문자");
+                deviceService.updateKakaoTalk("박유천입니다.", "카카오톡입니다.이것은 카카오톡입니다. 카카오톡입니다. 카카오톡야.카카오톡카카오톡카카오톡카카오톡카카오톡");
+            }
+        });
+
+        view.findViewWithTag("update").setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deviceService.refreshDeviceList();
+            }
+        });
+
         deviceListView = view.findViewById(R.id.device_list);
 
         Intent intent = new Intent(
@@ -88,15 +129,20 @@ public class DeviceFragment extends PageFragment {
 
     private class DeviceListAdapter extends BaseAdapter {
         Context context;
-        Map<String, BluetoothDevice> deviceMap;
         List<BluetoothDevice> deviceList = new ArrayList<>();
 
-        public DeviceListAdapter(Context context, Map<String, BluetoothDevice> deviceMap) {
+        public DeviceListAdapter(Context context) {
             this.context = context;
-            this.deviceMap = deviceMap;
-            for (String address : deviceMap.keySet()) {
-                deviceList.add(deviceMap.get(address));
-            }
+        }
+
+        public void clearDevice() {
+            deviceList.clear();
+            notifyDataSetChanged();
+        }
+
+        public void updateList(List<BluetoothDevice> bluetoothDeviceList) {
+            deviceList = bluetoothDeviceList;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -120,12 +166,6 @@ public class DeviceFragment extends PageFragment {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.view_device_list_item, parent, false);
 
-                TextView nameTextView = convertView.findViewWithTag("device_name");
-                nameTextView.setText(deviceList.get(position).getName());
-
-                TextView addressTextView = convertView.findViewWithTag("device_address");
-                addressTextView.setText(deviceList.get(position).getAddress());
-
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -134,7 +174,99 @@ public class DeviceFragment extends PageFragment {
                 });
             }
 
+            TextView nameTextView = convertView.findViewWithTag("device_name");
+            nameTextView.setText(deviceList.get(position).getName());
+
+            TextView addressTextView = convertView.findViewWithTag("device_address");
+            addressTextView.setText(deviceList.get(position).getAddress());
+
+            BluetoothDevice device = (BluetoothDevice) getItem(position);
+            if(deviceService.isConnected() && device.getAddress().equals(deviceService.getRegisteredDeviceAddress())) {
+                convertView.setBackgroundResource(R.drawable.border_bottom_gray_1px);
+                nameTextView.setTextColor(getResources().getColor(R.color.indigo700, context.getTheme()));
+                nameTextView.setTypeface(null, Typeface.BOLD);
+            }
+            else {
+                convertView.setBackgroundResource(R.drawable.bg_navigation_search_result_item_layout_idle);
+                nameTextView.setTextColor(getResources().getColor(R.color.default_text, context.getTheme()));
+                nameTextView.setTypeface(null, Typeface.NORMAL);
+            }
+
             return convertView;
         }
+    }
+
+    private CentralCallback centralCallback = new CentralCallback() {
+        @Override
+        public void requestEnableBLE() {
+
+        }
+
+        @Override
+        public void requestLocationPermission() {
+
+        }
+
+        @Override
+        public void onStartScan() {
+            deviceListAdapter.clearDevice();
+        }
+
+        @Override
+        public void onFindNewDevice(BluetoothDevice bluetoothDevice) {
+            deviceListAdapter.updateList(deviceService.getScanDeviceList());
+        }
+
+        @Override
+        public void onFinishScan(Map<String, BluetoothDevice> scanResult) {
+
+        }
+
+        @Override
+        public void connectedGattServer() {
+            changeDeviceConnectionState(true);
+
+            List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
+
+            for (BluetoothDevice device : deviceService.getScanDeviceList())
+                if(device.getAddress().equals(deviceService.getRegisteredDeviceAddress()))
+                    bluetoothDeviceList.add(device);
+
+            for (BluetoothDevice device : deviceService.getScanDeviceList())
+                if(!bluetoothDeviceList.contains(device))
+                    bluetoothDeviceList.add(device);
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                deviceListAdapter.updateList(bluetoothDeviceList);
+                deviceListAdapter.notifyDataSetChanged();
+            });
+        }
+
+        @Override
+        public void disconnectedGattServer() {
+            changeDeviceConnectionState(false);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                deviceListAdapter.notifyDataSetChanged();
+            });
+        }
+
+        @Override
+        public void onWrite() {
+
+        }
+    };
+
+    private void changeDeviceConnectionState(boolean state) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            String stateText = state ? "HUD 연결 완료" : "HUD 연결 필요";
+            String stateDescriptionText = state ? "디바이스와 연결되었습니다." : "디바이스와 연결이 필요합니다.";
+
+            try {
+                deviceStateImageView.setImageTintList(ColorStateList.valueOf(state ? getResources().getColor(R.color.indigo700, getActivity().getTheme()) : getResources().getColor(R.color.gray500, getActivity().getTheme())));
+                deviceStateTextView.setText(stateText);
+                deviceStateDescriptionTextView.setText(stateDescriptionText);
+            }
+            catch (IllegalStateException e) {}
+        });
     }
 }

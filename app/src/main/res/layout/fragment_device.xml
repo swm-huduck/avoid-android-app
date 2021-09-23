@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -9,6 +10,14 @@
         <TextView
             style="@style/TOPBAR_TITLE"
             android:text="HUD" />
+
+        <ImageView
+            android:tag="update"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_refresh" />
     </RelativeLayout>
 
     <LinearLayout
@@ -21,28 +30,34 @@
         android:background="@drawable/border_bottom_gray_1px">
 
         <ImageView
+            android:tag="debug"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/icon_bluetooth"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            app:tint="@color/gray500" />
         <TextView
+            android:tag="device_state_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="20dp"
-            android:text="HUD 연결 완료"/>
+            android:text="HUD 연결 필요"/>
         <TextView
+            android:tag="device_state_description_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="디바이스와 정상적으로 연결되었습니다."/>
+            android:text="디바이스와 연결이 필요합니다."/>
 
     </LinearLayout>
 
     <ListView
         android:id="@+id/device_list"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="8"
+        android:divider="#EFF0F1"
+        android:dividerHeight="1dp"
         android:overScrollMode="never" />
 </LinearLayout>

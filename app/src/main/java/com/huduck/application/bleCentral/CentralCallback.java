@@ -5,17 +5,18 @@ import android.bluetooth.BluetoothDevice;
 import java.util.Map;
 
 public interface CentralCallback {
-
     void requestEnableBLE();
 
     void requestLocationPermission();
 
-    void onStatusMsg(final String message);
+    /* 스캔 관련 함수 */
+    void onStartScan();
 
-    void onToast(final String message);
+    void onFindNewDevice(BluetoothDevice bluetoothDevice);
 
-    void finishedScan(Map<String, BluetoothDevice> scanResult);
+    void onFinishScan(Map<String, BluetoothDevice> scanResult);
 
+    /* 연결 관련 함수 */
     void connectedGattServer();
 
     void disconnectedGattServer();

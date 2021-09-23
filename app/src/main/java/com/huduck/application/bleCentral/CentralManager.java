@@ -60,6 +60,8 @@ public class CentralManager {
 
     // BLE Gatt
     private BluetoothGatt bleGatt;
+    @Getter
+    private boolean isWritable = false;
 
     // Callback listener
     private CentralCallback listener;
@@ -99,32 +101,27 @@ public class CentralManager {
          */
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             listener.requestLocationPermission();
-            listener.onStatusMsg("Scanning Failed: no fine location permission");
+//            listener.onStatusMsg("Scanning Failed: no fine location permission");
             return;
         }
-
-        /**
-         * 이미 연결된 상태라면 더이상 진행시키지 않는다.
-         */
-        if (isConnected)
-            return;
-
-        listener.onStatusMsg("Scanning...");
-        /**
-         * 블루투스를 사용할 수 있는 상태인지 체크한다.
-         */
-        if (bleAdapter == null || !bleAdapter.isEnabled()) {
-            listener.requestEnableBLE();
-            listener.onStatusMsg("Scanning Failed: ble not enabled");
-            return;
-        }
-
-        bleScanner = bleAdapter.getBluetoothLeScanner();
 
         /**
          * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
          */
         disconnectGattServer();
+        stopScan();
+
+//        listener.onStatusMsg("Scanning...");
+        /**
+         * 블루투스를 사용할 수 있는 상태인지 체크한다.
+         */
+        if (bleAdapter == null || !bleAdapter.isEnabled()) {
+            listener.requestEnableBLE();
+//            listener.onStatusMsg("Scanning Failed: ble not enabled");
+            return;
+        }
+
+        bleScanner = bleAdapter.getBluetoothLeScanner();
 
         //// set scan filters
         // create scan filter list
@@ -133,7 +130,7 @@ public class CentralManager {
         ScanFilter scan_filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(SERVICE_UUID)).build();
 
         // add the filter to the list
-        filters.add(scan_filter);
+//        filters.add(scan_filter);
 
         //// scan settings
         // set low power scan mode
@@ -152,6 +149,8 @@ public class CentralManager {
 
         scanHandler = new Handler();
         scanHandler.postDelayed(this::stopScan, SCAN_PERIOD);
+
+        listener.onStartScan();
     }
 
     /**
@@ -172,31 +171,33 @@ public class CentralManager {
         // update the status
 
 
-        listener.onStatusMsg("scanning stopped");
-        listener.finishedScan(scanResults);
+//        listener.onStatusMsg("scanning stopped");
+        listener.onFinishScan(scanResults);
     }
 
     /**
      * Handle scan results after scan stopped
      */
     public void connectDevice(BluetoothDevice device) {
+        stopScan();
+
         // check if nothing found
         if (scanResults.isEmpty()) {
-            listener.onStatusMsg("scan results is empty");
+//            listener.onStatusMsg("scan results is empty");
             Log.d(TAG, "scan results is empty");
             return;
         }
 
         if(!scanResults.containsValue(device)) {
-            listener.onStatusMsg("device is unknown");
+//            listener.onStatusMsg("device is unknown");
             Log.d(TAG, "device is unknown");
             return;
         }
 
         // update the status
-        listener.onStatusMsg("Connecting to " + device.getAddress());
+//        listener.onStatusMsg("Connecting to " + device.getAddress());
         GattClientCallback gatt_client_cb = new GattClientCallback();
-        bleGatt = device.connectGatt(mContext, false, gatt_client_cb);
+        bleGatt = device.connectGatt(mContext, false, gatt_client_cb, 2);
     }
 
     /**
@@ -204,10 +205,11 @@ public class CentralManager {
      */
     public void disconnectGattServer() {
         Log.d(TAG, "Closing Gatt connection");
-        listener.onStatusMsg("Closing Gatt connection");
-        listener.disconnectedGattServer();
         // reset the connection flag
         isConnected = false;
+        isWritable = false;
+        // listener.onStatusMsg("Closing Gatt connection");
+        listener.disconnectedGattServer();
         // disconnect and close the gatt
         if (bleGatt != null) {
             bleGatt.disconnect();
@@ -221,6 +223,10 @@ public class CentralManager {
      * 20Byte 까지만 보낼 수 있다.
      */
     public void sendData(String message) {
+        sendData(message.getBytes());
+    }
+
+    public void sendData(byte[] messageBytes) {
         // check connection
         if (!isConnected) {
             Log.e(TAG, "Failed to sendData due to no connection");
@@ -235,19 +241,24 @@ public class CentralManager {
             return;
         }
 
-        cmd_characteristic.setValue(message.getBytes()); // 20byte limit
+        cmd_characteristic.setValue(messageBytes); // 20byte limit
         cmd_characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
         // write the characteristic
         boolean success = bleGatt.writeCharacteristic(cmd_characteristic);
+        BluetoothGattDescriptor descriptor = cmd_characteristic.getDescriptor(UUID.fromString(CONFIG_UUID));
+//        descriptor.setValue(messageBytes);
+//        boolean success = bleGatt.writeDescriptor(descriptor);
+        isWritable = false;
         // check the result
         if (success) {
-            listener.onStatusMsg("write : " + message);
+// //            listener.onStatusMsg("write : " + message);
             Log.e(TAG, "Success to write command");
+//            listener.onWrite();
         } else {
             Log.e(TAG, "Failed to write command : " + cmd_characteristic.getUuid());
             Log.e(TAG, "Failed to write command");
-            listener.onStatusMsg("Failed to write command");
-            disconnectGattServer();
+            // listener.onStatusMsg("Failed to write command");
+//            disconnectGattServer();
         }
     }
 
@@ -288,16 +299,18 @@ public class CentralManager {
          * @param _result
          */
         private void addScanResult(ScanResult _result) {
-
             // get scanned device
             BluetoothDevice device = _result.getDevice();
             // get scanned device MAC address
             String device_address = device.getAddress();
+            if(cb_scan_results.containsKey(device_address)) return;
+
             // add the device to the result list
             cb_scan_results.put(device_address, device);
             // log
+            listener.onFindNewDevice(device);
+            // listener.onStatusMsg("scan results device: " + device_address + ", " + device.getName());
             Log.e(TAG, "scan results device: " + device_address + ", " + device.getName());
-            listener.onStatusMsg("scan results device: " + device_address + ", " + device.getName());
         }
     }
 
@@ -318,8 +331,9 @@ public class CentralManager {
             }
             if (_new_state == BluetoothProfile.STATE_CONNECTED) {
                 // update the connection status message
-                listener.onStatusMsg("Connected");
+                // listener.onStatusMsg("Connected");
                 listener.connectedGattServer();
+                isWritable = true;
                 // set the connection flag
                 isConnected = true;
                 Log.d(TAG, "Connected to the GATT server");
@@ -378,8 +392,9 @@ public class CentralManager {
         @Override
         public void onCharacteristicWrite(BluetoothGatt _gatt, BluetoothGattCharacteristic _characteristic, int _status) {
             super.onCharacteristicWrite(_gatt, _characteristic, _status);
-            if (_status == BluetoothGatt.GATT_SUCCESS) {
+            if (_status == BluetoothGatt.GATT_SUCCESS || _status == 14) {
                 Log.d(TAG, "Characteristic written successfully");
+                isWritable = true;
                 listener.onWrite();
             } else {
                 Log.e(TAG, "Characteristic write unsuccessful, status: " + _status);
@@ -409,8 +424,8 @@ public class CentralManager {
             byte[] msg = _characteristic.getValue();
             String message = new String(msg);
             Log.d(TAG, "read: " + message);
-            listener.onStatusMsg("read : " + message);
-            listener.onToast("read : " + message);
+            // listener.onStatusMsg("read : " + message);
+//            listener.onToast("read : " + message);
         }
     }
 }
