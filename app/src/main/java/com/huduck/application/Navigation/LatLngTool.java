@@ -36,6 +36,35 @@ public class LatLngTool {
 //    }
 
     public static double mag(LatLng latLng, boolean meter) {
+        /*if (latLng.latitude == 0 && latLng.longitude == 0) {
+            return 0.0D;
+        } else {
+            double lat1 = Math.toRadians(latLng.latitude);
+            double lng1 = Math.toRadians(latLng.longitude);
+            double lat2 = Math.toRadians(0);
+            double lng2 = Math.toRadians(0);
+            return 1.2756274E7D *
+                    Math.asin(
+                            Math.sqrt(
+                                    Math.pow(
+                                            Math.sin(
+                                                    (lat1 - lat2) / 2.0D
+                                            ), 2.0D
+                                    )
+                                    + Math.cos(lat1)
+                                    * Math.cos(lat2)
+                                    * Math.pow(
+                                            Math.sin(
+                                                    (lng1 - lng2) / 2.0D
+                                            ), 2.0D
+                                    )
+                            )
+                    );
+        }
+
+
+*/
+
         double R = 6371e3;
         double lat = latLng.latitude * Math.PI / 180;
         double lng = latLng.longitude * Math.PI / 180;

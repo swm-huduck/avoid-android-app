@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 
 import com.huduck.application.Navigation.LatLngTool;
 import com.huduck.application.Navigation.LocationProvider;
@@ -145,6 +144,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         });
         naverMap.addOnLocationChangeListener(navigator);
         naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
+        naverMap.addOnLocationChangeListener(renderer);
 
         // Set Naver Map UI
         UiSettings uiSettings = naverMap.getUiSettings();
@@ -212,7 +212,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         double speedKh = location.getSpeed() * 3.6;
         handler.post(() -> binding.currentSpeed.setText((int) speedKh + ""));
 
-        renderer.setSpeed(speedKh);
+//        renderer.setSpeed(location.getSpeed());
 
         // 현재 위치(주소) 업데이트
         updateAddressCnt--;
