@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.huduck.application.R;
 
+import java.text.DecimalFormat;
+
 import lombok.Getter;
 
 public class MyCarItemFragment extends Fragment {
@@ -33,23 +35,23 @@ public class MyCarItemFragment extends Fragment {
     @Getter private String description;
     @Getter private String hint;
     @Getter private String unit;
-    @Getter private int minValue = 0;
-    @Getter private int maxValue = 1000;
+    @Getter private float minValue = 0;
+    @Getter private float maxValue = 1000;
     @Getter private boolean success = false;
 
     // Callback
     private MyCarItemChanged changedCallback;
 
     // Value
-    @Getter private Integer value = null;
+    @Getter private Float value = null;
 
     public MyCarItemFragment() {}
 
-    public MyCarItemFragment init(String name, String description, String hint, String unit, int minValue, int maxValue) {
-        return init(name, description, hint, unit, minValue, maxValue, null);
+    public MyCarItemFragment init(String name, String description, String hint, String unit, float minValue, float maxValue) {
+        return init(name, description, hint, unit, minValue, maxValue, null, null);
     }
 
-    public MyCarItemFragment init(String name, String description, String hint, String unit, int minValue, int maxValue, Integer defaultValue) {
+    public MyCarItemFragment init(String name, String description, String hint, String unit, float minValue, float maxValue, Float defaultValue, Integer decimalLength) {
         this.name = name;
         nameView.setText(name);
 
@@ -64,12 +66,19 @@ public class MyCarItemFragment extends Fragment {
 
         this.minValue = minValue;
         this.maxValue = maxValue;
-        inputView.setFilters(new InputFilter[] {new InputFilter.LengthFilter((int)(Math.log10(maxValue)+1))});
+
+
         if(defaultValue != null) {
             this.success = true;
             this.value = defaultValue;
             inputView.setText(defaultValue.toString());
         }
+
+        if(decimalLength != null && decimalLength >= 0)
+            inputView.setFilters(new InputFilter[] {new InputFilter.LengthFilter((int)(Math.log10(maxValue)+1+decimalLength))});
+        else
+            inputView.setFilters(new InputFilter[] {new InputFilter.LengthFilter((int)(Math.log10(maxValue)+1+2))});
+
         return this;
     }
 
@@ -83,9 +92,9 @@ public class MyCarItemFragment extends Fragment {
         return this;
     }
 
-    public void setValue(int value) {
+    public void setValue(float value) {
         this.value = value;
-        inputView.setText(value+"");
+        inputView.setText(new DecimalFormat("#.######").format(value));
     }
 
     public void isSuccess(boolean value) {
@@ -118,11 +127,11 @@ public class MyCarItemFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int val = 0;
+                float val = 0;
 
                 String str = s.toString();
                 if(!str.equals(""))
-                    val = Integer.parseInt(str);
+                    val = Float.parseFloat(str);
 
                 boolean success = true;
 
@@ -147,7 +156,7 @@ public class MyCarItemFragment extends Fragment {
     }
 
     public static interface MyCarItemChanged {
-        public void myCarItemChanged(boolean success, int value);
+        public void myCarItemChanged(boolean success, float value);
     }
 }
 

@@ -12,21 +12,13 @@
             style="@style/TOPBAR_TITLE"
             android:text="내 차" />
 
-        <ImageView
-            android:tag="success_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_outline_cancel_24"
-            android:tint="@color/gray700"
-            android:tintMode="src_in"
-            tools:ignore="UseAppTint" />
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
         android:overScrollMode="never">
 
         <LinearLayout
@@ -70,26 +62,18 @@
                 android:layout_height="wrap_content"
                 android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/border_bottom_gray_1px"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="@drawable/border_bottom_gray_1px"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingVertical="15dp"
-                    android:textAlignment="center"
-                    android:text="모든 항목이 정상적으로 입력되면\n자동으로 저장 됩니다."/>
-            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>
+
+    <Button
+        android:id="@+id/save_my_car"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/indigo700"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:text="저장하기"/>
 
 
 </LinearLayout>

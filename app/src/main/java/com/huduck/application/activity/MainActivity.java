@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(NavigationMainFragment.class);
                     break;
                 case R.id.page_my_car:
-                    changeFragment(MyCarFragment.class);
+                    changeFragment(MyCarFragment.class, true);
                     break;
                 case R.id.page_device:
                     changeFragment(DeviceFragment.class);
