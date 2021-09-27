@@ -37,6 +37,10 @@ import com.huduck.application.fragment.setting.SettingFragment;
 import java.util.HashMap;
 import java.util.Map;
 
+import gun0912.tedkeyboardobserver.BaseKeyboardObserver;
+import gun0912.tedkeyboardobserver.TedKeyboardObserver;
+import gun0912.tedkeyboardobserver.TedRxKeyboardObserver;
+
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager;
@@ -92,6 +96,18 @@ public class MainActivity extends AppCompatActivity {
 
         // 초기 선택 되어있는 하단 내비바 아이템 지정
         binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
+
+        // 키보드 활성화에 따른 내비바 표시/숨
+        new TedKeyboardObserver(this).listen(new BaseKeyboardObserver.OnKeyboardListener() {
+            @Override
+            public void onKeyboardChange(boolean b) {
+                if(b)
+                    binding.bottomNaviBar.setVisibility(View.GONE);
+                else
+                    binding.bottomNaviBar.setVisibility(View.VISIBLE);
+            }
+        });
+
 
         // 디바이스 서비스
         Intent intent = new Intent(

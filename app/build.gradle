@@ -1,9 +1,10 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 30
+    compileSdk 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
@@ -53,5 +54,11 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     // annotationProcessor : annotation processor classpath 에서 compile processor classpath를 분리하여 빌드 성능개선
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-    
+    // 키보드 감지
+    implementation 'io.github.ParkSangGwon:tedkeyboardobserver:1.0.1'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
