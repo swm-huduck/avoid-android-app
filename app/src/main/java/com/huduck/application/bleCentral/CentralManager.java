@@ -62,6 +62,8 @@ public class CentralManager {
     private BluetoothGatt bleGatt;
     @Getter
     private boolean isWritable = false;
+    @Getter
+    private int mtu = 0;
 
     // Callback listener
     private CentralCallback listener;
@@ -108,7 +110,6 @@ public class CentralManager {
         /**
          * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
          */
-        disconnectGattServer();
         stopScan();
 
 //        listener.onStatusMsg("Scanning...");
@@ -126,11 +127,6 @@ public class CentralManager {
         //// set scan filters
         // create scan filter list
         List<ScanFilter> filters = new ArrayList<>();
-        // create a scan filter with device uuid
-        ScanFilter scan_filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(SERVICE_UUID)).build();
-
-        // add the filter to the list
-//        filters.add(scan_filter);
 
         //// scan settings
         // set low power scan mode
@@ -161,6 +157,7 @@ public class CentralManager {
         if (isScanning && bleAdapter != null && bleAdapter.isEnabled() && bleScanner != null) {
             // stop scanning
             bleScanner.stopScan(scanCallback);
+            listener.onFinishScan(scanResults);
         }
         // reset flags
         if (scanCallback != null)
@@ -168,11 +165,6 @@ public class CentralManager {
         if (scanHandler != null)
             scanHandler = null;
         isScanning = false;
-        // update the status
-
-
-//        listener.onStatusMsg("scanning stopped");
-        listener.onFinishScan(scanResults);
     }
 
     /**
@@ -208,13 +200,13 @@ public class CentralManager {
         // reset the connection flag
         isConnected = false;
         isWritable = false;
-        // listener.onStatusMsg("Closing Gatt connection");
-        listener.disconnectedGattServer();
         // disconnect and close the gatt
         if (bleGatt != null) {
             bleGatt.disconnect();
             bleGatt.close();
         }
+        // listener.onStatusMsg("Closing Gatt connection");
+        listener.disconnectedGattServer();
     }
 
     /**
@@ -318,6 +310,14 @@ public class CentralManager {
      * Gatt Client Callback class
      */
     private class GattClientCallback extends BluetoothGattCallback {
+        @Override
+        public void onMtuChanged(BluetoothGatt gatt, int _mtu, int status) {
+            super.onMtuChanged(gatt, _mtu, status);
+            if(status == BluetoothGatt.GATT_SUCCESS) {
+                mtu = _mtu - 3;
+                gatt.discoverServices();
+            }
+        }
 
         @Override
         public void onConnectionStateChange(BluetoothGatt _gatt, int _status, int _new_state) {
@@ -332,12 +332,12 @@ public class CentralManager {
             if (_new_state == BluetoothProfile.STATE_CONNECTED) {
                 // update the connection status message
                 // listener.onStatusMsg("Connected");
-                listener.connectedGattServer();
                 isWritable = true;
                 // set the connection flag
                 isConnected = true;
                 Log.d(TAG, "Connected to the GATT server");
-                _gatt.discoverServices();
+                // _gatt.discoverServices();
+                _gatt.requestMtu(512);
             } else if (_new_state == BluetoothProfile.STATE_DISCONNECTED) {
                 disconnectGattServer();
             }
@@ -370,15 +370,7 @@ public class CentralManager {
             // Set CharacteristicNotification
             BluetoothGattCharacteristic cmd_characteristic = BluetoothUtils.findCharacteristic(bleGatt, CHARACTERISTIC_UUID);
             _gatt.setCharacteristicNotification(cmd_characteristic, true);
-            // 리시버 설정
-            BluetoothGattDescriptor descriptor = cmd_characteristic.getDescriptor(UUID.fromString(CONFIG_UUID));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            boolean success = _gatt.writeDescriptor(descriptor);
-            if (success) {
-                Log.e(TAG, "writeCharacteristic success");
-            } else {
-                Log.e(TAG, "writeCharacteristic fail");
-            }
+            listener.connectedGattServer();
         }
 
         @Override
