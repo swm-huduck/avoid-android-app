@@ -6,15 +6,9 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.huduck.application.Navigation.LatLngTool;
-import com.huduck.application.Navigation.NavigationLineString;
-import com.huduck.application.Navigation.NavigationPoint;
-import com.huduck.application.Navigation.NavigationRoutes;
 import com.naver.maps.geometry.LatLng;
-import com.naver.maps.map.LocationSource;
 import com.naver.maps.map.NaverMap;
 
 import java.math.BigDecimal;
@@ -48,6 +42,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     // Row Location
     private Location currentLocation;
     private Location lastLocation;
+    private LatLng currentRowPosition;
 
     // Event
     private List<OnRouteChangedCallback> routeChangedCallbackList = new ArrayList<>();
@@ -133,10 +128,8 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         return result;
     }
 
-    private double distanceBetweenRouteAndRowLocation = 0;
-    private LatLng findCurrentPositionOnRoute(Location currentLocation) {
-        LatLng rowPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-
+    private double distanceMBetweenRouteAndRowLocation = 0;
+    private LatLng findCurrentPositionOnRoute(LatLng rowPosition) {
         int minDistIdx = -1;
         double minDist = Double.MAX_VALUE;
         NavigatorLineStringSegment targetSeg = lineStringSegmentList.get(currentLineStringSegIdx);
@@ -167,7 +160,6 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
                 break;
         }
 
-        distanceBetweenRouteAndRowLocation = minDist;
         Log.d("minDist", BigDecimal.valueOf(minDist).toString());
 
         double passedDistance = LatLngTool.mag(targetSeg.startPoint, positionOnRoute);  // Deg
@@ -182,6 +174,8 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         } else {
 
         }
+
+        distanceMBetweenRouteAndRowLocation = rowPosition.distanceTo(positionOnRoute);
 
         return this.currentPositionOnRoute;
     }
@@ -235,9 +229,11 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
 
         // Location
         currentLocation = location;
+        currentRowPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
         if (!startedNavigator || navigationRoute == null) return;
-        findCurrentPositionOnRoute(location);
+
+        findCurrentPositionOnRoute(currentRowPosition);
 
         if (currentPositionOnRoute == null) return;
 
@@ -262,14 +258,14 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
 
     private int offRouteCount = 0;
     private boolean checkOffRoute() {
-        if (distanceBetweenRouteAndRowLocation > 0.0003) {
-            offRouteCount++;
-            if (offRouteCount > 8) {
-                return true;
-            }
-        } else {
+        if(distanceMBetweenRouteAndRowLocation > 100) return true;
+
+        else if (distanceMBetweenRouteAndRowLocation > 60)
+            if (++offRouteCount > 3) return true;
+
+        else
             offRouteCount = 0;
-        }
+
         return false;
     }
 
