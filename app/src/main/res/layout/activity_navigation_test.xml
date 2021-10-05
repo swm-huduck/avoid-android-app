@@ -58,7 +58,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@color/indigo700"
+                    android:background="@drawable/bg_round_indigo_box"
+                    android:gravity="right"
                     android:minWidth="150dp"
                     android:orientation="vertical"
                     android:padding="10dp">
@@ -88,6 +89,8 @@
                      android:id="@+id/current_address"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
+                     android:background="@drawable/border_bottom_gray_1px"
+                     android:paddingVertical="5dp"
                      android:text="현재 위치 검색 중.."
                      android:textAlignment="center" />
 
@@ -101,7 +104,7 @@
                         android:id="@+id/refresh_button"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:background="@color/white"
+                        android:background="@drawable/border_right_gray_1px"
                         android:src="@drawable/icon_refresh"
                         app:tint="@color/indigo500" />
 
