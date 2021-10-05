@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.huduck.application.bleCentral.CentralCallback;
@@ -20,6 +22,7 @@ import com.huduck.application.bleCentral.CentralManager;
 import com.huduck.application.common.CommonMethod;
 import com.huduck.application.notification.CallListener;
 import com.huduck.application.notification.SMSReceiver;
+import com.huduck.application.setting.SettingConstants;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -113,8 +116,20 @@ public class DeviceService extends Service {
         }
     };
 
+    private boolean refresh = false;
     public void refreshDeviceList() {
+        if(!centralManager.isConnected()) {
+            refreshDevice();
+            return;
+        }
+
+        refresh = true;
         isFirstScan = false;
+        centralManager.disconnectGattServer();
+    }
+
+    private void refreshDevice() {
+        refresh = false;
         scanDeviceList = new ArrayList<>();
         centralManager.startScan();
     }
@@ -154,7 +169,7 @@ public class DeviceService extends Service {
     public void updateCall(String name, int callState) {
         if(!centralManager.isConnected()) return;
         String sendData = new StringBuilder("c")
-                .append(CommonMethod.subStringBytes(name, 15*3, 3))
+                .append(CommonMethod.subStringBytes(name, 30 * 3, 3))
                 .append(callState)
                 .toString();
 
@@ -164,6 +179,9 @@ public class DeviceService extends Service {
 
     public void updateSms(String name, String content) {
         if(!centralManager.isConnected()) return;
+        name = name.replaceAll("\\{]", "{}");
+        content = content.replaceAll("\\{]", "{}");
+
         Log.d(TAG, "(SMS) name: " + name + ", content: " + content);
         StringBuilder sb = new StringBuilder("m");
         sb
@@ -175,11 +193,25 @@ public class DeviceService extends Service {
 
     public void updateKakaoTalk(String name, String content) {
         if(!centralManager.isConnected()) return;
+        name = name.replaceAll("\\{]", "{}");
+        content = content.replaceAll("\\{]", "{}");
+
         Log.d(TAG, "(KakaoTalk) name: " + name + ", content: " + content);
         StringBuilder sb = new StringBuilder("k");
         sb
                 .append(CommonMethod.subStringBytes(name, 5 * 3, 3)).append("{]")
                 .append(CommonMethod.subStringBytes(content, 25 * 3, 3));
+
+        updateQueue(sb.toString());
+    }
+
+    public void updateSetting(String settingItem, String settingValue) {
+        if(!centralManager.isConnected()) return;
+        Log.d(TAG, "(Setting) item: " + settingItem + ", value: " + settingValue);
+        StringBuilder sb = new StringBuilder("p");
+        sb
+                .append(settingItem).append("{]")
+                .append(settingValue);
 
         updateQueue(sb.toString());
     }
@@ -191,8 +223,10 @@ public class DeviceService extends Service {
     }
 
     private void updateQueue(String data) {
-        int DATA_SIZE = 19;
-        int QUEUE_SIZE = DATA_SIZE + 1;
+        if(!centralManager.isConnected()) return;
+
+        int QUEUE_SIZE = centralManager.getMtu();
+        int DATA_SIZE = QUEUE_SIZE - 1;
 
         byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
 
@@ -261,9 +295,38 @@ public class DeviceService extends Service {
                 centralCallback.onFinishScan(scanResult);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void connectedGattServer() {
             isConnected = true;
+
+            // send MTU
+            updateSetting("mtu", Integer.valueOf(centralManager.getMtu()).toString());
+
+            // send setting value
+            SharedPreferences preferenceSharedPreferences = getSharedPreferences("preference", MODE_PRIVATE);
+            if(preferenceSharedPreferences.contains("saved")) {
+                SettingConstants.SETTING_ITEM_MAP.forEach((String key, Class class_) -> {
+                    String value = null;
+                    if(class_ == String.class) {
+                        value = preferenceSharedPreferences.getString(key, null);
+                    }
+                    else if(class_ == Boolean.class) {
+                        value = preferenceSharedPreferences.getBoolean(key, false) ? "true" : "false";
+                    }
+
+                    if(value != null)
+                        updateSetting(key, value);
+                });
+            }
+            else {
+                SettingConstants.SETTING_ITEM_MAP.forEach((String key, Class class_) -> {
+                    String value = SettingConstants.SETTING_DEFAULT_VALUE.get(key);
+
+                    if(value != null)
+                        updateSetting(key, value);
+                });
+            }
 
             for (CentralCallback centralCallback : centralCallbackList)
                 centralCallback.connectedGattServer();
@@ -277,6 +340,9 @@ public class DeviceService extends Service {
 
             for (CentralCallback centralCallback : centralCallbackList)
                 centralCallback.disconnectedGattServer();
+
+            if(refresh)
+                refreshDevice();
         }
 
         @Override

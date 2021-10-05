@@ -27,7 +27,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="네비게이션"
+        android:title="내비게이션"
         app:iconSpaceReserved="false">
 
         <SwitchPreference
