@@ -133,6 +133,28 @@ public class MainActivity extends AppCompatActivity {
         changeNavigationBarDeviceBadgeState(false);
     }
 
+    public void selectBottomNavigationBarItem(int index) {
+        if(index < 0 || index > binding.bottomNaviBar.getItemIconSize() - 1) return;
+
+        int id = 0;
+        switch (index) {
+            case 0:
+                id = R.id.page_navigation;
+                break;
+            case 1:
+                id = R.id.page_my_car;
+                break;
+            case 2:
+                id = R.id.page_device;
+                break;
+            case 3:
+                id = R.id.page_setting;
+                break;
+        }
+
+        binding.bottomNaviBar.setSelectedItemId(id);
+    }
+
     // container에 표시할 fragment 변경 (overwrite 하지 않음)
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void changeFragment(Class<? extends PageFragment> fragmentClass) {
