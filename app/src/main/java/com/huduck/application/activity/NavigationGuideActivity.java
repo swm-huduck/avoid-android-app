@@ -167,10 +167,11 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         LatLng lastLocation = LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation());
         LatLng lastLastLocation = null;
 
-        int lastLocSize = LocationProvider.getLastRowLocationSize();
+        // 너무 극단적인 경로가 나오는 경우가 있어서 주석 처리함
+        /*int lastLocSize = LocationProvider.getLastRowLocationSize();
         if(lastLocSize > 2) {
             lastLastLocation = LatLngTool.locationToLatlng(LocationProvider.getLastRowLocation(lastLocSize - 2));
-        }
+        }*/
 
         NavigationRouter router = NavigationRouter.builder()
                 .currentLocation(lastLocation)
