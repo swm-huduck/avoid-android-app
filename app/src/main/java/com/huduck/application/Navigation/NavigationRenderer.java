@@ -131,6 +131,9 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         double lastPointTime;
 
         private void changeLineStringSegmentListIndex(int index) {
+            if(index == lineStringSegmentList.size())
+                ended = true;
+
             if(index < 0 || lineStringSegmentList.size()-1 < index) return;
             this.currentSegIdx = index;
             currentSeg = lineStringSegmentList.get(index);
@@ -202,6 +205,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         }
 
         private boolean started = false;
+        private boolean ended = false;
         private void start() {
             if(lineStringSegmentList == null) return;
             started = true;
@@ -214,6 +218,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 start();
                 if(!started) return;
             }
+
+            if(ended) return;
 
             try {
                 updateDeltaTime();
@@ -229,6 +235,12 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
 
                 calcMoveSpeed();
                 calcPuckPosition();
+
+                if(ended) {
+                    cancel();
+                    return;
+                }
+
                 calcBearing();
                 calcProgress();
                 render();
@@ -243,6 +255,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         private double betweenRealAndPuckGapM;
         @Override
         public void onEnhancedLocationChange(int currentLineStringSegIdx, double currentLineStringSegPassedDistance, LatLng currentPosition, double currentBearing) {
+            if(ended) return;
+
             realSegIdx = currentLineStringSegIdx;
             realPosition = currentPosition;
 
@@ -301,12 +315,13 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             }
 
             double addValue = betweenRealAndPuckGapM < 0 ? 1 : -1;
+            if(betweenRealAndPuckGapM > 20)
+                addValue = speedMs * -0.6;
             addValue = MathUtils.clamp(addValue, -speedMs, speedMs);
 
             calAddSpeed += addValue * deltaTime;
             calAddSpeed = MathUtils.clamp(calAddSpeed, -moveSpeed, Double.MAX_VALUE);
             calibratedMoveSpeed = moveSpeed + calAddSpeed;
-            Log.d("aasdfasdf", betweenRealAndPuckGapM + ", "+ calAddSpeed + ", " + calibratedMoveSpeed);
         }
 
         private void calcPuckPosition() {
