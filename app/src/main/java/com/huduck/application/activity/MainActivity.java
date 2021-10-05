@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -36,10 +38,10 @@ import com.huduck.application.fragment.setting.SettingFragment;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimerTask;
 
-import gun0912.tedkeyboardobserver.BaseKeyboardObserver;
-import gun0912.tedkeyboardobserver.TedKeyboardObserver;
-import gun0912.tedkeyboardobserver.TedRxKeyboardObserver;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -49,10 +51,14 @@ public class MainActivity extends AppCompatActivity {
     Integer currentBottomNaviItemId = 0;
     Class currentFragmentClass = null;
 
+    Handler handler;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        handler = new Handler(Looper.getMainLooper());
 
         // 바인딩
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -98,16 +104,24 @@ public class MainActivity extends AppCompatActivity {
         binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
 
         // 키보드 활성화에 따른 내비바 표시/숨
-        new TedKeyboardObserver(this).listen(new BaseKeyboardObserver.OnKeyboardListener() {
-            @Override
-            public void onKeyboardChange(boolean b) {
-                if(b)
-                    binding.bottomNaviBar.setVisibility(View.GONE);
-                else
-                    binding.bottomNaviBar.setVisibility(View.VISIBLE);
-            }
-        });
-
+        KeyboardVisibilityEvent.setEventListener(
+                this,
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen)
+                            binding.bottomNaviBar.setVisibility(View.GONE);
+                        else {
+                            handler.postDelayed(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    binding.bottomNaviBar.setVisibility(View.VISIBLE);
+                                }
+                            }, 30);
+                        }
+                    }
+                }
+        );
 
         // 디바이스 서비스
         Intent intent = new Intent(
