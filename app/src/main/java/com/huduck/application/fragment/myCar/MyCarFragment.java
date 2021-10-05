@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.huduck.application.R;
+import com.huduck.application.activity.MainActivity;
 import com.huduck.application.fragment.PageFragment;
 
 public class MyCarFragment extends PageFragment {
@@ -51,6 +52,9 @@ public class MyCarFragment extends PageFragment {
             @Override
             public void onClick(View v) {
                 saveMyCarInformation();
+                changeSaveButtonState(false);
+                MainActivity activity = (MainActivity) getActivity();
+                activity.hideKeyboard();
             }
         });
 
@@ -99,7 +103,6 @@ public class MyCarFragment extends PageFragment {
 
         sharedPreferences = getActivity().getSharedPreferences("my_car", Context.MODE_PRIVATE);
         boolean saved = sharedPreferences.contains("saved");
-        changeSaveButtonState(saved);
 
         if(saved) {
             float width = sharedPreferences.getFloat("width", 0);
@@ -116,6 +119,8 @@ public class MyCarFragment extends PageFragment {
             loadWeightFragment.setValue(load_weight);
             totalWeightFragment.setValue(total_weight);
         }
+
+        changeSaveButtonState(false);
 
         return view;
     }
