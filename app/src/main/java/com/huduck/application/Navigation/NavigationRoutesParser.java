@@ -56,8 +56,11 @@ public class NavigationRoutesParser {
                         .build();
 
                 // Properties
-                if(propertiesJson.getString("pointType").equals("S"))
-                    routes.setTotalTime(propertiesJson.getInt("totalTime"));
+                int totalTime = 0;
+                if(propertiesJson.getString("pointType").equals("S")) {
+                    totalTime = propertiesJson.getInt("totalTime");
+                    routes.setTotalTime(totalTime);
+                }
                 int pointIndex = propertiesJson.getInt("pointIndex");
                 String nextRoadName = propertiesJson.getString("nextRoadName");
                 int turnType = propertiesJson.getInt("turnType");
@@ -67,6 +70,7 @@ public class NavigationRoutesParser {
                         .index(index).pointIndex(pointIndex)
                         .name(name).description(description)
                         .nextRoadName(nextRoadName).turnType(turnType).pointType(pointType)
+                        .totalTime(totalTime)
                         .build();
 
                 NavigationPoint point = new NavigationPoint(geo, prop);

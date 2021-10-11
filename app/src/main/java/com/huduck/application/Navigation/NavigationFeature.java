@@ -1,15 +1,12 @@
 package com.huduck.application.Navigation;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-public class NavigationFeature {
-
-    public NavigationFeature() {
-
-    }
-
+public interface NavigationFeature {
     @Getter
     @SuperBuilder
     public static class Geometry {
@@ -23,4 +20,6 @@ public class NavigationFeature {
         protected String name;
         protected String description;
     }
+
+    public JSONObject toJson() throws JSONException;
 }

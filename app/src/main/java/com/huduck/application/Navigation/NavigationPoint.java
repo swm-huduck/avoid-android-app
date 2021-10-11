@@ -1,5 +1,9 @@
 package com.huduck.application.Navigation;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,7 +11,7 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-public class NavigationPoint extends NavigationFeature {
+public class NavigationPoint implements NavigationFeature {
     private Geometry geometry;
     private Properties properties;
 
@@ -22,14 +26,49 @@ public class NavigationPoint extends NavigationFeature {
         private final String type = "Point";
         private ArrayList<Double> coordinates; // Lat, Lng
     }
-
     @Getter
     @SuperBuilder
     public static class Properties extends NavigationFeature.Properties {
+
         private int pointIndex;
         private String nextRoadName;
         private int turnType;
         private String pointType;
+        private int totalTime;
+    }
+
+    @Override
+    public JSONObject toJson() throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("type", "Feature");
+
+        // Geometry
+        JSONObject geometryJson = new JSONObject();
+
+        geometryJson.put("type", "Point");
+
+        JSONArray coordinatesJson = new JSONArray();
+        coordinatesJson.put(geometry.getCoordinates().get(1));
+        coordinatesJson.put(geometry.getCoordinates().get(0));
+        geometryJson.put("coordinates", coordinatesJson);
+
+        result.put("geometry", geometryJson);
+
+        // Properties
+        JSONObject propertiesJson = new JSONObject();
+
+        propertiesJson.put("index",         properties.index);
+        propertiesJson.put("pointIndex",    properties.pointIndex);
+        propertiesJson.put("name",          properties.name);
+        propertiesJson.put("description",   properties.description);
+        propertiesJson.put("nextRoadName",  properties.nextRoadName);
+        propertiesJson.put("turnType",      properties.turnType);
+        propertiesJson.put("pointType",     properties.pointType);
+        propertiesJson.put("totalTime",     properties.totalTime);
+
+        result.put("properties", propertiesJson);
+
+        return result;
     }
 
     public static HashMap<Integer, String> TurnType = new HashMap<Integer, String>() {{
