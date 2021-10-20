@@ -92,10 +92,18 @@
             android:name=".activity.NavigationGuideActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" />
+        <activity
+            android:name=".activity.NavigationGuideDebugActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true" />
+
+        <activity
+            android:name=".activity.DeviceDebugActivity"
+            android:exported="true" />
 
         <service
             android:name=".device.DeviceService"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

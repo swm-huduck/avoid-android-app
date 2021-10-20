@@ -19,8 +19,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huduck.application.R;
+import com.huduck.application.activity.DeviceDebugActivity;
 import com.huduck.application.bleCentral.CentralCallback;
 import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
@@ -106,6 +108,15 @@ public class DeviceFragment extends PageFragment {
                 deviceService.updateSms("박유천입니다.", "문자입니다.이것은 문자입니다. 문자입니다. 문자야.문자문자문자문자문자");
                 deviceService.updateKakaoTalk("박유천입니다.", "카카오톡입니다.이것은 카카오톡입니다. 카카오톡입니다. 카카오톡야.카카오톡카카오톡카카오톡카카오톡카카오톡");
             }
+        });
+
+        view.findViewWithTag("debug").setOnLongClickListener(v -> {
+            if(!deviceService.isConnected()) {
+                Toast.makeText(getContext(), "블루투스 연결 후 진입 바랍니다.", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            startActivity(new Intent(getActivity(), DeviceDebugActivity.class));
+            return true;
         });
 
         view.findViewWithTag("update").setOnClickListener(new View.OnClickListener() {

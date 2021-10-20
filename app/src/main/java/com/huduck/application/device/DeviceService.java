@@ -158,12 +158,9 @@ public class DeviceService extends Service {
 
     public void updateSpeed(int speed) {
         if(!centralManager.isConnected()) return;
-        // 속도 필터 (0~255)
-        speed = Math.min(speed, 255);
-        speed = Math.max(0, speed);
-
         // 전송 데이터
-        updateQueue(new StringBuilder("s").append(speed).toString());
+        String data = new StringBuilder("s").append(speed).toString();
+        updateQueue(data);
     }
 
     public void updateCall(String name, int callState) {
