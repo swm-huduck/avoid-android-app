@@ -1,5 +1,6 @@
 package com.huduck.application.fragment.navigation;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.huduck.application.Navigation.LocationProvider;
+import com.huduck.application.activity.NavigationGuideDebugActivity;
 import com.huduck.application.common.CommonMethod;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
@@ -69,6 +71,14 @@ public class NavigationMainFragment extends PageFragment {
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity)getActivity();
                 mainActivity.changeFragment(NavigationSearchFragment.class, true);
+            }
+        });
+
+        searchInput.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                startActivity(new Intent(getActivity(), NavigationGuideDebugActivity.class));
+                return true;
             }
         });
 

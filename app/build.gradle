@@ -60,6 +60,9 @@ dependencies {
 
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // 파일 선택
+    implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
 }
 repositories {
     mavenCentral()

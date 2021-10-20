@@ -1,9 +1,6 @@
 package com.huduck.application.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +9,14 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.huduck.application.Navigation.LatLngTool;
 import com.huduck.application.Navigation.LocationProvider;
+import com.huduck.application.Navigation.NavigationLoggerManager;
 import com.huduck.application.Navigation.NavigationLogger;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationProvider;
@@ -21,10 +24,10 @@ import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.Navigation.NavigationSpeaker;
+import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
 import com.huduck.application.fragment.LoadingFragment;
-import com.huduck.application.Navigation.Navigator;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationSource;
@@ -32,20 +35,28 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.UiSettings;
-import com.naver.maps.map.util.FusedLocationSource;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapView;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NavigationGuideActivity extends AppCompatActivity implements NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback, Navigator.OnOffRouteCallback {
-    private NavigationGuideActivity it = this;
+public class NavigationGuideDebugActivity
+        extends AppCompatActivity
+        implements  NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback,
+                    Navigator.OnOffRouteCallback, NavigationLoggerManager.OnRouteChangedCallback {
+
+    private NavigationGuideDebugActivity it = this;
     private ActivityNavigationTestBinding binding;
+    private static final String TAG = "NavigationGuideDebugActivity";
+
+    private static final int EX_FILE_PICKER_RESULT = 0;
 
     private MapFragment naverMapFragment;
     private NaverMap naverMap;
@@ -63,6 +74,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     private LoadingFragment loadingFragment = null;
 
     private NavigationLogger logger = new NavigationLogger();
+    private NavigationLoggerManager loggerManager;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -72,15 +84,50 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         setContentView(binding.getRoot());
 
         new TMapView(this).setSKTMapApiKey(getString(R.string.skt_map_api_key));
+        loggerManager = new NavigationLoggerManager(this, logger, this);
 
         naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
         naverMapFragment.getMapAsync(naverMap_ -> {
             naverMap = naverMap_;
             initActivity();
             initNaverMap();
-            startNavigation(NavigationProvider.getNavigationRoute());
+            // startNavigation(NavigationProvider.getNavigationRoute());
             navigator.onLocationChanged(LocationProvider.getLastRowLocation());
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+/*
+        if (requestCode == EX_FILE_PICKER_RESULT) {
+            ExFilePickerResult result = ExFilePickerResult.getFromIntent(data);
+            if (result != null && result.getCount() > 0) {
+                Log.d(TAG, result.getPath());
+                try {
+                    logger = NavigationLogger.readFile(result.getPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
+
+        /*if(requestCode == FilePickerConst.REQUEST_CODE_DOC) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                List<Uri> docPaths = new ArrayList<>();
+                docPaths.addAll(data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+                try {
+                    logger = NavigationLogger.readFile(docPaths.get(0).getPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -99,11 +146,36 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         navigator.addOnProgressChangedCallback(this);
         navigator.addOnOffRouteCallback(this);
 
-        navigator.addOnRouteChangedCallback(logger);
-
         // 상단 목적지 출력
-        this.destination = LatLngTool.tMapPointToLatlng(NavigationProvider.getDestination().getPOIPoint());
-        binding.targetAddress.setText(NavigationProvider.getDestination().name);
+        NavigationGuideDebugActivity it = this;
+        ChooserDialog chooserDialog = new ChooserDialog(it)
+                .withFilter(false, false, "dat", "txt")
+                .withChosenListener(new ChooserDialog.Result() {
+                    @Override
+                    public void onChoosePath(String dir, File dirFile) {
+                        try {
+                            Toast.makeText(it, "정상적으로 불러왔습니다.", Toast.LENGTH_SHORT).show();
+                            logger = NavigationLogger.readFile(dirFile);
+                            loggerManager.setLogger(logger);
+                            loggerManager.start();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(it, "불러오기 실패", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(it, "불러오기 실패", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .build();
+
+        binding.targetAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loggerManager.stop();
+                chooserDialog.show();
+            }
+        });
 
         // 로딩 프레그먼트 가져오기
         loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
@@ -112,33 +184,12 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         binding.refreshButton.setOnClickListener(v -> {
             this.refreshRoute();
         });
-
-        // 로거 연결
-        binding.targetAddress.setOnClickListener(view -> {
-            try {
-                logger.writeFile(this);
-                Toast.makeText(this, "저장 성공", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "저장 실패", Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "저장 실패", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // KalmanLocationManager 등록
-        /*new KalmanLocationManager(this).requestLocationUpdates(
-                KalmanLocationManager.UseProvider.GPS_AND_NET,
-                30, 1000, 1000, navigator, true
-        );*/
     }
 
     private void initNaverMap() {
         // Set event
         naverMap.setMapType(NaverMap.MapType.Navi);
-        locationSource = new FusedLocationSource(this, 1000);
-        naverMap.setLocationSource(locationSource);
+        naverMap.setLocationSource(loggerManager);
         naverMap.setLocationTrackingMode(LocationTrackingMode.NoFollow);
         naverMap.setBuildingHeight(0.5f);
         naverMap.setSymbolScale(0);
@@ -260,13 +311,13 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onOffRoute() {
-        double currentTime = System.currentTimeMillis();
+       /* double currentTime = System.currentTimeMillis();
         double deltaTime = (currentTime - lastOffRouteTime) * 0.001;
         if(deltaTime < 10) return;
         if(offRoute) return;
         offRoute = true;
         lastOffRouteTime = currentTime;
-        refreshRoute();
+        refreshRoute();*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -283,4 +334,11 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         super.onDestroy();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onRouteChanged(NavigationRoutes route) {
+        navigator.setRoute(route);
+        navigator.startNavigator();
+        afterStartNavigation();
+    }
 }

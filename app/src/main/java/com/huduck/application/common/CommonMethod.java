@@ -1,6 +1,11 @@
 package com.huduck.application.common;
 
 import android.content.res.Resources;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.time.LocalTime;
 
 public class CommonMethod {
     public static int dpToPx(Resources res, int dp) {
@@ -38,5 +43,10 @@ public class CommonMethod {
         }
 
         return str.substring(0, retLength);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static int LocalTimeToMiliSecond(LocalTime localTime) {
+        return (int) (localTime.toSecondOfDay() * 1e+3);
     }
 }
