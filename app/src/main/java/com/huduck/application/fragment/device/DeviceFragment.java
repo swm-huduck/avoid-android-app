@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.huduck.application.R;
 import com.huduck.application.activity.DeviceDebugActivity;
 import com.huduck.application.bleCentral.CentralCallback;
+import com.huduck.application.common.CommonMethod;
 import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
 
@@ -185,6 +187,8 @@ public class DeviceFragment extends PageFragment {
                 });
             }
 
+            LinearLayout layout = convertView.findViewWithTag("device_list_item");
+
             TextView nameTextView = convertView.findViewWithTag("device_name");
             nameTextView.setText(deviceList.get(position).getName());
 
@@ -193,12 +197,12 @@ public class DeviceFragment extends PageFragment {
 
             BluetoothDevice device = (BluetoothDevice) getItem(position);
             if(deviceService.isConnected() && device.getAddress().equals(deviceService.getRegisteredDeviceAddress())) {
-                convertView.setBackgroundResource(R.drawable.border_bottom_gray_1px);
+                layout.setBackgroundResource(R.drawable.bg_round_white_box_4dp);
                 nameTextView.setTextColor(getResources().getColor(R.color.indigo700, context.getTheme()));
                 nameTextView.setTypeface(null, Typeface.BOLD);
             }
             else {
-                convertView.setBackgroundResource(R.drawable.bg_navigation_search_result_item_layout_idle);
+                layout.setBackgroundResource(R.drawable.bg_round_gray_box_4dp);
                 nameTextView.setTextColor(getResources().getColor(R.color.default_text, context.getTheme()));
                 nameTextView.setTypeface(null, Typeface.NORMAL);
             }

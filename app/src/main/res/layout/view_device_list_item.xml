@@ -4,25 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="15dp"
-    android:tag="navigation_search_result_item">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:tag="device_list_item"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:tag="device_name"
-        android:text="디바이스 이름"
-        android:textSize="16sp" />
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_round_white_box_4dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:elevation="1dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tag="device_address"
-        android:textColor="@color/gray600"
-        android:text="디바이스 주소"
-        android:textSize="13sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:tag="device_name"
+            android:text="디바이스 이름"
+            android:textSize="16sp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="device_address"
+            android:text="디바이스 주소"
+            android:textColor="@color/gray600"
+            android:textSize="13sp" />
+
+    </LinearLayout>
 </LinearLayout>

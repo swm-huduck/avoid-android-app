@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray000"
     android:orientation="vertical">
 
     <RelativeLayout style="@style/TOPBAR_LAYOUT">
@@ -12,52 +13,76 @@
             android:text="HUD" />
 
         <ImageView
-            android:tag="update"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/icon_refresh" />
+            android:src="@drawable/icon_refresh"
+            android:tag="update" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:paddingVertical="30dp"
-        android:background="@drawable/border_bottom_gray_1px">
+        android:orientation="vertical">
+        <!--        android:background="@drawable/border_bottom_gray_1px">-->
 
-        <ImageView
-            android:tag="debug"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/icon_bluetooth"
-            android:layout_gravity="center"
-            app:tint="@color/gray500" />
-        <TextView
-            android:tag="device_state_textview"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:text="HUD 연결 필요"/>
-        <TextView
-            android:tag="device_state_description_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="디바이스와 연결이 필요합니다."/>
+            android:background="@drawable/bg_round_white_box_4dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            android:gravity="left"
+            android:elevation="1dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:src="@drawable/icon_bluetooth"
+                android:tag="debug"
+                app:tint="@color/gray500"
+                android:layout_marginRight="10dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="left">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tag="device_state_textview"
+                    android:text="HUD 연결 필요"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tag="device_state_description_textview"
+                    android:text="디바이스와 연결이 필요합니다." />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <ListView
+        android:clipToPadding="false"
         android:id="@+id/device_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8"
-        android:divider="#EFF0F1"
-        android:dividerHeight="1dp"
-        android:overScrollMode="never" />
+        android:divider="@color/gray000"
+        android:dividerHeight="0dp"
+        android:overScrollMode="never"
+        android:scrollbars="none"/>
 </LinearLayout>
