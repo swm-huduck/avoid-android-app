@@ -3,74 +3,83 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_navigation_search_result_item_layout_idle"
-    android:orientation="vertical"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="15dp"
-    android:tag="navigation_search_result_item">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:tag="poi_name"
-        android:text="장소"
-        android:textSize="16sp" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:tag="poi_business"
-        android:textColor="@color/gray600"
-        android:text="업종"
-        android:textSize="13sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tag="poi_address"
-        android:textColor="@color/gray600"
-        android:text="주소"
-        android:textSize="13sp" />
-
-    <Button
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        style="@style/DECIDE_DESTINATION_BTN"
-        android:text="목적지로"/>
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:tag="decide_destination_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:clickable="true"
-        style="@style/DECIDE_DESTINATION_BTN">
+        android:background="@drawable/bg_round_gray_box_4dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="15dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="1dp"
+        android:tag="navigation_search_result_item">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:layout_marginRight="10dp"
-            android:text="길 안내"/>
+            android:layout_marginBottom="1dp"
+            android:tag="poi_name"
+            android:text="장소"
+            android:textSize="16sp" />
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:tint="@color/white"
-            android:tintMode="src_in"
-            android:src="@drawable/ic_direction"
-            tools:ignore="UseAppTint" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:tag="poi_business"
+            android:text="업종"
+            android:textColor="@color/gray600"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="poi_address"
+            android:text="주소"
+            android:textColor="@color/gray600"
+            android:textSize="13sp" />
+
+        <Button
+            style="@style/DECIDE_DESTINATION_BTN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="end"
+            android:text="목적지로"
+            android:visibility="gone" />
+
+        <LinearLayout
+            style="@style/DECIDE_DESTINATION_BTN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:clickable="true"
+            android:tag="decide_destination_btn">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="길 안내"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_direction"
+                android:tint="@color/white"
+                android:tintMode="src_in"
+                tools:ignore="UseAppTint" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
