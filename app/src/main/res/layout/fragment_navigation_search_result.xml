@@ -45,7 +45,8 @@
         android:paddingHorizontal="10dp"
         android:clickable="true"
         android:tag="@+tag/search_input"
-        android:elevation="1dp">
+        android:elevation="3dp"
+        android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -122,7 +123,7 @@
 
     <ListView
         android:clipToPadding="false"
-        android:paddingTop="10dp"
+        android:paddingVertical="5dp"
         android:tag="result_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

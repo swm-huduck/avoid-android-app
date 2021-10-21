@@ -187,8 +187,6 @@ public class DeviceFragment extends PageFragment {
                 });
             }
 
-            LinearLayout layout = convertView.findViewWithTag("device_list_item");
-
             TextView nameTextView = convertView.findViewWithTag("device_name");
             nameTextView.setText(deviceList.get(position).getName());
 
@@ -197,12 +195,10 @@ public class DeviceFragment extends PageFragment {
 
             BluetoothDevice device = (BluetoothDevice) getItem(position);
             if(deviceService.isConnected() && device.getAddress().equals(deviceService.getRegisteredDeviceAddress())) {
-                layout.setBackgroundResource(R.drawable.bg_round_white_box_4dp);
                 nameTextView.setTextColor(getResources().getColor(R.color.indigo700, context.getTheme()));
                 nameTextView.setTypeface(null, Typeface.BOLD);
             }
             else {
-                layout.setBackgroundResource(R.drawable.bg_round_gray_box_4dp);
                 nameTextView.setTextColor(getResources().getColor(R.color.default_text, context.getTheme()));
                 nameTextView.setTypeface(null, Typeface.NORMAL);
             }

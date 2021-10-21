@@ -174,7 +174,7 @@ public class MyCarFragment extends PageFragment {
             saveButton.setBackgroundColor(getResources().getColor(R.color.indigo700, getActivity().getTheme()));
         }
         else {
-            saveButton.setBackgroundColor(getResources().getColor(R.color.gray700, getActivity().getTheme()));
+            saveButton.setBackgroundColor(getResources().getColor(R.color.gray500, getActivity().getTheme()));
         }
     }
 }

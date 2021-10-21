@@ -338,12 +338,10 @@ public class NavigationSearchResultFragment extends PageFragment {
 
 
             if (selectedItemPosition == position) {
-                item.setBackgroundResource(R.drawable.border_bottom_gray_1px);
                 name.setTypeface(null, Typeface.BOLD);
                 name.setTextColor(getResources().getColor(R.color.indigo700));
                 decideDestinationBtn.setVisibility(View.VISIBLE);
             } else {
-                item.setBackgroundResource(R.drawable.bg_navigation_search_result_item_layout_idle);
                 name.setTypeface(null, Typeface.NORMAL);
                 name.setTextColor(getResources().getColor(R.color.default_text));
                 decideDestinationBtn.setVisibility(View.GONE);
