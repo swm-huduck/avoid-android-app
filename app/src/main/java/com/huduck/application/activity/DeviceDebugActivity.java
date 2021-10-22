@@ -75,7 +75,7 @@ public class DeviceDebugActivity extends AppCompatActivity {
         binding.addSms.setOnClickListener(v -> {
             Test test;
 
-            if (binding.radioSms.isSelected()) {
+            if (binding.radioSms.isChecked()) {
                 test = SmsTest.builder()
                         .deviceService(deviceService)
                         .nextDelay(!binding.delaySms.getText().toString().isEmpty() ? Integer.parseInt(binding.delaySms.getText().toString()) : 0)
