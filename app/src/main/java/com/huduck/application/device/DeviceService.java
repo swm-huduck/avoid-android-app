@@ -40,6 +40,11 @@ public class DeviceService extends Service {
         return isConnected;
     }
 
+    private boolean isScanning = false;
+    public boolean isScanning() {
+        return isScanning;
+    }
+
     TelephonyManager telephony;
     CallListener callListener;
     SMSReceiver smsReceiver;
@@ -282,12 +287,16 @@ public class DeviceService extends Service {
 
         @Override
         public void onStartScan() {
+            isScanning = true;
+
             for (CentralCallback centralCallback : centralCallbackList)
                 centralCallback.onStartScan();
         }
 
         @Override
         public void onFinishScan(Map<String, BluetoothDevice> scanResult) {
+            isScanning = false;
+
             for (CentralCallback centralCallback : centralCallbackList)
                 centralCallback.onFinishScan(scanResult);
         }
@@ -296,6 +305,7 @@ public class DeviceService extends Service {
         @Override
         public void connectedGattServer() {
             isConnected = true;
+            isScanning = false;
 
             // send MTU
             updateSetting("mtu", Integer.valueOf(centralManager.getMtu()).toString());
