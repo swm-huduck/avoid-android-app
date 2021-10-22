@@ -207,6 +207,10 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         routeTotalLeftDistance = leftDistance;
     }
 
+    public double getRouteTotalLeftDistance() {
+        return routeTotalLeftDistance;
+    }
+
     private double maxMovableM = 0;
     @Override
     public void onLocationChanged(@NonNull Location location) {
