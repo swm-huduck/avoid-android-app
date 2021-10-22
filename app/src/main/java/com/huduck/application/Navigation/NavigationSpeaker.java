@@ -32,7 +32,10 @@ public class NavigationSpeaker implements Navigator.OnProgressChangedCallback, N
     private List<NavigationPoint> evnets = new ArrayList<>();
     private boolean spookGoStraight = false;
     @Override
-    public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
+    public void onProgressChanged(double totalProgress,
+                                  NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                                  NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                                  NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
         if(!ttsIsInitialized) return;
 
         int speechType = TextToSpeech.QUEUE_FLUSH;

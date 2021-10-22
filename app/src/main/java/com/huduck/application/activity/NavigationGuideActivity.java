@@ -4,10 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
@@ -21,8 +26,10 @@ import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.Navigation.NavigationSpeaker;
+import com.huduck.application.Navigation.NavigationTurnEventCalc;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
+import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.LoadingFragment;
 import com.huduck.application.Navigation.Navigator;
 import com.naver.maps.geometry.LatLng;
@@ -46,6 +53,8 @@ import java.util.Date;
 public class NavigationGuideActivity extends AppCompatActivity implements NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback, Navigator.OnOffRouteCallback {
     private NavigationGuideActivity it = this;
     private ActivityNavigationTestBinding binding;
+
+    private DeviceService deviceService;
 
     private MapFragment naverMapFragment;
     private NaverMap naverMap;
@@ -72,6 +81,20 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         setContentView(binding.getRoot());
 
         new TMapView(this).setSKTMapApiKey(getString(R.string.skt_map_api_key));
+
+        bindService(new Intent(this, DeviceService.class),
+                new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName componentName, IBinder service) {
+                        DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+                        deviceService = binder.getService();
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName componentName) {}
+                }, Context.BIND_AUTO_CREATE
+        );
+
 
         naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
         naverMapFragment.getMapAsync(naverMap_ -> {
@@ -227,13 +250,26 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     }
 
     @Override
-    public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
+    public void onProgressChanged(double totalProgress,
+                                  NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                                  NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                                  NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
+
         String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
         binding.nextTurnEvent.setText(turnEvent);
         binding.nextTurnEventLeftDistance.setText((int) (Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10) + "m");
 
         int leftDistanceKm = (int) (navigator.getRouteTotalLeftDistance() / 1000);
         binding.leftDistance.setText(leftDistanceKm + "");
+
+        deviceService.updateNavigationTurnEvent(
+                nextTurnEvent.getProperties().getTurnType(),
+                nextTurnEventLeftDistanceMeter,
+                nextTurnEventData.getDistanceFromEventToFootOfPerpendicular(),
+                nextTurnEventData.getDistanceFromCurrentPositionToFootOfPerpendicular(),
+                nextNextTurnEvent == null ? -1 : nextNextTurnEvent.getProperties().getTurnType(),
+                nextNextTurnEventLeftDistanceMeter
+        );
     }
 
     private int updateAddressOrigin = 30;
@@ -244,8 +280,10 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     @Override
     public void onLocationChange(@NonNull Location location) {
         // 속도 업데이트
-        double speedKh = location.getSpeed() * 3.6;
-        handler.post(() -> binding.currentSpeed.setText((int) speedKh + ""));
+        int speedKh = (int) (location.getSpeed() * 3.6);
+        handler.post(() -> binding.currentSpeed.setText(speedKh + ""));
+
+        deviceService.updateSpeed(speedKh);
 
 //        renderer.setSpeed(location.getSpeed());
 
