@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="SEARCHBOX_TEXT">
         <item name="android:textSize">16sp</item>
     </style>
@@ -8,8 +8,8 @@
         <item name="android:layout_margin">10dp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
-        <item name="android:paddingRight">10dp</item>
-        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">15dp</item>
+        <item name="android:paddingLeft">15dp</item>
     </style>
 
     <style name="DECIDE_DESTINATION_BTN">
@@ -34,14 +34,15 @@
         <item name="android:paddingLeft">20dp</item>
         <item name="android:paddingRight">20dp</item>
         <item name="android:background">@color/white</item>
-        <item name="android:elevation">5dp</item>
+        <item name="android:elevation">3dp</item>
+        <item name="android:outlineSpotShadowColor" tools:targetApi="p">@color/gray_outline_spot_shadow_color</item>
     </style>
 
     <style name="TOPBAR_TITLE">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">20dp</item>
-        <item name="android:textStyle">bold</item>
+<!--        <item name="android:textStyle">bold</item>-->
         <item name="android:layout_centerVertical">true</item>
     </style>
 </resources>

@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean initBadge = false;
     private TextView badge;
     private void changeNavigationBarDeviceBadgeState(boolean success) {
-        if(!initBadge) {
+        if(!initBadge && false) {
             BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) binding.bottomNaviBar.getChildAt(0);
             View v = bottomNavigationMenuView.getChildAt(2);
             BottomNavigationItemView itemView = (BottomNavigationItemView) v;
@@ -315,6 +315,6 @@ public class MainActivity extends AppCompatActivity {
         int id = R.drawable.circle_gray;
         if(success) id = R.drawable.circle_indigo;
 
-        badge.setBackground(getResources().getDrawable(id, getTheme()));
+//        badge.setBackground(getResources().getDrawable(id, getTheme()));
     }
 }

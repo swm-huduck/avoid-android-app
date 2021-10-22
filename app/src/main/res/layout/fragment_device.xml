@@ -17,7 +17,7 @@
             android:layout_height="25dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/icon_refresh"
+            android:src="@drawable/ic_refresh"
             android:tag="update" />
     </RelativeLayout>
 
@@ -44,10 +44,10 @@
             android:layout_marginBottom="5dp">
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:src="@drawable/icon_bluetooth"
+                android:src="@drawable/ic_bluetooth"
                 android:tag="debug"
                 app:tint="@color/gray500"
                 android:layout_marginRight="10dp"/>

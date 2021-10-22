@@ -32,7 +32,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_round_indigo_box"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
                     android:paddingHorizontal="5dp"
                     android:text="문자, 카카오톡"
                     android:textColor="@color/white" />
@@ -102,7 +102,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_round_indigo_box"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
                     android:paddingHorizontal="5dp"
                     android:text="속도"
                     android:textColor="@color/white" />
@@ -160,7 +160,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_round_indigo_box"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
                     android:paddingHorizontal="5dp"
                     android:text="전화"
                     android:textColor="@color/white" />
@@ -212,7 +212,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_round_indigo_box"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
                     android:paddingHorizontal="5dp"
                     android:text="테스트 목록"
                     android:textColor="@color/white" />

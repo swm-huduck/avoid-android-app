@@ -58,7 +58,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/bg_round_indigo_box"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
                     android:gravity="right"
                     android:minWidth="150dp"
                     android:orientation="vertical"
@@ -78,22 +78,42 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_round_white_box_100dp"
+                    android:elevation="3dp"
+                    android:gravity="center"
+                    android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/ic_current_location" />
+
+                    <TextView
+                        android:id="@+id/current_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="현재 위치 검색 중.."
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/border_top_gray_1px"
                 android:orientation="vertical">
-
-                 <TextView
-                     android:id="@+id/current_address"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:background="@drawable/border_bottom_gray_1px"
-                     android:paddingVertical="5dp"
-                     android:text="현재 위치 검색 중.."
-                     android:textAlignment="center" />
-
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -104,24 +124,87 @@
                         android:id="@+id/refresh_button"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/border_right_gray_1px"
-                        android:src="@drawable/icon_refresh"
+                        android:background="@drawable/btn_navigation_refresh"
+                        android:src="@drawable/ic_refresh"
                         app:tint="@color/indigo500" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:weightSum="10">
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
 
                         <TextView
                             android:id="@+id/arrived_time"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:gravity="right|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:paddingRight="5dp"
+                            android:text="00:00"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/am_or_pm"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textSize="20sp"
-                            android:text="도착 시간 계산 중.."
-                            android:textAlignment="center" />
+                            android:layout_gravity="bottom"
+                            android:gravity="left|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:text="오전"
+                            android:textSize="18dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/left_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:gravity="right|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:paddingRight="5dp"
+                            android:text="0"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="left|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:text="km"
+                            android:textSize="18dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
                     </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/exit_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/btn_navigation_exit"
+                        android:src="@drawable/ic_exit" />
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

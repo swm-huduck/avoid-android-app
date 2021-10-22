@@ -338,11 +338,11 @@ public class NavigationSearchResultFragment extends PageFragment {
 
 
             if (selectedItemPosition == position) {
-                name.setTypeface(null, Typeface.BOLD);
+                item.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_4dp, getContext().getTheme()));
                 name.setTextColor(getResources().getColor(R.color.indigo700));
                 decideDestinationBtn.setVisibility(View.VISIBLE);
             } else {
-                name.setTypeface(null, Typeface.NORMAL);
+                item.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_4dp, getContext().getTheme()));
                 name.setTextColor(getResources().getColor(R.color.default_text));
                 decideDestinationBtn.setVisibility(View.GONE);
             }

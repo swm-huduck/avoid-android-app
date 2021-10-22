@@ -3,24 +3,24 @@
     <item
         android:id="@+id/page_navigation"
         android:enabled="true"
-        android:icon="@drawable/icon_location"
+        android:icon="@drawable/ic_navigation_mark"
         android:title="내비게이션"/>
 
     <item
         android:id="@+id/page_my_car"
         android:enabled="true"
-        android:icon="@drawable/icon_car"
+        android:icon="@drawable/ic_truck"
         android:title="내 차"/>
 
     <item
         android:id="@+id/page_device"
         android:enabled="true"
-        android:icon="@drawable/icon_bluetooth"
+        android:icon="@drawable/ic_bluetooth"
         android:title="HUD"/>
 
     <item
         android:id="@+id/page_setting"
         android:enabled="true"
-        android:icon="@drawable/icon_settings"
+        android:icon="@drawable/ic_setting"
         android:title="옵션 설정"/>
 </menu>

@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:tag="device_address"
             android:text="디바이스 주소"
-            android:textColor="@color/gray600"
+            android:textColor="@color/gray500"
             android:textSize="13sp" />
 
     </LinearLayout>

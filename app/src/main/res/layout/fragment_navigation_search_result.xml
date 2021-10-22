@@ -1,138 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/gray000"
-    >
+    android:orientation="vertical">
 
-    <!--<LinearLayout
+    <RelativeLayout
+        android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/SEARCHBOX_LAYOUT"
-        android:background="@drawable/bg_search_box_selected"
+        android:background="@color/white"
+        android:elevation="3dp"
+        android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color"
         android:padding="10dp">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:src="@drawable/icon_back_arrow"
-            android:tag="back_button" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@null"
-            android:tag="search_input"
-            style="@style/SEARCHBOX_TEXT"
-            android:text="장소 검색"/>
-    </LinearLayout>-->
-
-    <LinearLayout
-        android:id="@+id/search_input"
-        style="@style/SEARCHBOX_LAYOUT"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_round_white_box_10dp"
-        android:layout_margin="10dp"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="10dp"
-        android:clickable="true"
-        android:tag="@+tag/search_input"
-        android:elevation="3dp"
-        android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color">
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginRight="10dp"
-            android:background="@null"
-            android:src="@drawable/icon_back_arrow"
-            android:tag="back_button" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@null"
-            android:tag="search_input"
-            style="@style/SEARCHBOX_TEXT"
-            android:text="장소 검색"/>
-    </LinearLayout>
-
-
-    <RelativeLayout
-        android:tag="none_result_layout"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="200dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_centerInParent="true"
-            android:text="검색 결과가 없습니다" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:tag="destination_map_layout"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="200dp"
-        android:layout_marginTop="5dp">
-
-        <FrameLayout
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <LinearLayout
-            android:id="@+id/road_view_btn"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_width="wrap_content"
+            android:id="@+id/search_input"
+            style="@style/SEARCHBOX_LAYOUT"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:orientation="vertical"
-            android:background="@drawable/btn_road_view"
-            android:clickable="true">
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_streetview_24"
-                app:tint="@color/naver_green" />
-            <TextView
+            android:layout_margin="0dp"
+            android:background="@drawable/bg_search_box_selected"
+            android:clickable="true"
+            android:tag="@+tag/search_input">
+
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="@color/naver_green"
-                android:textSize="10dp"
-                android:textStyle="bold"
-                android:text="거리뷰"/>
+                android:layout_marginRight="10dp"
+                android:background="@null"
+                android:src="@drawable/ic_back_arrow"
+                android:tag="back_button" />
+
+            <TextView
+                style="@style/SEARCHBOX_TEXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:tag="search_input"
+                android:text="장소 검색" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_below="@+id/search_input"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:tag="none_result_layout"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="검색 결과가 없습니다"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_below="@+id/search_input"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/white"
+            android:tag="destination_map_layout"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:id="@+id/road_view_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_road_view"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:src="@drawable/ic_road_view"
+                    app:tint="@color/naver_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="거리뷰"
+                    android:textColor="@color/naver_green"
+                    android:textSize="10dp" />
+            </LinearLayout>
+        </RelativeLayout>
+
     </RelativeLayout>
 
+
+
     <ListView
-        android:clipToPadding="false"
-        android:paddingVertical="5dp"
-        android:tag="result_list_view"
+        android:layout_below="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="8"
+        android:cacheColorHint="@android:color/transparent"
+        android:clipToPadding="false"
         android:divider="#00FFFFFF"
         android:dividerHeight="0dp"
-        android:overScrollMode="never"
-        android:scrollbars="none"
         android:listSelector="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"
-    />
-</LinearLayout>
+        android:overScrollMode="never"
+        android:paddingVertical="5dp"
+        android:scrollbars="none"
+        android:tag="result_list_view" />
+</RelativeLayout>

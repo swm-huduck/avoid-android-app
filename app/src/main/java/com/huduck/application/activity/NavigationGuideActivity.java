@@ -113,6 +113,10 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
             this.refreshRoute();
         });
 
+        binding.exitButton.setOnClickListener(v -> {
+            finish();
+        });
+
         // 로거 연결
         binding.targetAddress.setOnClickListener(view -> {
             try {
@@ -216,8 +220,10 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
     private void afterStartNavigation() {
         loadingFragment.isVisible(false);
         Date arrivedDate = new Date(System.currentTimeMillis() + (navigator.getNavigationRoute().getTotalTime() * 1000));
-        SimpleDateFormat format = new SimpleDateFormat("a hh : mm");
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm");
         binding.arrivedTime.setText(format.format(arrivedDate));
+        format = new SimpleDateFormat("a");
+        binding.amOrPm.setText(format.format(arrivedDate));
     }
 
     @Override
@@ -225,6 +231,9 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
         binding.nextTurnEvent.setText(turnEvent);
         binding.nextTurnEventLeftDistance.setText((int) (Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10) + "m");
+
+        int leftDistanceKm = (int) (navigator.getRouteTotalLeftDistance() / 1000);
+        binding.leftDistance.setText(leftDistanceKm + "");
     }
 
     private int updateAddressOrigin = 30;

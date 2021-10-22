@@ -2,10 +2,8 @@ package com.huduck.application.fragment.myCar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import android.view.Gravity;
@@ -13,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.huduck.application.R;
@@ -171,10 +168,10 @@ public class MyCarFragment extends PageFragment {
     private void changeSaveButtonState(boolean success) {
         saveButton.setEnabled(success);
         if(success) {
-            saveButton.setBackgroundColor(getResources().getColor(R.color.indigo700, getActivity().getTheme()));
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_indigo700_box_4dp, getActivity().getTheme()));
         }
         else {
-            saveButton.setBackgroundColor(getResources().getColor(R.color.gray500, getActivity().getTheme()));
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_gray500_box_4dp, getActivity().getTheme()));
         }
     }
 }

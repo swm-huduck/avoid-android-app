@@ -84,7 +84,7 @@
                     <ImageButton
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/icon_refresh" />
+                        android:src="@drawable/ic_refresh" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
