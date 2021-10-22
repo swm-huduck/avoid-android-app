@@ -207,6 +207,22 @@ public class DeviceService extends Service {
         updateQueue(sb.toString());
     }
 
+    public void updateNavigationTurnEvent(int nextEventTurnType, double nextEventLeftDistanceM,
+                                          double nextEventRelationalPositionX, double nextEventRelationalPositionY,
+                                          int nextNextEventTurnType, double nextNextEventLeftDistanceM) {
+
+        if(!centralManager.isConnected()) return;
+        String data = new StringBuilder("n")
+                .append(nextEventTurnType).append("{]")
+                .append(nextEventLeftDistanceM).append("{]")
+                .append(nextEventRelationalPositionX).append("{]")
+                .append(nextEventRelationalPositionY).append("{]")
+                .append(nextNextEventTurnType).append("{]")
+                .append(nextNextEventLeftDistanceM).append("{]").toString();
+
+        updateQueue(data);
+    }
+
     public void updateSetting(String settingItem, String settingValue) {
         if(!centralManager.isConnected()) return;
         Log.d(TAG, "(Setting) item: " + settingItem + ", value: " + settingValue);
