@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context=".activity.NavigationRoutesActivity">
+
+    <RelativeLayout style="@style/TOPBAR_LAYOUT">
+
+        <TextView
+            style="@style/TOPBAR_TITLE"
+            android:layout_centerInParent="true"
+            android:text="경로 안내" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <fragment
+                    android:id="@+id/map_view"
+                    android:name="com.naver.maps.map.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:weightSum="1">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_white_box_10dp"
+                        android:translationZ="3dp">
+
+                        <Spinner
+                            android:id="@+id/search_option_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_round_white_box_10dp"
+                            android:padding="10dp"
+                            android:popupBackground="@drawable/bg_round_white_box_10dp" />
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_spinner_dropdown"
+                            app:tint="@color/gray200" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/start_guide_btn"
+                        style="@style/DECIDE_DESTINATION_BTN"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:clickable="true">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_destination"
+                            android:tint="@color/white"
+                            android:tintMode="src_in"
+                            tools:ignore="UseAppTint" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="길 안내"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+                    
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <fragment
+            android:name="com.huduck.application.fragment.LoadingFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="loading" />
+    </RelativeLayout>
+
+
+</LinearLayout>

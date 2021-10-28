@@ -21,8 +21,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/BOTTOM_NAVIGATION_VIEW"
         app:labelVisibilityMode="labeled"
         android:background="@color/white"
+        app:itemIconTint="@drawable/bottom_navigation_bar"
+        app:itemTextColor="@drawable/bottom_navigation_bar"
         app:menu="@menu/bottom_navigation_menu"
-        app:itemBackground="@android:color/white"/>
+        app:itemBackground="@android:color/white" />
 </LinearLayout>

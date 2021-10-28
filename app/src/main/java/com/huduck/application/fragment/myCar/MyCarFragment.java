@@ -1,77 +1,179 @@
 package com.huduck.application.fragment.myCar;
 
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
+import com.huduck.application.common.CommonMethod;
 import com.huduck.application.fragment.PageFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MyCarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MyCarFragment extends PageFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private MyCarItemFragment widthFragment;
+    private MyCarItemFragment heightFragment;
+    private MyCarItemFragment lengthFragment;
+    private MyCarItemFragment truckWeightFragment;
+    private MyCarItemFragment loadWeightFragment;
+    private MyCarItemFragment totalWeightFragment;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private SharedPreferences sharedPreferences;
 
-    public MyCarFragment() {
-        // Required empty public constructor
-    }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyCarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MyCarFragment newInstance(String param1, String param2) {
+    private Button saveButton;
+    
+    public MyCarFragment() { }
+
+    public static MyCarFragment newInstance() {
         MyCarFragment fragment = new MyCarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_car, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_car, container, false);
 
+        saveButton = view.findViewById(R.id.save_my_car);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveMyCarInformation();
+                changeSaveButtonState(false);
+                MainActivity activity = (MainActivity) getActivity();
+                activity.hideKeyboard();
+            }
+        });
+
+        FragmentManager fm = getChildFragmentManager();
+
+        widthFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_width);
+        widthFragment.init("차량 너비", "1~3m", "너비", "m", 1, 3)
+                .setMyCarItemChangedCallback((success, value) -> {
+                    changeSaveButtonState(checkSavable());
+                });
+
+        heightFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_height);
+        heightFragment.init("차량 높이", "1~6m", "높이", "m", 1, 6)
+                .setMyCarItemChangedCallback((success, value) -> {
+                    changeSaveButtonState(checkSavable());
+                });
+
+        lengthFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_length);
+        lengthFragment.init("차량 길이", "2~40m", "길이", "m", 2, 40)
+                .setMyCarItemChangedCallback((success, value) -> {
+                    changeSaveButtonState(checkSavable());
+                });
+
+        totalWeightFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_total_weight);
+        totalWeightFragment
+                .init("[자동 계산] 총 중량", "(차량 중량 + 화물 중량)이\n0.5~600t 사이여야 합니다.", "", "t", 0.5f, 600, 0.0f, 2)
+                .isEditable(false)
+                .setMyCarItemChangedCallback((success, value) -> {
+                });
+
+        truckWeightFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_truck_weight);
+        truckWeightFragment
+                .init("차량 중량", "0.5~600t", "중량", "t", 0.5f, 600, null, 2)
+                .setMyCarItemChangedCallback((success, value) -> {
+                    checkTotalWeight();
+                    changeSaveButtonState(checkSavable());
+                });
+
+        loadWeightFragment = (MyCarItemFragment) fm.findFragmentById(R.id.my_car_load_weight);
+        loadWeightFragment
+                .init("화물 중량", "0.5~600t", "중량", "t", 0.5f, 600, null, 2)
+                .setMyCarItemChangedCallback((success, value) -> {
+                    checkTotalWeight();
+                    changeSaveButtonState(checkSavable());
+                });
+
+        sharedPreferences = getActivity().getSharedPreferences("my_car", Context.MODE_PRIVATE);
+        boolean saved = sharedPreferences.contains("saved");
+
+        if(saved) {
+            float width = sharedPreferences.getFloat("width", 0);
+            float height = sharedPreferences.getFloat("height", 0);
+            float length = sharedPreferences.getFloat("length", 0);
+            float truck_weight = sharedPreferences.getFloat("truck_weight", 0);
+            float load_weight = sharedPreferences.getFloat("load_weight", 0);
+            float total_weight = sharedPreferences.getFloat("total_weight", 0);
+
+            widthFragment.setValue(width);
+            heightFragment.setValue(height);
+            lengthFragment.setValue(length);
+            truckWeightFragment.setValue(truck_weight);
+            loadWeightFragment.setValue(load_weight);
+            totalWeightFragment.setValue(total_weight);
+        }
+
+        changeSaveButtonState(false);
+
+        return view;
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        Log.d("aaaaa", hidden?"true":"false");
+    private boolean checkTotalWeight() {
+        float total = 0;
+        boolean success = truckWeightFragment.isSuccess() && loadWeightFragment.isSuccess();
+
+        if(success) {
+            total = truckWeightFragment.getValue() + loadWeightFragment.getValue();
+            if(0.5 <= total && total <= 600) {
+                totalWeightFragment.setValue(total);
+                totalWeightFragment.isSuccess(true);
+                return true;
+            }
+        }
+
+        totalWeightFragment.setValue(total);
+        totalWeightFragment.isSuccess(false);
+        return false;
+    }
+
+    private void saveMyCarInformation() {
+        if(checkSavable())
+        {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor
+                    .putBoolean("saved", true)
+                    .putFloat("width", widthFragment.getValue())
+                    .putFloat("height", heightFragment.getValue())
+                    .putFloat("length", lengthFragment.getValue())
+                    .putFloat("truck_weight", truckWeightFragment.getValue())
+                    .putFloat("load_weight", loadWeightFragment.getValue())
+                    .putFloat("total_weight", totalWeightFragment.getValue())
+                    .commit();
+
+            Toast toast = Toast.makeText(getActivity(), "저장되었습니다.", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+    }
+
+    private boolean checkSavable() {
+        return widthFragment.isSuccess() && heightFragment.isSuccess() && lengthFragment.isSuccess()
+                && totalWeightFragment.isSuccess();
+    }
+
+    private void changeSaveButtonState(boolean success) {
+        saveButton.setEnabled(success);
+        if(success) {
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_indigo700_box_100dp, getActivity().getTheme()));
+        }
+        else {
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_gray500_box_100dp, getActivity().getTheme()));
+        }
+        saveButton.setTranslationZ(CommonMethod.dpToPx(getResources(), 3));
     }
 }

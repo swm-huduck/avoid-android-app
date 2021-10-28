@@ -27,12 +27,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="네비게이션"
+        android:title="내비게이션"
         app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:key="speed"
             android:title="속도"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false"/>
+
+        <SwitchPreference
+            android:key="turn_event"
+            android:title="회전 정보"
             app:iconSpaceReserved="false"
             android:defaultValue="false"/>
 
@@ -56,7 +62,7 @@
 
         <SwitchPreference
             android:key="kakao"
-            android:title="카카오"
+            android:title="카카오톡"
             app:iconSpaceReserved="false"
             android:defaultValue="false"/>
 

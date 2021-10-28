@@ -1,27 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/LinearLayout_map"
+    <fragment
+        android:tag="map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"/>
+        android:name="com.naver.maps.map.MapFragment"/>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/search_input"
-        android:tag="@+tag/search_input"
+        style="@style/SEARCHBOX_LAYOUT"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="10dp"
-        android:padding="10dp"
-        android:textAlignment="center"
+        android:background="@drawable/bg_search_box"
         android:clickable="true"
-        android:text="장소 검색"
-        android:background="@color/white"
-        />
+        android:gravity="center"
+        android:translationZ="3dp"
+        android:tag="@+tag/search_input">
 
+        <!--<TextView
+            style="@style/SEARCHBOX_TEXT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:gravity="center"
+            android:tag="search_input"
+            android:text="목적지 검색"
+            android:textColor="@color/gray500" />-->
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp"
+            android:background="@null"
+            android:src="@drawable/ic_search"
+            android:tag="back_button"
+            app:tint="@color/gray500" />
+
+        <TextView
+            style="@style/SEARCHBOX_TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:tag="search_input"
+            android:text="목적지 검색"
+            android:textColor="@color/gray500" />
+    </LinearLayout>
 
 </RelativeLayout>

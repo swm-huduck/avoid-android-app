@@ -9,35 +9,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_bottom"
-        android:padding="20dp">
+    <RelativeLayout style="@style/TOPBAR_LAYOUT">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="설정"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-        <ImageView
-            android:id="@+id/Image_save_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/icon_check_circle"
-            app:tint="@android:color/holo_blue_dark"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/TextView_save_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:textColor="@android:color/holo_blue_dark"
-            android:text="동기화"/>
+            style="@style/TOPBAR_TITLE"
+            android:text="옵션 설정"/>
+
     </RelativeLayout>
 </LinearLayout>

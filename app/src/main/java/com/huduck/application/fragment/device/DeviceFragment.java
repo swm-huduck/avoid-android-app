@@ -1,67 +1,308 @@
 package com.huduck.application.fragment.device;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
-
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huduck.application.R;
+import com.huduck.application.activity.DeviceDebugActivity;
+import com.huduck.application.bleCentral.CentralCallback;
+import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DeviceFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class DeviceFragment extends PageFragment {
+    private ImageView deviceStateImageView;
+    private TextView deviceStateTextView;
+    private TextView deviceStateDescriptionTextView;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    ImageView updateBtn;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    ListView deviceListView;
 
-    public DeviceFragment() {
-        // Required empty public constructor
-    }
+    DeviceService deviceService;
+    boolean isService = false;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DeviceFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DeviceFragment newInstance(String param1, String param2) {
+    DeviceListAdapter deviceListAdapter;
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+            deviceService = binder.getService();
+
+            changeDeviceConnectionState(deviceService.isConnected());
+            deviceService.registerCentralCallback(centralCallback);
+            deviceListAdapter = new DeviceListAdapter(getActivity());
+            deviceListView.setAdapter(deviceListAdapter);
+
+            if(deviceService.isConnected()) {
+                moveConnectedDeviceToTop();
+            }
+            else {
+                if (deviceService.isScanning())
+                    setUpdateBtnAnimation(true);
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    deviceListAdapter.updateList(deviceService.getScanDeviceList());
+                    deviceListAdapter.notifyDataSetChanged();
+                });
+            }
+            isService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isService = false;
+        }
+    };
+
+    public DeviceFragment() { }
+
+    public static DeviceFragment newInstance() {
         DeviceFragment fragment = new DeviceFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_device, container, false);
+        View view = inflater.inflate(R.layout.fragment_device, container, false);
+
+        deviceStateImageView = view.findViewWithTag("debug");
+        deviceStateTextView = view.findViewWithTag("device_state_textview");
+        deviceStateDescriptionTextView = view.findViewWithTag("device_state_description_textview");
+
+        view.findViewWithTag("debug").setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(deviceService == null) return;
+                deviceService.updateCall("010-6294-5186", 1);
+                deviceService.updateCall("테스트", 2);
+                deviceService.updateSpeed(123);
+                deviceService.updateSms("박유천입니다.", "문자입니다.이것은 문자입니다. 문자입니다. 문자야.문자문자문자문자문자");
+                deviceService.updateKakaoTalk("박유천입니다.", "카카오톡입니다.이것은 카카오톡입니다. 카카오톡입니다. 카카오톡야.카카오톡카카오톡카카오톡카카오톡카카오톡");
+            }
+        });
+
+        view.findViewWithTag("debug").setOnLongClickListener(v -> {
+            if(!deviceService.isConnected()) {
+                Toast.makeText(getContext(), "블루투스 연결 후 진입 바랍니다.", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            startActivity(new Intent(getActivity(), DeviceDebugActivity.class));
+            return true;
+        });
+
+        updateBtn = view.findViewWithTag("update");
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deviceService.refreshDeviceList();
+            }
+        });
+
+        deviceListView = view.findViewById(R.id.device_list);
+
+        Intent intent = new Intent(
+                getActivity(),
+                DeviceService.class
+        );
+
+        getActivity().bindService(intent, conn, Context.BIND_AUTO_CREATE);
+
+        return view;
+    }
+
+    private void setUpdateBtnAnimation(boolean value) {
+        if(updateBtn == null) return;
+
+        if(value) {
+            Animation anim = AnimationUtils.loadAnimation(
+                    getActivity(), // 현재 화면의 제어권자
+                    R.anim.anim_rotate);    // 설정한 에니메이션 파일
+            updateBtn.startAnimation(anim);
+        }
+        else
+            updateBtn.clearAnimation();
+    }
+
+    private void moveConnectedDeviceToTop() {
+        List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
+
+        for (BluetoothDevice device : deviceService.getScanDeviceList())
+            if(device.getAddress().equals(deviceService.getRegisteredDeviceAddress()))
+                bluetoothDeviceList.add(device);
+
+        for (BluetoothDevice device : deviceService.getScanDeviceList())
+            if(!bluetoothDeviceList.contains(device))
+                bluetoothDeviceList.add(device);
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+            deviceListAdapter.updateList(bluetoothDeviceList);
+            deviceListAdapter.notifyDataSetChanged();
+            deviceListView.smoothScrollToPosition(0);
+        });
+    }
+
+    private class DeviceListAdapter extends BaseAdapter {
+        Context context;
+        List<BluetoothDevice> deviceList = new ArrayList<>();
+
+        public DeviceListAdapter(Context context) {
+            this.context = context;
+        }
+
+        public void clearDevice() {
+            deviceList.clear();
+            notifyDataSetChanged();
+        }
+
+        public void updateList(List<BluetoothDevice> bluetoothDeviceList) {
+            deviceList = bluetoothDeviceList;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return deviceList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return deviceList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.view_device_list_item, parent, false);
+
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deviceService.registerDevice(deviceList.get(position));
+                    }
+                });
+            }
+
+            LinearLayout layout = convertView.findViewWithTag("device_list_item");
+
+            TextView nameTextView = convertView.findViewWithTag("device_name");
+            nameTextView.setText(deviceList.get(position).getName());
+
+            TextView addressTextView = convertView.findViewWithTag("device_address");
+            addressTextView.setText(deviceList.get(position).getAddress());
+
+            BluetoothDevice device = (BluetoothDevice) getItem(position);
+            if(deviceService.isConnected() && device.getAddress().equals(deviceService.getRegisteredDeviceAddress())) {
+                layout.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_100dp, context.getTheme()));
+                nameTextView.setTextColor(getResources().getColor(R.color.indigo700, context.getTheme()));
+//                nameTextView.setTypeface(null, Typeface.BOLD);
+            }
+            else {
+                layout.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_100dp, context.getTheme()));
+                nameTextView.setTextColor(getResources().getColor(R.color.default_text, context.getTheme()));
+//                nameTextView.setTypeface(null, Typeface.NORMAL);
+            }
+
+            return convertView;
+        }
+    }
+
+    private CentralCallback centralCallback = new CentralCallback() {
+        @Override
+        public void requestEnableBLE() {
+
+        }
+
+        @Override
+        public void requestLocationPermission() {
+
+        }
+
+        @Override
+        public void onStartScan() {
+            setUpdateBtnAnimation(true);
+            deviceListAdapter.clearDevice();
+        }
+
+        @Override
+        public void onFindNewDevice(BluetoothDevice bluetoothDevice) {
+            deviceListAdapter.updateList(deviceService.getScanDeviceList());
+        }
+
+        @Override
+        public void onFinishScan(Map<String, BluetoothDevice> scanResult) {
+            setUpdateBtnAnimation(false);
+            updateBtn.clearAnimation();
+        }
+
+        @Override
+        public void connectedGattServer() {
+            setUpdateBtnAnimation(false);
+            changeDeviceConnectionState(true);
+            moveConnectedDeviceToTop();
+        }
+
+        @Override
+        public void disconnectedGattServer() {
+            changeDeviceConnectionState(false);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                deviceListAdapter.notifyDataSetChanged();
+            });
+        }
+
+        @Override
+        public void onWrite() {
+
+        }
+    };
+
+    private void changeDeviceConnectionState(boolean state) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            String stateText = state ? "HUD 연결 완료" : "HUD 연결 필요";
+            String stateDescriptionText = state ? "디바이스와 연결되었습니다." : "디바이스와 연결이 필요합니다.";
+
+            try {
+                deviceStateImageView.setImageTintList(ColorStateList.valueOf(state ? getResources().getColor(R.color.indigo700, getActivity().getTheme()) : getResources().getColor(R.color.gray500, getActivity().getTheme())));
+                deviceStateTextView.setText(stateText);
+                deviceStateDescriptionTextView.setText(stateDescriptionText);
+            }
+            catch (IllegalStateException e) {}
+        });
     }
 }

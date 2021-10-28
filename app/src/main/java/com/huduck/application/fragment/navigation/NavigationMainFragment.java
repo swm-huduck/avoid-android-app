@@ -1,59 +1,41 @@
 package com.huduck.application.fragment.navigation;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import com.huduck.application.Navigation.LocationProvider;
+import com.huduck.application.activity.NavigationGuideDebugActivity;
+import com.huduck.application.common.CommonMethod;
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
 import com.huduck.application.fragment.PageFragment;
-import com.huduck.application.service.NavigationService;
-import com.skt.Tmap.TMapMarkerItem;
-import com.skt.Tmap.TMapPoint;
+import com.naver.maps.map.LocationTrackingMode;
+import com.naver.maps.map.MapView;
+import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.util.FusedLocationSource;
 import com.skt.Tmap.TMapView;
 
 public class NavigationMainFragment extends PageFragment {
+    private FusedLocationSource locationSource;
+    private NaverMap naverMap;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public NavigationMainFragment() {
-        // Required empty public constructor
-    }
+    public NavigationMainFragment() {}
 
     public static NavigationMainFragment newInstance(/*String param1, String param2*/) {
         NavigationMainFragment fragment = new NavigationMainFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -63,32 +45,40 @@ public class NavigationMainFragment extends PageFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_navigation_main, container, false);
 
-        LinearLayout linearLayoutTmap = view.findViewById(R.id.LinearLayout_map);
-        TMapView tMapView = new TMapView(view.getContext());
+        // T MAP API KEY 등록
+        TMapView tMapView = new TMapView(getActivity().getApplicationContext());
+        tMapView.setSKTMapApiKey( getString(R.string.skt_map_api_key) );
 
-        tMapView.setSKTMapApiKey( "l7xxf21cc9e0068d4fbbb7c939aa6bda5a25" );
-        linearLayoutTmap.addView( tMapView );
+        // 네이버 지도 현 위치 표시
+        MapView mapView = view.findViewWithTag("map_view");
+        mapView.getMapAsync(naverMap_ -> {
+            naverMap = naverMap_;
+            naverMap.getUiSettings().setLocationButtonEnabled(true);
+            int[] paddings = naverMap.getContentPadding();
+            naverMap.setContentPadding(paddings[0], CommonMethod.dpToPx(getResources(), 56) ,paddings[2], paddings[3]);
 
-        TMapMarkerItem mapMarker = new TMapMarkerItem();
-        mapMarker.setPosition(0.5f, 1f);
-        mapMarker.setVisible(TMapMarkerItem.VISIBLE);
+            locationSource = new FusedLocationSource(this, 1000);
+            naverMap.setLocationSource(locationSource);
+            naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
 
-
-        tMapView.addMarkerItem("myMarker", mapMarker);
-        Fragment fragment = this;
-
-        NavigationService.addNavigationLocationChangeEvent((currentPoint, info) -> {
-            if(!fragment.isVisible()) return;
-            mapMarker.setTMapPoint(currentPoint);
-            tMapView.setCenterPoint(currentPoint.getLongitude(), currentPoint.getLatitude());
+            naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
         });
 
-        TextView searchInput = view.findViewById(R.id.search_input);
+        // 검색창 클릭 이벤트 등록
+        View searchInput = view.findViewById(R.id.search_input);
         searchInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity)getActivity();
                 mainActivity.changeFragment(NavigationSearchFragment.class, true);
+            }
+        });
+
+        searchInput.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                startActivity(new Intent(getActivity(), NavigationGuideDebugActivity.class));
+                return true;
             }
         });
 

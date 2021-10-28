@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1"
+    tools:context=".activity.NavigationGuideActivity">
+
+    <!--<RelativeLayout style="@style/TOPBAR_LAYOUT">
+
+        <TextView
+            android:id="@+id/target_address"
+            style="@style/TOPBAR_TITLE"
+            android:layout_centerInParent="true"
+            android:text="내비게이션" />
+
+    </RelativeLayout>-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <fragment
+                    android:id="@+id/naver_map_view"
+                    android:name="com.naver.maps.map.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/naver_map_view_overlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+
+                <com.huduck.application.common.OutlineTextView
+                    android:id="@+id/current_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="10"
+                    android:textColor="@color/black"
+                    android:textSize="50dp"
+                    android:translationZ="3dp"
+                    app:textStroke="true"
+                    app:textStrokeColor="@color/white"
+                    app:textStrokeWidth="15.0" />
+
+                <LinearLayout
+                    android:id="@+id/next_turn_event_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/bg_round_indigo_box_10dp"
+                    android:gravity="right"
+                    android:minWidth="150dp"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:translationZ="3dp">
+
+                    <ImageView
+                        android:id="@+id/next_turn_event_icon"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/ic_destination"
+                        app:tint="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/next_turn_event_left_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="0km"
+                            android:textColor="@color/white"
+                            android:textSize="40dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/next_turn_event"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="20dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/next_turn_event_layout"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="-10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/bg_bottom_round_indigo_box_10dp"
+                    android:gravity="right"
+                    android:minWidth="100dp"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:translationZ="2dp">
+
+                    <ImageView
+                        android:id="@+id/next_next_turn_event_icon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/ic_destination"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/next_next_turn_event_left_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="0km"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_round_white_box_100dp"
+                    android:elevation="3dp"
+                    android:gravity="center"
+                    android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp">
+
+                    <ImageView
+                        android:id="@+id/bottom_information_bar_icon"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/ic_current_location" />
+
+                    <TextView
+                        android:id="@+id/bottom_information_bar_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="현재 위치 검색 중.."
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/camera_move_to_my_position"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/bg_round_white_box_100dp"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="10dp"
+                    android:translationZ="3dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="내 위치로"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_top_gray_1px"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/refresh_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/btn_navigation_refresh"
+                        android:src="@drawable/ic_refresh" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/arrived_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:gravity="right|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:paddingRight="5dp"
+                            android:text="00:00"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/am_or_pm"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="bottom"
+                            android:gravity="left|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:text="오전"
+                            android:textSize="18dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/left_distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:gravity="right|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:paddingRight="5dp"
+                            android:text="0"
+                            android:textSize="25dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/left_distance_unit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="left|bottom"
+                            android:includeFontPadding="false"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:text="km"
+                            android:textSize="18dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/exit_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/btn_navigation_exit"
+                        android:src="@drawable/ic_exit" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <fragment
+            android:name="com.huduck.application.fragment.LoadingFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="loading" />
+
+    </RelativeLayout>
+
+</LinearLayout>

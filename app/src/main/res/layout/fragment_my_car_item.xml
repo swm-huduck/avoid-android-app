@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="15dp"
+    android:background="@drawable/border_bottom_gray_1px"
+    android:weightSum="10"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:orientation="vertical">
+
+        <TextView
+            android:tag="name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="name"
+            android:textSize="16sp" />
+
+        <TextView
+            android:tag="description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/gray500"
+            android:text="description"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:tag="check_layout"
+        android:layout_width="wrap_content"
+        android:minWidth="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/bg_my_car_info_danger"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:paddingRight="10dp">
+
+        <EditText
+            android:tag="input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="hint"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal"
+            android:textAlignment="textEnd"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:paddingVertical="10dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:tag="unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="unit"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

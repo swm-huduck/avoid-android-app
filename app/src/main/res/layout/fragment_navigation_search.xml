@@ -1,69 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.navigation.NavigationSearchFragment"
+    android:background="@color/white"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/search_box_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/rbtn_setting_subtitle_selector">
-        <ImageButton
-            android:tag="back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_back_arrow"
-            android:layout_marginRight="10dp"
-            android:layout_gravity="center"
-            android:background="@null"/>
+        android:background="@color/white"
+        android:translationZ="3dp">
 
-        <EditText
-            android:tag="search_input"
+        <LinearLayout
+            style="@style/SEARCHBOX_LAYOUT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20sp"
-            android:hint="장소 검색"
-            android:background="@null"
-            android:privateImeOptions="defaultInputmode=korea;"
-            android:imeOptions="actionSearch"
-            android:inputType="textShortMessage"/>
-    </LinearLayout>
+            android:background="@drawable/bg_search_box_selected"
+            android:layout_marginBottom="20dp">
+
+            <!--<ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:background="@null"
+                android:src="@drawable/ic_back_arrow"
+                android:tag="back_button" />-->
+
+            <EditText
+                style="@style/SEARCHBOX_TEXT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:textAlignment="center"
+                android:hint="목적지 검색"
+                android:imeOptions="actionSearch"
+                android:inputType="textShortMessage"
+                android:privateImeOptions="defaultInputmode=korea;"
+                android:tag="search_input" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/navigation_search_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_box_layout"
+        android:divider="#00FFFFFF"
+        android:dividerHeight="1dp"
+        android:listSelector="@android:color/transparent"
+        android:overScrollMode="never" />
 
-<!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:overScrollMode="never">-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
+    <!--    <ScrollView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:overScrollMode="never">-->
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical">-->
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:background="@drawable/border_bottom"-->
-<!--                android:padding="10dp">-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:textSize="20sp"-->
-<!--                    android:text="장소"/>-->
-<!--            </LinearLayout>-->
+    <!--            <LinearLayout-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:orientation="vertical"-->
+    <!--                android:background="@drawable/border_bottom"-->
+    <!--                android:padding="10dp">-->
+    <!--                <TextView-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:textSize="20sp"-->
+    <!--                    android:text="장소"/>-->
+    <!--            </LinearLayout>-->
 
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
-</LinearLayout>
+    <!--        </LinearLayout>-->
+    <!--    </ScrollView>-->
+</RelativeLayout>

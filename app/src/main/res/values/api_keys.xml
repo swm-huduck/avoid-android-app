@@ -1,0 +1,5 @@
+<resources>
+    <string name="naver_maps_client_id">클라이언트 ID</string>
+    <string name="skt_map_api_key">API Key</string>
+    <string name="mapbox_access_token">엑세스 토큰</string>
+</resources>

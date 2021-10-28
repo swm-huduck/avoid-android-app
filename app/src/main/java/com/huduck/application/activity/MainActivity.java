@@ -1,78 +1,64 @@
 package com.huduck.application.activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.PreferenceFragment;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.renderscript.ScriptGroup;
-import android.util.Log;
-import android.view.MenuItem;
+import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationMenu;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.huduck.application.R;
+import com.huduck.application.bleCentral.CentralCallback;
 import com.huduck.application.databinding.ActivityMainBinding;
+import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.PageFragment;
 import com.huduck.application.fragment.myCar.MyCarFragment;
 import com.huduck.application.fragment.navigation.NavigationMainFragment;
 import com.huduck.application.fragment.navigation.NavigationSearchFragment;
 import com.huduck.application.fragment.navigation.NavigationSearchResultFragment;
-import com.huduck.application.service.NavigationService;
-import com.huduck.application.setting.Setting;
-import com.huduck.application.setting.detail.SettingDetail;
-import com.huduck.application.setting.detail.item.SettingDetailItem;
-import com.huduck.application.setting.detail.item.SettingDetailItemCheckBox;
-import com.huduck.application.setting.detail.item.SettingDetailItemSwitch;
-
-import org.json.JSONException;
 
 import com.huduck.application.fragment.device.DeviceFragment;
 import com.huduck.application.fragment.setting.SettingFragment;
-import com.skt.Tmap.TMapPoint;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.Map;
+import java.util.TimerTask;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FragmentManager fragmentManager;
-    private InputMethodManager inputMethodManager;
 
     HashMap<Class, PageFragment> fragmentHashMap = new HashMap<>();
     Integer currentBottomNaviItemId = 0;
     Class currentFragmentClass = null;
 
+    Handler handler;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 권한 얻기
-        requestPermissions(
-                new String[]
-                {Manifest.permission.ACCESS_COARSE_LOCATION,
-                 Manifest.permission.ACCESS_FINE_LOCATION},
-                1000
-        );
 
-        Intent navigationServiceIntent = new Intent(this, NavigationService.class);
-        startService(navigationServiceIntent);
+        handler = new Handler(Looper.getMainLooper());
 
         // 바인딩
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -80,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         // 멤버변수 초기화
         fragmentManager = getSupportFragmentManager();
-        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         // 하단 내비바 선택 이벤트 설정
         binding.bottomNaviBar.setOnNavigationItemSelectedListener(item -> {
@@ -95,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(NavigationMainFragment.class);
                     break;
                 case R.id.page_my_car:
-                    changeFragment(MyCarFragment.class);
+                    changeFragment(MyCarFragment.class, true);
                     break;
                 case R.id.page_device:
                     changeFragment(DeviceFragment.class);
                     break;
                 case R.id.page_setting:
-                    changeFragment(SettingFragment.class, true);
+                    changeFragment(SettingFragment.class);
                     break;
                 default:
                     return false;
@@ -117,6 +102,57 @@ public class MainActivity extends AppCompatActivity {
 
         // 초기 선택 되어있는 하단 내비바 아이템 지정
         binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
+
+        // 키보드 활성화에 따른 내비바 표시/숨
+        KeyboardVisibilityEvent.setEventListener(
+                this,
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen)
+                            binding.bottomNaviBar.setVisibility(View.GONE);
+                        else {
+                            handler.postDelayed(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    binding.bottomNaviBar.setVisibility(View.VISIBLE);
+                                }
+                            }, 30);
+                        }
+                    }
+                }
+        );
+
+        // 디바이스 서비스
+        Intent intent = new Intent(
+                this,
+                DeviceService.class
+        );
+
+        bindService(intent, conn, Context.BIND_AUTO_CREATE);
+        changeNavigationBarDeviceBadgeState(false);
+    }
+
+    public void selectBottomNavigationBarItem(int index) {
+        if(index < 0 || index > binding.bottomNaviBar.getItemIconSize() - 1) return;
+
+        int id = 0;
+        switch (index) {
+            case 0:
+                id = R.id.page_navigation;
+                break;
+            case 1:
+                id = R.id.page_my_car;
+                break;
+            case 2:
+                id = R.id.page_device;
+                break;
+            case 3:
+                id = R.id.page_setting;
+                break;
+        }
+
+        binding.bottomNaviBar.setSelectedItemId(id);
     }
 
     // container에 표시할 fragment 변경 (overwrite 하지 않음)
@@ -197,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
             changeFragment(NavigationSearchFragment.class);
         }
         else if(currentFragmentClass.equals(MyCarFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else if(currentFragmentClass.equals(DeviceFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else if(currentFragmentClass.equals(SettingFragment.class)) {
-            changeFragment(NavigationMainFragment.class);
+            binding.bottomNaviBar.setSelectedItemId(R.id.page_navigation);
         }
         else {
             changeFragment(NavigationMainFragment.class);
@@ -219,5 +255,66 @@ public class MainActivity extends AppCompatActivity {
             if(focusedView != null)
                 inputMethodManager.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
         }
+    }
+
+    /* Device Service */
+    DeviceService deviceService;
+    boolean isService = false;
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            isService = true;
+            DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+            deviceService = binder.getService();
+            deviceService.registerCentralCallback(centralCallback);
+
+            if(deviceService.getRegisteredDeviceAddress() == null) {
+                // 디바이스 페이지로 이동
+                binding.bottomNaviBar.setSelectedItemId(R.id.page_device);
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isService = false;
+        }
+    };
+
+    private CentralCallback centralCallback = new CentralCallback() {
+        @Override public void requestEnableBLE() {}
+        @Override public void requestLocationPermission() {}
+        @Override public void onStartScan() {}
+        @Override public void onFindNewDevice(BluetoothDevice bluetoothDevice) {}
+        @Override public void onFinishScan(Map<String, BluetoothDevice> scanResult) {}
+        @Override public void onWrite() {}
+
+        @Override public void connectedGattServer() {
+            changeNavigationBarDeviceBadgeState(true);
+        }
+
+        @Override public void disconnectedGattServer() {
+            changeNavigationBarDeviceBadgeState(false);
+        }
+    };
+
+    private boolean initBadge = false;
+    private TextView badge;
+    private void changeNavigationBarDeviceBadgeState(boolean success) {
+        if(!initBadge && false) {
+            BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) binding.bottomNaviBar.getChildAt(0);
+            View v = bottomNavigationMenuView.getChildAt(2);
+            BottomNavigationItemView itemView = (BottomNavigationItemView) v;
+
+            View badgeLayout = LayoutInflater.from(this).inflate(R.layout.view_device_connection_state, bottomNavigationMenuView, false);
+            badge = badgeLayout.findViewWithTag("badge");
+            itemView.addView(badgeLayout);
+            initBadge = true;
+        }
+
+        int id = R.drawable.circle_gray;
+        if(success) id = R.drawable.circle_indigo;
+
+//        badge.setBackground(getResources().getDrawable(id, getTheme()));
     }
 }
