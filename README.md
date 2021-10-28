@@ -1,14 +1,14 @@
-# 1. AVOID
+# 1. AVOiD
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/img_logo.png" style="filter: bright(150%)" width="300px">
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/img_logo.png" width="300px">
 
-HUDuck팀의 애플리케이션, **AVOID**입니다.
+HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
-**AVOID**는 HUD(Head up display) 디바이스와 블루투스 통신을 통해, 사용자 편의에 맞는 HUD 환경을 구축해줍니다.
+**AVOiD**는 HUD(Head up display) 디바이스와 블루투스 통신을 통해, 운전자(사용자, 이하 '사용자') 편의에 맞는 HUD 환경을 구축해줍니다.
 
 # 2. 기능
 
-**AVOID**는 총 4개의 기능으로 이뤄져 있습니다.
+**AVOiD**는 총 4개의 기능으로 이뤄져 있습니다.
 
 1. 내비게이션
 2. 내 차 설정
@@ -17,8 +17,9 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ## 2.1. 내비게이션 🧭
 
-검색을 통해 원하는 장소를 찾을 수 있습니다.
-그 후, 사용자의 화물차 정보를 기반으로 경로를 추천 및 안내합니다. 
+1. 검색을 통해 원하는 장소를 찾을 수 있습니다.
+2. 사용자의 화물차 정보를 기반으로 경로를 추천 및 안내합니다.
+3. AR 내비게이션을 위한 경로 정보를 실시간으로 HUD 디바이스에 전달합니다. 
 
 ### 2.1.1. 플로우 차트
 
@@ -45,7 +46,7 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ## 2.2. 내 차 설정 🚚
 
-경로 검색에 필요한 사용자의 화물차 정보를 입력할 수 있습니다.
+내비게이션 경로 검색에 필요한 사용의 화물차 정보를 입력할 수 있습니다.
 
 기본값이 있어, 사용자의 필요에 맞게 입력을 선택할 수 있습니다.
 
@@ -79,9 +80,9 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ## 2.3. 디바이스 연결 📱
 
-블루투스를 통해 HUD 디바이스와 스마트폰의 연결을 돕습니다.
+블루투스(BLE, Bluetooth low energy)를 통해 HUD 디바이스와 스마트폰의 연결을 돕습니다.
 
-애플리케이션의 사용에서 HUD 디바이스와의 연결이 필수이기 때문에, 블루투스 미연결 상태일 경우 본 기능(디바이스 연결)으로 이동됩니다.
+한 번 등록한 HUD 디바이스는 애플리케이션을 실행하면 자동으로 연결됩니다.
 
 ### 2.3.1. 구동 화면
 <table>
@@ -107,7 +108,6 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 1. 위험 경고
     1. 앞 차 급정거 (ON/OFF)
     2. 위험 민감도  (민감/보통/둔감)
-    3. [기능 추가 예정]
 2. 내비게이션
     1. 속도 (ON/OFF)
     2. 회전 정보 (ON/OFF)
@@ -135,7 +135,7 @@ HUDuck팀의 애플리케이션, **AVOID**입니다.
 
 ## 3.1. 개발 환경
 
-PC OS `macOS Big Sur 11.4 (Apple M1)`<br/>
+PC OS `macOS Big Sur 11.6 (Apple M1)`<br/>
 Android Studio `Arctic Fox | 2020.3.1 Beta 3 (aarch64)`<br/>
 Android Emulator `Pixel 2 API 30 (Android 11.0, arm64)`<br/>
 Android Gradle Plugin Version `7.0.0-beta03`<br/>
