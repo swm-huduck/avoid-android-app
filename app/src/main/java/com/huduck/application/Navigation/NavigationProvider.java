@@ -1,6 +1,5 @@
 package com.huduck.application.Navigation;
 
-import com.huduck.application.myCar.TruckInformation;
 import com.skt.Tmap.TMapPOIItem;
 
 import lombok.Getter;
@@ -42,16 +41,5 @@ public class NavigationProvider {
 
     public static String getSearchOption() {
         return navigationProvider.searchOption;
-    }
-
-    // Truck information
-    private TruckInformation truckInformation = TruckInformation.builder().build();
-
-    public static void setTruckInformation(TruckInformation truckInformation) {
-        navigationProvider.truckInformation = truckInformation;
-    }
-
-    public static TruckInformation getTruckInformation() {
-        return navigationProvider.truckInformation;
     }
 }

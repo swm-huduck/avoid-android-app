@@ -8,7 +8,6 @@ import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.common.internal.service.Common;
 import com.huduck.application.common.CommonMethod;
 import com.naver.maps.map.NaverMap;
 
@@ -16,24 +15,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import lombok.Getter;
@@ -45,7 +37,7 @@ public class NavigationLogger implements NaverMap.OnLocationChangeListener, Navi
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public void onRouteChanged(NavigationRoutes route, List<Navigator.NavigatorLineStringSegment> navigatorLineStringSegmentList) {
+    public void onRouteChanged(NavigationRoutes route, double routeTotalDistance, List<Navigator.NavigatorLineStringSegment> navigatorLineStringSegmentList) {
         RouteLog log = new RouteLog(LocalTime.now(), route);
         routeLogList.add(log);
     }

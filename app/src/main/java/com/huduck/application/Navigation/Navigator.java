@@ -1,7 +1,6 @@
 package com.huduck.application.Navigation;
 
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Build;
 import android.util.Log;
 
@@ -9,18 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.naver.maps.geometry.LatLng;
+import com.naver.maps.geometry.Tm128;
 import com.naver.maps.map.NaverMap;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Navigator implements LocationListener, NaverMap.OnLocationChangeListener {
+public class Navigator implements NaverMap.OnLocationChangeListener {
     /* Route */
     @Getter
     private NavigationRoutes navigationRoute = null;
@@ -69,9 +69,112 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         startedNavigator = false;
     }
 
+    private NavigationRoutes modifyRouteByMoveDirection(NavigationRoutes navigationRoutes) {
+        // 현재 및 직전 위치 가져오기
+        int locationSize = LocationProvider.getLastRowLocationSize();
+
+        if(locationSize < 2) return navigationRoutes;
+
+        Location curLocation    = LocationProvider.getLastRowLocation(locationSize - 1);
+        Location prevLocation   = LocationProvider.getLastRowLocation(locationSize - 2);
+
+        if(curLocation == null || prevLocation == null || curLocation == prevLocation || curLocation.equals(prevLocation))
+            return navigationRoutes;
+
+        LatLng curPosition      = new LatLng(curLocation.getLatitude(),     curLocation.getLongitude());
+        LatLng prevPosition     = new LatLng(prevLocation.getLatitude(),    prevLocation.getLongitude());
+
+        // 10미터 범위 안에 있는 세그먼트 수집
+        List<NavigatorLineStringSegment> segList = navigationRouteToLineStringSegment(navigationRoutes);
+        List<NavigatorLineStringSegment> closeSegList = new ArrayList<>();
+        for (NavigatorLineStringSegment seg : segList) {
+            NavigatorLineStringSegment.DistanceAndPoint dap = seg.getDistanceAndPoint(curPosition);
+
+            if(dap.distance < 10)
+                closeSegList.add(seg);
+        }
+
+        if(closeSegList.size() == 0) return navigationRoutes;
+
+        // 비슷한 방향의 진행 방향을 가진 세그먼트 찾기
+        double moveDirDeg = LatLngTool.deg(prevPosition, curPosition);
+
+        NavigatorLineStringSegment flagSeg = null;
+        double minGap = Double.MAX_VALUE;
+
+        for (NavigatorLineStringSegment seg : closeSegList) {
+            double segDirDeg = LatLngTool.deg(seg.startPoint, seg.endPoint);
+
+            double gap = Math.abs(moveDirDeg - segDirDeg);
+
+            if (gap < minGap) {
+                minGap = gap;
+                flagSeg = seg;
+            }
+        }
+
+        // 목표 세그먼트에 맞게 경로 수정
+        List<Integer> routeSeq = navigationRoutes.getNavigationSequence();
+        Map<Integer, NavigationPoint> pointMap = navigationRoutes.getNavigationPointHashMap();
+        Map<Integer, NavigationLineString> lineStringMap = navigationRoutes.getNavigationLineStringHashMap();
+
+        NavigationLineString flagSegParentLineString = flagSeg.getParentLineString();
+
+        int flagIndex = flagSegParentLineString.getProperties().getIndex();
+
+        for (Integer key : routeSeq) {
+            // 새로운 시작 지점 전의 포인트와 라인 스트링은 삭제
+            if (key < flagIndex) {
+                if (pointMap.containsKey(key))
+                    pointMap.remove(key);
+                else if (lineStringMap.containsKey(key))
+                    lineStringMap.remove(key);
+            }
+
+            // 시작 지점 라인 스트링이면 본 라인 스트링 수정
+            if (key == flagIndex) {
+                NavigationLineString lineString = lineStringMap.get(flagIndex);
+
+                // 라인 스트링에서 몇 번째 Seg인지 검색
+                int segIndex = 0;
+
+                for (NavigatorLineStringSegment seg : segList) {
+                    if(!seg.getParentLineString().equals(flagSegParentLineString)) continue;
+
+                    if (seg.equals(flagSeg))
+                        break;
+
+                    segIndex++;
+                }
+
+                ArrayList<ArrayList<Double>> coordList = lineString.getGeometry().getCoordinates();
+
+                // 기준 Seg 전의 Seg는 삭제
+                for (int i = 0; i < segIndex; i++) {
+                    coordList.remove(0);
+                }
+
+                // 기준 Seg 좌표
+                ArrayList<Double> targetCoord = coordList.get(0);
+
+                // 기준 Seg 좌표 수정
+                NavigatorLineStringSegment.DistanceAndPoint dap = flagSeg.getDistanceAndPoint(curPosition);
+
+                targetCoord.set(0, dap.point.latitude);
+                targetCoord.set(1, dap.point.longitude);
+
+                break;
+            }
+        }
+
+        Log.d("Modified Route", "Modified Route close seg count: " + closeSegList.size());
+
+        return navigationRoutes;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void setRoute(NavigationRoutes navigationRoute) {
-        this.navigationRoute = navigationRoute;
+        this.navigationRoute = modifyRouteByMoveDirection(navigationRoute);
         lineStringSegmentList = navigationRouteToLineStringSegment(navigationRoute);
 
         // init lineStringSeg parm
@@ -85,7 +188,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
 
         // Call event
         for (OnRouteChangedCallback onRouteChangedCallback : routeChangedCallbackList) {
-            onRouteChangedCallback.onRouteChanged(navigationRoute, lineStringSegmentList);
+            onRouteChangedCallback.onRouteChanged(navigationRoute, routeTotalDistance, lineStringSegmentList);
         }
 
         if (currentLocation != null)
@@ -113,7 +216,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
                         lastPoint = point;
                         continue;
                     }
-                    NavigatorLineStringSegment lineStringSegment = new NavigatorLineStringSegment(lastPoint, point);
+                    NavigatorLineStringSegment lineStringSegment = new NavigatorLineStringSegment(lastPoint, point, lineString);
                     result.add(lineStringSegment);
                     lastPoint = point;
                     lastSeg = lineStringSegment;
@@ -160,8 +263,6 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
                 break;
         }
 
-        Log.d("minDist", BigDecimal.valueOf(minDist).toString());
-
         double passedDistance = LatLngTool.mag(targetSeg.startPoint, positionOnRoute);  // Deg
 
         if (minDistIdx > currentLineStringSegIdx) {
@@ -176,6 +277,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         }
 
         distanceMBetweenRouteAndRowLocation = rowPosition.distanceTo(positionOnRoute);
+        Log.d("distanceMBetweenRouteAndRowLocation", distanceMBetweenRouteAndRowLocation+"");
 
         return this.currentPositionOnRoute;
     }
@@ -223,10 +325,9 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     }
 
     private double maxMovableM = 0;
-    @Override
     public void onLocationChanged(@NonNull Location location) {
-        Log.d("Location", location.toString());
         if (location.getLongitude() < 0) return;
+        if (lineStringSegmentList.size() == 0) return;
 
         // Delta Time
         if(lastTime < 0)
@@ -281,13 +382,13 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
 
     private int offRouteCount = 0;
     private boolean checkOffRoute() {
-        if(distanceMBetweenRouteAndRowLocation > 100) return true;
+        if(distanceMBetweenRouteAndRowLocation > 15) return true;
 
-        else if (distanceMBetweenRouteAndRowLocation > 60)
-            if (++offRouteCount > 3) return true;
+        else if (distanceMBetweenRouteAndRowLocation > 10)
+            if (++offRouteCount > 2) return true;
 
-        else
-            offRouteCount = 0;
+            else
+                offRouteCount = 0;
 
         return false;
     }
@@ -306,11 +407,11 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     }
 
     public interface OnRouteChangedCallback {
-        public void onRouteChanged(NavigationRoutes route, List<NavigatorLineStringSegment> navigatorLineStringSegmentList);
+        void onRouteChanged(NavigationRoutes route, double routeTotalDistance, List<NavigatorLineStringSegment> navigatorLineStringSegmentList);
     }
 
     public interface OnEnhancedLocationChangedCallback {
-        public void onEnhancedLocationChange(int currentLineStringSegIdx, double currentLineStringSegPassedDistance, LatLng currentPosition, double currentBearing);
+        void onEnhancedLocationChange(int currentLineStringSegIdx, double currentLineStringSegPassedDistance, LatLng currentPosition, double currentBearing);
     }
 
     public void addOnEnhancedLocationChangedCallback(OnEnhancedLocationChangedCallback onEnhancedLocationChangedCallback) {
@@ -322,10 +423,10 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     }
 
     public interface OnProgressChangedCallback {
-        public void onProgressChanged(double totalProgress,
-                                      NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
-                                      NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
-                                      NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter);
+        void onProgressChanged(double totalProgress,
+                               NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                               NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                               NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter);
     }
 
     public void addOnProgressChangedCallback(OnProgressChangedCallback onProgressChangedCallback) {
@@ -337,7 +438,7 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
     }
 
     public interface OnOffRouteCallback {
-        public void onOffRoute();
+        void onOffRoute();
     }
 
     public void addOnOffRouteCallback(OnOffRouteCallback onOffRouteCallback) {
@@ -364,8 +465,10 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
         private double directionBearing;
         @Getter
         private double distanceMeter;
+        @Getter
+        private NavigationLineString parentLineString;
 
-        NavigatorLineStringSegment(@NonNull LatLng startPoint, @NonNull LatLng endPoint) {
+        NavigatorLineStringSegment(@NonNull LatLng startPoint, @NonNull LatLng endPoint, NavigationLineString parentLineString) {
             this.startPoint = startPoint;
             this.endPoint = endPoint;
             LatLng dir = LatLngTool.sub(endPoint, startPoint);
@@ -373,16 +476,22 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
             this.direction = LatLngTool.normalize(dir);
             this.directionBearing = LatLngTool.deg(this.startPoint, this.endPoint);
             this.distanceMeter = startPoint.distanceTo(endPoint);
+            this.parentLineString = parentLineString;
         }
 
         public DistanceAndPoint getDistanceAndPoint(@NonNull LatLng point) {
-            double x1 = startPoint.longitude;
-            double y1 = startPoint.latitude;
-            double x2 = endPoint.longitude;
-            double y2 = endPoint.latitude;
+            Tm128 startPointTm    = Tm128.valueOf(this.startPoint);
+            Tm128 endPointTm      = Tm128.valueOf(this.endPoint);
 
-            double x = point.longitude;
-            double y = point.latitude;
+            double x1 = startPointTm.x;
+            double y1 = startPointTm.y;
+            double x2 = endPointTm.x;
+            double y2 = endPointTm.y;
+
+            Tm128 pointTm = Tm128.valueOf(point);
+
+            double x = pointTm.x;
+            double y = pointTm.y;
             double A = x - x1;
             double B = y - y1;
             double C = x2 - x1;
@@ -407,11 +516,12 @@ public class Navigator implements LocationListener, NaverMap.OnLocationChangeLis
                 yy = y1 + param * D;
             }
 
-            double dx = x - xx;
-            double dy = y - yy;
-            double distance = Math.sqrt(dx * dx + dy * dy);
+            Tm128 targetPointTm = new Tm128(xx, yy);
+            LatLng targetPoint = targetPointTm.toLatLng();
 
-            return new DistanceAndPoint(distance, new LatLng(yy, xx));
+            double distance = point.distanceTo(targetPoint);
+
+            return new DistanceAndPoint(distance, targetPoint);
         }
 
         @AllArgsConstructor

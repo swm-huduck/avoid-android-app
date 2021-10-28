@@ -8,8 +8,7 @@
     android:weightSum="1"
     tools:context=".activity.NavigationRoutesActivity">
 
-    <RelativeLayout
-        style="@style/TOPBAR_LAYOUT">
+    <RelativeLayout style="@style/TOPBAR_LAYOUT">
 
         <TextView
             style="@style/TOPBAR_TITLE"
@@ -42,32 +41,27 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_alignParentBottom="true"
-                    android:padding="10dp"
                     android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
                     android:weightSum="1">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:elevation="20dp"
-                        android:background="@drawable/bg_search_box"
-                        android:layout_marginBottom="-10dp"
-                        android:layout_marginTop="-10dp"
-                        android:layout_marginLeft="-10dp"
-                        android:layout_marginRight="0dp"
-                        android:padding="10dp"
-                        android:layout_weight="1">
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_white_box_10dp"
+                        android:translationZ="3dp">
 
                         <Spinner
                             android:id="@+id/search_option_spinner"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="10dp"
                             android:background="@drawable/bg_round_white_box_10dp"
-                            android:popupBackground="@drawable/bg_round_white_box_10dp"
-                            />
+                            android:padding="10dp"
+                            android:popupBackground="@drawable/bg_round_white_box_10dp" />
 
                         <ImageView
                             android:layout_width="40dp"
@@ -87,35 +81,36 @@
                         android:layout_gravity="right"
                         android:clickable="true">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:text="길 안내"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"/>
-
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/ic_direction"
+                            android:layout_marginRight="10dp"
+                            android:src="@drawable/ic_destination"
                             android:tint="@color/white"
                             android:tintMode="src_in"
                             tools:ignore="UseAppTint" />
-                    </LinearLayout>
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="길 안내"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+                    
                 </LinearLayout>
+
             </RelativeLayout>
 
         </LinearLayout>
 
         <fragment
-            android:tag="loading"
+            android:name="com.huduck.application.fragment.LoadingFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.huduck.application.fragment.LoadingFragment"/>
-
+            android:tag="loading" />
     </RelativeLayout>
 
 

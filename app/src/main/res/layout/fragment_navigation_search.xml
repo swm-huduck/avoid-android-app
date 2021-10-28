@@ -12,23 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:elevation="3dp"
-        android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color">
+        android:translationZ="3dp">
 
         <LinearLayout
             style="@style/SEARCHBOX_LAYOUT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_search_box_selected">
+            android:background="@drawable/bg_search_box_selected"
+            android:layout_marginBottom="20dp">
 
-            <ImageButton
+            <!--<ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginRight="10dp"
                 android:background="@null"
                 android:src="@drawable/ic_back_arrow"
-                android:tag="back_button" />
+                android:tag="back_button" />-->
 
             <EditText
                 style="@style/SEARCHBOX_TEXT"
@@ -36,6 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
+                android:textAlignment="center"
                 android:hint="목적지 검색"
                 android:imeOptions="actionSearch"
                 android:inputType="textShortMessage"
@@ -53,6 +54,7 @@
         android:layout_below="@+id/search_box_layout"
         android:divider="#00FFFFFF"
         android:dividerHeight="1dp"
+        android:listSelector="@android:color/transparent"
         android:overScrollMode="never" />
 
     <!--    <ScrollView-->

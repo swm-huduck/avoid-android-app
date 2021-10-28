@@ -17,6 +17,7 @@ import com.huduck.application.Navigation.LatLngTool;
 import com.huduck.application.Navigation.NavigationPoint;
 import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
+import com.huduck.application.Navigation.NavigationTurnEventCalc;
 import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
 import com.huduck.application.common.CommonMethod;
@@ -156,7 +157,10 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
     }
 
     @Override
-    public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
+    public void onProgressChanged(double totalProgress,
+                                  NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                                  NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                                  NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
         String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
         binding.nextTurnEvent.setText(turnEvent);
         binding.nextTurnEventLeftDistance.setText((int)(Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10)+"m");
@@ -315,7 +319,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
                 public void onReverseGeocoding(TMapAddressInfo tMapAddressInfo) {
                     if (tMapAddressInfo == null) return;
                     String address = tMapAddressInfo.strFullAddress;
-                    handler.post(() -> binding.currentAddress.setText(address));
+                    handler.post(() -> binding.bottomInformationBarText.setText(address));
                 }
             });
         }
@@ -345,7 +349,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
                 public void onReverseGeocoding(TMapAddressInfo tMapAddressInfo) {
                     if (tMapAddressInfo == null) return;
                     String address = tMapAddressInfo.strFullAddress;
-                    handler.post(() -> binding.currentAddress.setText(address));
+                    handler.post(() -> binding.bottomInformationBarText.setText(address));
                 }
             });
         }
@@ -392,7 +396,7 @@ public class NavigationTestActivity extends AppCompatActivity implements NaverMa
         new TMapData().reverseGeocoding(destination.latitude, destination.longitude, "A02", tMapAddressInfo -> {
             if (tMapAddressInfo == null) return;
             handler.post(() -> {
-                binding.targetAddress.setText(tMapAddressInfo.strFullAddress);
+//                binding.targetAddress.setText(tMapAddressInfo.strFullAddress);
             });
         });
     }

@@ -168,6 +168,7 @@ public class DeviceFragment extends PageFragment {
         new Handler(Looper.getMainLooper()).post(() -> {
             deviceListAdapter.updateList(bluetoothDeviceList);
             deviceListAdapter.notifyDataSetChanged();
+            deviceListView.smoothScrollToPosition(0);
         });
     }
 
@@ -228,12 +229,12 @@ public class DeviceFragment extends PageFragment {
 
             BluetoothDevice device = (BluetoothDevice) getItem(position);
             if(deviceService.isConnected() && device.getAddress().equals(deviceService.getRegisteredDeviceAddress())) {
-                layout.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_4dp, context.getTheme()));
+                layout.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_100dp, context.getTheme()));
                 nameTextView.setTextColor(getResources().getColor(R.color.indigo700, context.getTheme()));
 //                nameTextView.setTypeface(null, Typeface.BOLD);
             }
             else {
-                layout.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_4dp, context.getTheme()));
+                layout.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_100dp, context.getTheme()));
                 nameTextView.setTextColor(getResources().getColor(R.color.default_text, context.getTheme()));
 //                nameTextView.setTypeface(null, Typeface.NORMAL);
             }

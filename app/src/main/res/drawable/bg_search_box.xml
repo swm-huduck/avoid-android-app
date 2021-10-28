@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/round_shadow_10px"/>
-    <item
-        android:left="10dp"
-        android:right="10dp"
-        android:top="10dp"
-        android:bottom="10dp">
-        <shape android:shape="rectangle">
-            <stroke
-                android:width="0px"
-                android:color="#CFCFCF"/>
-            <solid android:color="@color/white"/>
-            <corners android:radius="10dp"/>
-        </shape>
-    </item>
+    <item android:drawable="@drawable/bg_round_white_box_100dp"/>
 </layer-list>

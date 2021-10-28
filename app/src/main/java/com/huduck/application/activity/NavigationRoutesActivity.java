@@ -1,5 +1,6 @@
 package com.huduck.application.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +39,6 @@ import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
-import com.naver.maps.map.util.MarkerIcons;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,6 +103,7 @@ public class NavigationRoutesActivity extends AppCompatActivity{
                 android.R.layout.simple_spinner_dropdown_item,
                 searchOptionList);
         searchOptionSpinner.setAdapter(adapter);
+        searchOptionSpinner.setSelection(0);
         searchOptionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -120,7 +121,6 @@ public class NavigationRoutesActivity extends AppCompatActivity{
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-        searchOptionSpinner.setSelection(0);
 
         // 길 안내 시작 버튼
         LinearLayout startGuideBtn = findViewById(R.id.start_guide_btn);
@@ -142,7 +142,7 @@ public class NavigationRoutesActivity extends AppCompatActivity{
                 )
                 .targetLocation(new LatLng(routeBundle.getDouble("target_poi_lat"), routeBundle.getDouble("target_poi_lng")))
                 .searchOption(searchOption)
-                .truckInformation(NavigationProvider.getTruckInformation())
+                .truckInformation(TruckInformation.getInstance(this))
                 .build();
 
 
@@ -176,6 +176,8 @@ public class NavigationRoutesActivity extends AppCompatActivity{
                 navigationLineStringHashMap = routes.getNavigationLineStringHashMap();
 
         ArrayList<LatLng> latLngs = new ArrayList<>();
+
+        /*List<InfoWindow> infoWindows = new ArrayList<>();*/
 
         navigationSequence.forEach(integer -> {
             if (navigationPointHashMap.containsKey(integer)) {
@@ -211,13 +213,18 @@ public class NavigationRoutesActivity extends AppCompatActivity{
                 /*InfoWindow infoWindow = new InfoWindow();
                 infoWindow.setPosition(position);
                 infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
+                    String type = null;
+
                     @NonNull
                     @Override
                     public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                        return NavigationPoint.TurnType.get(point.getProperties().getTurnType());
+                        if (type == null)
+                            type = NavigationPoint.TurnType.get(point.getProperties().getTurnType());
+                        return type;
                     }
                 });
                 infoWindows.add(infoWindow);*/
+
             } else if (navigationLineStringHashMap.containsKey(integer)) {
                 navigationLineStringHashMap.get(integer).getGeometry().getCoordinates().forEach(doubles -> {
                     double lat = doubles.get(0);
@@ -264,6 +271,8 @@ public class NavigationRoutesActivity extends AppCompatActivity{
             startMarker.setMap(naverMap);
             endMarker.setMap(naverMap);
             naverMap.moveCamera(cameraUpdate);
+            /*for (InfoWindow infoWindow : infoWindows)
+                infoWindow.setMap(naverMap);*/
         });
     }
 

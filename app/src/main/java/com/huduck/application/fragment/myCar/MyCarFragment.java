@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.huduck.application.R;
 import com.huduck.application.activity.MainActivity;
+import com.huduck.application.common.CommonMethod;
 import com.huduck.application.fragment.PageFragment;
 
 public class MyCarFragment extends PageFragment {
@@ -168,10 +169,11 @@ public class MyCarFragment extends PageFragment {
     private void changeSaveButtonState(boolean success) {
         saveButton.setEnabled(success);
         if(success) {
-            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_indigo700_box_4dp, getActivity().getTheme()));
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_indigo700_box_100dp, getActivity().getTheme()));
         }
         else {
-            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_gray500_box_4dp, getActivity().getTheme()));
+            saveButton.setBackground(getResources().getDrawable(R.drawable.bg_round_gray500_box_100dp, getActivity().getTheme()));
         }
+        saveButton.setTranslationZ(CommonMethod.dpToPx(getResources(), 3));
     }
 }

@@ -94,12 +94,12 @@ public class NavigationSearchFragment extends PageFragment implements TextWatche
             return true;
         });
 
-        // 뒤로가기 버튼 클릭 이벤트
+        /*// 뒤로가기 버튼 클릭 이벤트
         ImageButton backButton = view.findViewWithTag("back_button");
         backButton.setOnClickListener(view_ -> {
             ((MainActivity)getActivity()).changeFragment(NavigationMainFragment.class);
             return;
-        });
+        });*/
 
         return view;
     }

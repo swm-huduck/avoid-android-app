@@ -3,29 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="15dp"
+    android:tag="navigation_search_result_item">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:tag="poi_name"
+        android:text="장소"
+        android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_round_white_box_4dp"
-        android:orientation="vertical"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="15dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="5dp"
-        android:elevation="3dp"
-        android:outlineSpotShadowColor="@color/gray_outline_spot_shadow_color"
-        android:tag="navigation_search_result_item">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="1dp"
-            android:tag="poi_name"
-            android:text="장소"
-            android:textSize="16sp" />
-
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,6 +31,14 @@
             android:textColor="@color/gray600"
             android:textSize="13sp" />
 
+        <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="13dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="8dp"
+            android:background="@color/gray200"
+            android:orientation="horizontal" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,42 +47,44 @@
             android:textColor="@color/gray600"
             android:textSize="13sp" />
 
-        <Button
-            style="@style/DECIDE_DESTINATION_BTN"
+    </LinearLayout>
+
+    <Button
+        style="@style/DECIDE_DESTINATION_BTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end"
+        android:text="목적지로"
+        android:visibility="gone" />
+
+    <LinearLayout
+        style="@style/DECIDE_DESTINATION_BTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="10dp"
+        android:clickable="true"
+        android:tag="decide_destination_btn">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_destination"
+            android:tint="@color/white"
+            android:tintMode="src_in"
+            tools:ignore="UseAppTint" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="end"
-            android:text="목적지로"
-            android:visibility="gone" />
+            android:text="길 안내"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-        <LinearLayout
-            style="@style/DECIDE_DESTINATION_BTN"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:clickable="true"
-            android:tag="decide_destination_btn">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:text="길 안내"
-                android:textColor="@color/white"
-                android:textSize="16sp"/>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_direction"
-                android:tint="@color/white"
-                android:tintMode="src_in"
-                tools:ignore="UseAppTint" />
-
-        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

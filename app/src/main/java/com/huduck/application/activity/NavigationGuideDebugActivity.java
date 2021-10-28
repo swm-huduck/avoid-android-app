@@ -1,18 +1,27 @@
 package com.huduck.application.activity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.PointF;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.huduck.application.Navigation.LatLngTool;
 import com.huduck.application.Navigation.LocationProvider;
@@ -24,10 +33,14 @@ import com.huduck.application.Navigation.NavigationRenderer;
 import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.Navigation.NavigationSpeaker;
+import com.huduck.application.Navigation.NavigationTurnEventCalc;
+import com.huduck.application.Navigation.NavigationUiManager;
 import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
+import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.LoadingFragment;
+import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationSource;
@@ -54,9 +67,8 @@ public class NavigationGuideDebugActivity
 
     private NavigationGuideDebugActivity it = this;
     private ActivityNavigationTestBinding binding;
-    private static final String TAG = "NavigationGuideDebugActivity";
 
-    private static final int EX_FILE_PICKER_RESULT = 0;
+    private DeviceService deviceService;
 
     private MapFragment naverMapFragment;
     private NaverMap naverMap;
@@ -71,6 +83,8 @@ public class NavigationGuideDebugActivity
 
     private LatLng destination = null;
 
+    private NavigationUiManager uiManager;
+
     private LoadingFragment loadingFragment = null;
 
     private NavigationLogger logger = new NavigationLogger();
@@ -83,7 +97,25 @@ public class NavigationGuideDebugActivity
         binding = ActivityNavigationTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        uiManager = new NavigationUiManager(this, binding, new TMapData());
+
         new TMapView(this).setSKTMapApiKey(getString(R.string.skt_map_api_key));
+
+        bindService(new Intent(this, DeviceService.class),
+                new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName componentName, IBinder service) {
+                        DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+                        deviceService = binder.getService();
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName componentName) {}
+                }, Context.BIND_AUTO_CREATE
+        );
+
         loggerManager = new NavigationLoggerManager(this, logger, this);
 
         naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
@@ -100,34 +132,6 @@ public class NavigationGuideDebugActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-/*
-        if (requestCode == EX_FILE_PICKER_RESULT) {
-            ExFilePickerResult result = ExFilePickerResult.getFromIntent(data);
-            if (result != null && result.getCount() > 0) {
-                Log.d(TAG, result.getPath());
-                try {
-                    logger = NavigationLogger.readFile(result.getPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
-
-        /*if(requestCode == FilePickerConst.REQUEST_CODE_DOC) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                List<Uri> docPaths = new ArrayList<>();
-                docPaths.addAll(data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
-                try {
-                    logger = NavigationLogger.readFile(docPaths.get(0).getPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -145,6 +149,10 @@ public class NavigationGuideDebugActivity
 
         navigator.addOnProgressChangedCallback(this);
         navigator.addOnOffRouteCallback(this);
+
+        // UI Manager 초기화
+        navigator.addOnRouteChangedCallback(uiManager);
+        navigator.addOnProgressChangedCallback(uiManager);
 
         // 상단 목적지 출력
         NavigationGuideDebugActivity it = this;
@@ -169,7 +177,7 @@ public class NavigationGuideDebugActivity
                 })
                 .build();
 
-        binding.targetAddress.setOnClickListener(new View.OnClickListener() {
+        binding.nextTurnEventLeftDistance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loggerManager.stop();
@@ -182,7 +190,11 @@ public class NavigationGuideDebugActivity
         loadingFragment.isVisible(false);
 
         binding.refreshButton.setOnClickListener(v -> {
-            this.refreshRoute();
+            // this.refreshRoute();
+        });
+
+        binding.exitButton.setOnClickListener(v -> {
+            closeActivity();
         });
     }
 
@@ -220,6 +232,7 @@ public class NavigationGuideDebugActivity
         naverMap.addOnLocationChangeListener(navigator);
         naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
         naverMap.addOnLocationChangeListener(renderer);
+        naverMap.addOnLocationChangeListener(uiManager);
         naverMap.addOnLocationChangeListener(logger);
 
         // Set Naver Map UI
@@ -227,6 +240,18 @@ public class NavigationGuideDebugActivity
         uiSettings.setCompassEnabled(false);
         uiSettings.setZoomControlEnabled(false);
         uiSettings.setScaleBarEnabled(false);
+
+        // 지도 터치 감지
+        binding.cameraMoveToMyPosition.setOnClickListener(view -> {
+            renderer.setDontMoveCamera(false);
+            view.setVisibility(View.GONE);
+        });
+
+        binding.naverMapViewOverlay.setOnTouchListener((view, motionEvent) -> {
+            renderer.setDontMoveCamera(true);
+            binding.cameraMoveToMyPosition.setVisibility(View.VISIBLE);
+            return false;
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -252,7 +277,7 @@ public class NavigationGuideDebugActivity
         NavigationRouter router = NavigationRouter.builder()
                 .currentLocation(lastLocation)
                 .targetLocation(destination)
-                .truckInformation(NavigationProvider.getTruckInformation())
+                .truckInformation(TruckInformation.getInstance(this))
                 .searchOption(NavigationProvider.getSearchOption())
                 .build();
 
@@ -266,44 +291,29 @@ public class NavigationGuideDebugActivity
 
     private void afterStartNavigation() {
         loadingFragment.isVisible(false);
-        Date arrivedDate = new Date(System.currentTimeMillis() + (navigator.getNavigationRoute().getTotalTime() * 1000));
-        SimpleDateFormat format = new SimpleDateFormat("a hh : mm");
-        binding.arrivedTime.setText(format.format(arrivedDate));
     }
 
     @Override
-    public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
-        String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
-        binding.nextTurnEvent.setText(turnEvent);
-        binding.nextTurnEventLeftDistance.setText((int) (Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10) + "m");
+    public void onProgressChanged(double totalProgress,
+                                  NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                                  NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                                  NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
+        deviceService.updateNavigationTurnEvent(
+                nextTurnEvent.getProperties().getTurnType(),
+                nextTurnEventLeftDistanceMeter,
+                nextTurnEventData.getDistanceFromEventToFootOfPerpendicular(),
+                nextTurnEventData.getDistanceFromCurrentPositionToFootOfPerpendicular(),
+                nextNextTurnEvent == null ? -1 : nextNextTurnEvent.getProperties().getTurnType(),
+                nextNextTurnEventLeftDistanceMeter
+        );
     }
-
-    private int updateAddressOrigin = 30;
-    private int updateAddressCnt = 0;
-    TMapData tMapData = new TMapData();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onLocationChange(@NonNull Location location) {
         // 속도 업데이트
-        double speedKh = location.getSpeed() * 3.6;
-        handler.post(() -> binding.currentSpeed.setText((int) speedKh + ""));
-
-//        renderer.setSpeed(location.getSpeed());
-
-        // 현재 위치(주소) 업데이트
-        updateAddressCnt--;
-        if (updateAddressCnt <= 0) {
-            updateAddressCnt = updateAddressOrigin;
-            tMapData.reverseGeocoding(location.getLatitude(), location.getLongitude(), "A02", new TMapData.reverseGeocodingListenerCallback() {
-                @Override
-                public void onReverseGeocoding(TMapAddressInfo tMapAddressInfo) {
-                    if (tMapAddressInfo == null) return;
-                    String address = tMapAddressInfo.strFullAddress;
-                    handler.post(() -> binding.currentAddress.setText(address));
-                }
-            });
-        }
+        int speedKh = (int) (location.getSpeed() * 3.6);
+        deviceService.updateSpeed(speedKh);
     }
 
     private boolean offRoute = false;
@@ -311,13 +321,15 @@ public class NavigationGuideDebugActivity
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onOffRoute() {
-       /* double currentTime = System.currentTimeMillis();
+       /*
+        double currentTime = System.currentTimeMillis();
         double deltaTime = (currentTime - lastOffRouteTime) * 0.001;
         if(deltaTime < 10) return;
         if(offRoute) return;
         offRoute = true;
         lastOffRouteTime = currentTime;
-        refreshRoute();*/
+        refreshRoute();
+        */
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -340,5 +352,27 @@ public class NavigationGuideDebugActivity
         navigator.setRoute(route);
         navigator.startNavigator();
         afterStartNavigation();
+    }
+
+    @Override
+    public void onBackPressed() {
+        closeActivity();
+    }
+
+    private void closeActivity() {
+        new AlertDialog.Builder( this )
+                .setMessage( "내비게이션을 종료하시겠습니까?" )
+                .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
     }
 }

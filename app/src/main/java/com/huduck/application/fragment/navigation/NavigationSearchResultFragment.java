@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textclassifier.TextClassifier;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -110,12 +111,12 @@ public class NavigationSearchResultFragment extends PageFragment {
             return;
         });
 
-        // 뒤로가기 버튼 클릭 이벤트 등록
+        /*// 뒤로가기 버튼 클릭 이벤트 등록
         ImageButton backButton = view.findViewWithTag("back_button");
         backButton.setOnClickListener(view_ -> {
             ((MainActivity) getActivity()).changeFragment(NavigationMainFragment.class);
             return;
-        });
+        });*/
 
         // 결과 리스트 어댑터 연결
         listViewAdapter = new NavigationSearchResultListViewAdapter(getActivity());
@@ -338,12 +339,14 @@ public class NavigationSearchResultFragment extends PageFragment {
 
 
             if (selectedItemPosition == position) {
-                item.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_4dp, getContext().getTheme()));
+                /*item.setBackground(getResources().getDrawable(R.drawable.bg_selected_round_white_box_4dp, getContext().getTheme()));*/
                 name.setTextColor(getResources().getColor(R.color.indigo700));
+                /*name.setTypeface(null, Typeface.BOLD);*/
                 decideDestinationBtn.setVisibility(View.VISIBLE);
             } else {
-                item.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_4dp, getContext().getTheme()));
+                /*item.setBackground(getResources().getDrawable(R.drawable.bg_unselected_round_white_box_4dp, getContext().getTheme()));*/
                 name.setTextColor(getResources().getColor(R.color.default_text));
+                /*name.setTypeface(null, Typeface.NORMAL);*/
                 decideDestinationBtn.setVisibility(View.GONE);
             }
 

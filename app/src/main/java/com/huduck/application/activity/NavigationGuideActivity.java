@@ -2,10 +2,12 @@ package com.huduck.application.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
@@ -15,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.huduck.application.Navigation.LatLngTool;
@@ -27,11 +30,13 @@ import com.huduck.application.Navigation.NavigationRouter;
 import com.huduck.application.Navigation.NavigationRoutes;
 import com.huduck.application.Navigation.NavigationSpeaker;
 import com.huduck.application.Navigation.NavigationTurnEventCalc;
+import com.huduck.application.Navigation.NavigationUiManager;
+import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
 import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.LoadingFragment;
-import com.huduck.application.Navigation.Navigator;
+import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationSource;
@@ -39,6 +44,7 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapData;
@@ -50,7 +56,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NavigationGuideActivity extends AppCompatActivity implements NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback, Navigator.OnOffRouteCallback {
+public class NavigationGuideActivity
+        extends AppCompatActivity
+        implements NaverMap.OnLocationChangeListener, Navigator.OnProgressChangedCallback,
+        Navigator.OnOffRouteCallback {
+
     private NavigationGuideActivity it = this;
     private ActivityNavigationTestBinding binding;
 
@@ -69,6 +79,8 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
 
     private LatLng destination = null;
 
+    private NavigationUiManager uiManager;
+
     private LoadingFragment loadingFragment = null;
 
     private NavigationLogger logger = new NavigationLogger();
@@ -80,21 +92,25 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         binding = ActivityNavigationTestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        uiManager = new NavigationUiManager(this, binding, new TMapData());
+
         new TMapView(this).setSKTMapApiKey(getString(R.string.skt_map_api_key));
 
         bindService(new Intent(this, DeviceService.class),
                 new ServiceConnection() {
                     @Override
                     public void onServiceConnected(ComponentName componentName, IBinder service) {
-                        DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder)service;
+                        DeviceService.DeviceServiceBinder binder = (DeviceService.DeviceServiceBinder) service;
                         deviceService = binder.getService();
                     }
 
                     @Override
-                    public void onServiceDisconnected(ComponentName componentName) {}
+                    public void onServiceDisconnected(ComponentName componentName) {
+                    }
                 }, Context.BIND_AUTO_CREATE
         );
-
 
         naverMapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.naver_map_view);
         naverMapFragment.getMapAsync(naverMap_ -> {
@@ -122,11 +138,15 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         navigator.addOnProgressChangedCallback(this);
         navigator.addOnOffRouteCallback(this);
 
+        // UI Manager 초기화
+        navigator.addOnRouteChangedCallback(uiManager);
+        navigator.addOnProgressChangedCallback(uiManager);
+
         navigator.addOnRouteChangedCallback(logger);
 
         // 상단 목적지 출력
         this.destination = LatLngTool.tMapPointToLatlng(NavigationProvider.getDestination().getPOIPoint());
-        binding.targetAddress.setText(NavigationProvider.getDestination().name);
+        uiManager.setDestination(NavigationProvider.getDestination().name);
 
         // 로딩 프레그먼트 가져오기
         loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
@@ -137,11 +157,11 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         });
 
         binding.exitButton.setOnClickListener(v -> {
-            finish();
+            closeActivity();
         });
 
         // 로거 연결
-        binding.targetAddress.setOnClickListener(view -> {
+        binding.nextTurnEventLeftDistance.setOnClickListener(view -> {
             try {
                 logger.writeFile(this);
                 Toast.makeText(this, "저장 성공", Toast.LENGTH_SHORT).show();
@@ -153,12 +173,6 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
                 Toast.makeText(this, "저장 실패", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // KalmanLocationManager 등록
-        /*new KalmanLocationManager(this).requestLocationUpdates(
-                KalmanLocationManager.UseProvider.GPS_AND_NET,
-                30, 1000, 1000, navigator, true
-        );*/
     }
 
     private void initNaverMap() {
@@ -172,10 +186,10 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         naverMap.setFpsLimit(30);
 
         // 위치 오버레이 지우기
-       /*handler.post(() -> {
+        handler.post(() -> {
             naverMap.getLocationOverlay().setCircleRadius(0);
             naverMap.getLocationOverlay().setIcon(OverlayImage.fromResource(R.drawable.icon_null));
-        });*/
+        });
 
         // 카메라 위치 초기화
         naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
@@ -196,6 +210,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         naverMap.addOnLocationChangeListener(navigator);
         naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
         naverMap.addOnLocationChangeListener(renderer);
+        naverMap.addOnLocationChangeListener(uiManager);
         naverMap.addOnLocationChangeListener(logger);
 
         // Set Naver Map UI
@@ -203,6 +218,18 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         uiSettings.setCompassEnabled(false);
         uiSettings.setZoomControlEnabled(false);
         uiSettings.setScaleBarEnabled(false);
+
+        // 지도 터치 감지
+        binding.cameraMoveToMyPosition.setOnClickListener(view -> {
+            renderer.setDontMoveCamera(false);
+            view.setVisibility(View.GONE);
+        });
+
+        binding.naverMapViewOverlay.setOnTouchListener((view, motionEvent) -> {
+            renderer.setDontMoveCamera(true);
+            binding.cameraMoveToMyPosition.setVisibility(View.VISIBLE);
+            return false;
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -228,7 +255,7 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         NavigationRouter router = NavigationRouter.builder()
                 .currentLocation(lastLocation)
                 .targetLocation(destination)
-                .truckInformation(NavigationProvider.getTruckInformation())
+                .truckInformation(TruckInformation.getInstance(this))
                 .searchOption(NavigationProvider.getSearchOption())
                 .build();
 
@@ -242,11 +269,6 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
 
     private void afterStartNavigation() {
         loadingFragment.isVisible(false);
-        Date arrivedDate = new Date(System.currentTimeMillis() + (navigator.getNavigationRoute().getTotalTime() * 1000));
-        SimpleDateFormat format = new SimpleDateFormat("hh:mm");
-        binding.arrivedTime.setText(format.format(arrivedDate));
-        format = new SimpleDateFormat("a");
-        binding.amOrPm.setText(format.format(arrivedDate));
     }
 
     @Override
@@ -254,14 +276,6 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
                                   NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
                                   NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
                                   NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
-
-        String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
-        binding.nextTurnEvent.setText(turnEvent);
-        binding.nextTurnEventLeftDistance.setText((int) (Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10) + "m");
-
-        int leftDistanceKm = (int) (navigator.getRouteTotalLeftDistance() / 1000);
-        binding.leftDistance.setText(leftDistanceKm + "");
-
         deviceService.updateNavigationTurnEvent(
                 nextTurnEvent.getProperties().getTurnType(),
                 nextTurnEventLeftDistanceMeter,
@@ -272,45 +286,24 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         );
     }
 
-    private int updateAddressOrigin = 30;
-    private int updateAddressCnt = 0;
-    TMapData tMapData = new TMapData();
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onLocationChange(@NonNull Location location) {
         // 속도 업데이트
         int speedKh = (int) (location.getSpeed() * 3.6);
-        handler.post(() -> binding.currentSpeed.setText(speedKh + ""));
-
         deviceService.updateSpeed(speedKh);
-
-//        renderer.setSpeed(location.getSpeed());
-
-        // 현재 위치(주소) 업데이트
-        updateAddressCnt--;
-        if (updateAddressCnt <= 0) {
-            updateAddressCnt = updateAddressOrigin;
-            tMapData.reverseGeocoding(location.getLatitude(), location.getLongitude(), "A02", new TMapData.reverseGeocodingListenerCallback() {
-                @Override
-                public void onReverseGeocoding(TMapAddressInfo tMapAddressInfo) {
-                    if (tMapAddressInfo == null) return;
-                    String address = tMapAddressInfo.strFullAddress;
-                    handler.post(() -> binding.currentAddress.setText(address));
-                }
-            });
-        }
     }
 
     private boolean offRoute = false;
     private double lastOffRouteTime = 0;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onOffRoute() {
         double currentTime = System.currentTimeMillis();
         double deltaTime = (currentTime - lastOffRouteTime) * 0.001;
-        if(deltaTime < 10) return;
-        if(offRoute) return;
+        if (deltaTime < 10) return;
+        if (offRoute) return;
         offRoute = true;
         lastOffRouteTime = currentTime;
         refreshRoute();
@@ -330,4 +323,25 @@ public class NavigationGuideActivity extends AppCompatActivity implements NaverM
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        closeActivity();
+    }
+
+    private void closeActivity() {
+        new AlertDialog.Builder(this)
+                .setMessage("내비게이션을 종료하시겠습니까?")
+                .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
 }

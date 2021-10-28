@@ -17,11 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_search_box"
-        android:layout_margin="0dp"
-        android:padding="20dp"
         android:clickable="true"
-        android:tag="@+tag/search_input"
-        android:gravity="center">
+        android:gravity="center"
+        android:translationZ="3dp"
+        android:tag="@+tag/search_input">
 
         <!--<TextView
             style="@style/SEARCHBOX_TEXT"
@@ -50,8 +49,8 @@
             android:layout_gravity="center"
             android:background="@null"
             android:tag="search_input"
-            android:textColor="@color/gray500"
-            android:text="목적지 검색" />
+            android:text="목적지 검색"
+            android:textColor="@color/gray500" />
     </LinearLayout>
 
 </RelativeLayout>

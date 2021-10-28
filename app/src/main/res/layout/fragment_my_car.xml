@@ -1,81 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout style="@style/TOPBAR_LAYOUT">
-
-        <TextView
-            style="@style/TOPBAR_TITLE"
-            android:text="내 차" />
-
-    </RelativeLayout>
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:overScrollMode="never">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout style="@style/TOPBAR_LAYOUT">
+
+            <TextView
+                style="@style/TOPBAR_TITLE"
+                android:text="내 차" />
+
+        </RelativeLayout>
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
-            <fragment
-                android:id="@+id/my_car_width"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <fragment
-                android:id="@+id/my_car_height"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                <fragment
+                    android:id="@+id/my_car_width"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <fragment
-                android:id="@+id/my_car_length"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                <fragment
+                    android:id="@+id/my_car_height"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <fragment
-                android:id="@+id/my_car_truck_weight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                <fragment
+                    android:id="@+id/my_car_length"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <fragment
-                android:id="@+id/my_car_load_weight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                <fragment
+                    android:id="@+id/my_car_truck_weight"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <fragment
-                android:id="@+id/my_car_total_weight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"/>
+                <fragment
+                    android:id="@+id/my_car_load_weight"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-        </LinearLayout>
+                <fragment
+                    android:id="@+id/my_car_total_weight"
+                    android:name="com.huduck.application.fragment.myCar.MyCarItemFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-    </ScrollView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"/>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/save_my_car"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/bg_round_indigo700_box_4dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/bg_round_indigo700_box_100dp"
+        android:text="저장하기"
         android:textColor="@color/white"
-        android:text="저장하기"/>
+        android:translationZ="3dp"
+        android:textSize="20dp" />
 
-
-</LinearLayout>
+</RelativeLayout>

@@ -1,11 +1,11 @@
 package com.huduck.application.Navigation;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -36,6 +36,9 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
     private Context context;
 
     private Timer timer = null;
+
+    @Setter
+    private boolean dontMoveCamera = false;
 
     private NavigationGraphicResources graphicResources = new NavigationGraphicResources();
 
@@ -90,7 +93,6 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
             setSpeed(0);
         else
             setSpeed(ms);
-        Log.d("BBBB", "ms: " + ms + ", currentSpeed:" + location.getSpeed() + ", lastSpeed: " + lastLoc.getSpeed());
 
         lastLoc = location;
     }
@@ -227,7 +229,6 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 lastPointTime += deltaTime;
                 if(lastPointTime >= 1) {
                     double moveM = lastPoint.distanceTo(currentPuckPosition);
-                    Log.d("AAAA", "moved M: " + moveM+", m/s: " + (moveM / lastPointTime) + "speed: " + speedMs);
                     lastPoint = currentPuckPosition;
                     lastPointTime = 0;
                 }
@@ -290,7 +291,6 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 gapM = currentSeg.getEndPoint().distanceTo(realPosition) - currentSeg.getEndPoint().distanceTo(currentPuckPosition);
             }
             betweenRealAndPuckGapM = gapM;
-            Log.d("Gap", gapM+"");
         }
 
         private int lastGapDir = 0;
@@ -405,7 +405,8 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
                 double bearing = lineStringSegmentList.get(currentSegIdx).getDirectionBearing();
                 graphicResources.getPuckMarker().setAngle((float) bearing);
                 graphicResources.routePathOverlay.setProgress(/*GeometryUtils.getProgress(routeLatLngList, currentPuckPosition)*/totalPassedDistanceM / totalDistanceM);
-                naverMap.moveCamera(cameraUpdate);
+                if(!dontMoveCamera)
+                    naverMap.moveCamera(cameraUpdate);
             });
         }
 
@@ -419,7 +420,7 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
     };
 
     @Override
-    public void onRouteChanged(NavigationRoutes route, List<Navigator.NavigatorLineStringSegment> navigatorLineStringSegmentList) {
+    public void onRouteChanged(NavigationRoutes route, double routeTotalDistance, List<Navigator.NavigatorLineStringSegment> navigatorLineStringSegmentList) {
         rendererTimerTask.setLineStringSegmentList(navigatorLineStringSegmentList);
         drawRoute(route);
     }
@@ -465,16 +466,18 @@ public class NavigationRenderer implements Navigator.OnRouteChangedCallback, Nav
         rendererTimerTask.onEnhancedLocationChange(currentLineStringSegIdx, currentLineStringSegPassedDistance, currentPosition, currentBearing);
 
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (debug.getMap() == null)
+            /*if (debug.getMap() == null)
                 debug.setMap(naverMap);
-            debug.setPosition(currentPosition);
+            debug.setPosition(currentPosition);*/
         });
 
     }
 
     @Override
-    public void onProgressChanged(double totalProgress, NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter) {
-
+    public void onProgressChanged(double totalProgress,
+                                  NavigationPoint nextTurnEvent, double nextTurnEventLeftDistanceMeter,
+                                  NavigationTurnEventCalc.NavigationTurnEventData nextTurnEventData,
+                                  NavigationPoint nextNextTurnEvent, double nextNextTurnEventLeftDistanceMeter) {
     }
 
     private class NavigationGraphicResources {

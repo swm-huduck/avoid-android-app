@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.huduck.application.R;
@@ -54,6 +55,9 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        View logoHider = findViewById(R.id.logo_hider);
+        logoHider.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.anim_move_right));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -98,7 +102,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        },500);
+        },1000);
     }
 
     @Override

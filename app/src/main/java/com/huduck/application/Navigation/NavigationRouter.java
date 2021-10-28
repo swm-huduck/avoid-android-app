@@ -1,10 +1,7 @@
 package com.huduck.application.Navigation;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.location.Location;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -14,11 +11,6 @@ import com.huduck.application.myCar.TruckInformation;
 import com.naver.maps.geometry.LatLng;
 
 import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 import lombok.Builder;
 import lombok.Getter;
