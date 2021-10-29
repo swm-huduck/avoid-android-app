@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -63,6 +63,9 @@ dependencies {
 
     // 파일 선택
     implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
+
+    // 권한 요청
+    implementation 'io.github.ParkSangGwon:tedpermission-normal:3.3.0'
 }
 repositories {
     mavenCentral()
