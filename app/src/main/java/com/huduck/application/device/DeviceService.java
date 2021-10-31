@@ -161,10 +161,10 @@ public class DeviceService extends Service {
         return sharedPreferences.getString("deviceAddress", null);
     }
 
-    public void updateSpeed(int speed) {
+    public void updateSpeed(float speedMs) {
         if(!centralManager.isConnected()) return;
         // 전송 데이터
-        String data = new StringBuilder("s").append(speed).toString();
+        String data = new StringBuilder("s").append(speedMs).toString();
         updateQueue(data);
     }
 
