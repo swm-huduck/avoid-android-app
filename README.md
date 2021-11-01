@@ -23,7 +23,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.1.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Navigation.drawio.png" width="1100px">
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Navigation.png" width="1100px">
 
 ### 2.1.2. GPS 테스트 방법
 
@@ -61,7 +61,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.2.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-My%20Car.drawio.png" width="600px">
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-My%20Car.png" width="600px">
 
 ### 2.2.2. 구동 화면
 
@@ -90,7 +90,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.3.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-HUD%20Device.drawio.png" width="1000px">
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-HUD%20Device.png" width="1000px">
 
 ### 2.3.2. 구동 화면
 <table>
@@ -126,7 +126,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.4.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Setting.drawio.png" width="300px">
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Setting.png" width="300px">
 
 ### 2.4.2. 구동 화면
 <table>
@@ -143,9 +143,19 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
     </tbody>
 </table>
 
-# 3. 와이어 프레임
+# 3. UI/UX
 
+## 3.1. 와이어 프레임
 
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2001.png" width="100%">
+
+## 3.2. 스토리 보드
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2002.png" width="100%">
+
+## 3.3. 흐름도
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2003.png" width="100%">
 
 # 4. 프로젝트 시작하기
 
