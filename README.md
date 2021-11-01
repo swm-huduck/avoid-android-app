@@ -1,6 +1,6 @@
-# 1. AVOiD
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/AVOiD-background.png" width="100%">
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/img_logo.png" width="300px">
+# 1. AVOiD
 
 HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
