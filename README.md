@@ -23,7 +23,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.1.1. 플로우 차트
 
-![System_architecture-Final_of_Android-Navigation](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/System%20architecture-Final%20of%20Android-Navigation.png)
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Navigation.drawio.png" width="1100px">
 
 ### 2.1.2. GPS 테스트 방법
 
@@ -59,7 +59,11 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 5. 화물 무게
 6. 총 무게 (자동 계산, 차량 무게 + 화물 무게)
 
-### 2.2.1. 구동 화면
+### 2.2.1. 플로우 차트
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-My%20Car.drawio.png" width="600px">
+
+### 2.2.2. 구동 화면
 
 <table>
     <thead>
@@ -84,7 +88,11 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 한 번 등록한 HUD 디바이스는 애플리케이션을 실행하면 자동으로 연결됩니다.
 
-### 2.3.1. 구동 화면
+### 2.3.1. 플로우 차트
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-HUD%20Device.drawio.png" width="1000px">
+
+### 2.3.2. 구동 화면
 <table>
     <thead>
         <th>HUD 디바이스 연결 확인</th>
@@ -116,7 +124,11 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
     2. 문자 (ON/OFF)
     3. 카카오톡 (ON/OFF)
 
-### 2.4.1. 구동 화면
+### 2.4.1. 플로우 차트
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Setting.drawio.png" width="300px">
+
+### 2.4.2. 구동 화면
 <table>
     <thead>
         <th>HUD 표시 옵션 설정</th>
@@ -131,9 +143,13 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
     </tbody>
 </table>
 
-# 3. 프로젝트 시작하기
+# 3. 와이어 프레임
 
-## 3.1. 개발 환경
+
+
+# 4. 프로젝트 시작하기
+
+## 4.1. 개발 환경
 
 PC OS `macOS Big Sur 11.6 (Apple M1)`<br/>
 Android Studio `Arctic Fox | 2020.3.1 Beta 3 (aarch64)`<br/>
@@ -141,20 +157,20 @@ Android Emulator `Pixel 2 API 30 (Android 11.0, arm64)`<br/>
 Android Gradle Plugin Version `7.0.0-beta03`<br/>
 Gradle Version `7.0`
 
-## 3.2. API (SDK)
+## 4.2. API (SDK)
 
 애플리케이션의 구현을 위해 사용된 API 목록입니다.
 
 [NAVER MAPS API]()<br/>
 [T map API]()<br/>
 
-## 3.3. API Key 설정
+## 4.3. API Key 설정
 
 위에 열거된 API를 사용하기 위해, 반드시 API Key를 입력해야 합니다.
 
 API Key 발급 방법은 API Document를 참고하시면 됩니다.
 
-### 3.3.1. NAVER MAPS API
+### 4.3.1. NAVER MAPS API
 
 [NAVER MAPS API Document](https://navermaps.github.io/android-map-sdk/guide-ko/0.html)
 
@@ -163,7 +179,7 @@ API Key 발급 방법은 API Document를 참고하시면 됩니다.
 <string name="naver_maps_client_id">클라이언트 ID</string>
 ```
 
-### 3.3.2. T map API
+### 4.3.2. T map API
 
 [T map API Document](https://tmapapi.sktelecom.com/main.html#android/guide/androidGuide.sample1)
 
