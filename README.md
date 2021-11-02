@@ -34,10 +34,45 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.1.3. 구동 화면
 
-|메인|검색|검색 결과|경로 추천|
-|:--:|:--:|:--:|:--:|
-|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%A9%94%EC%9D%B8.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%80%EC%83%89%20%EA%B2%B0%EA%B3%BC.png)|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EA%B2%BD%EB%A1%9C%20%EC%B6%94%EC%B2%9C.png)|
-|현재 위치를 표시한다.|목적지를 검색할 수 있다.<br/>추천 검색어와 자음 검색을 지원한다.|검색된 목적지의 이름, 업종, 주소, 지도상 위치를 표시한다.|7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.|
+<table>
+<thead>
+    <th width="33%">메인</th>
+    <th width="33%">검색</th>
+    <th width="33%">검색 결과</th>
+</thead>
+<tbody>
+    <tr>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg"></td>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2002.jpg"></td>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2003.jpg"></td>
+    </tr>
+    <tr>
+        <td>현재 위치를 표시한다.</td>
+        <td>목적지를 검색할 수 있다.<br/>추천 검색어와 자음 검색을 지원한다.</td>
+        <td>검색된 목적지의 이름, 업종, 주소, 지도상 위치를 표시한다.</td>
+    </tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+    <th width="33%">거리뷰</th>
+    <th width="33%">경로 안내</th>
+    <th width="33%">길 안내</th>
+</thead>
+<tbody>
+    <tr>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2004.jpg"></td>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2005.jpg"></td>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg"></td>
+    </tr>
+    <tr>
+        <td>선택된 장소의 거리뷰를 보여준다.</td>
+        <td>7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.</td>
+        <td></td>
+    </tr>
+</tbody>
+</table>
 
 |길 안내 구동 영상 (개발 중)|
 |:-|
