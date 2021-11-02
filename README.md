@@ -100,20 +100,21 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.2.2. 구동 화면
 
-<table>
-    <thead>
-        <th>내 차 설정 前</th>
-        <th>내 차 설정 後</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%82%B4%EC%B0%A8%20%EC%A0%84.png"/></td>
-            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%EB%82%B4%EC%B0%A8.png"/></td>
-        </tr>
-        <tr>
-            <td colspan="2">사용자 화물차의 정보를 입력하여, 내비게이션에서 화물차가 원활히 지날 수 있는 경로를 추천한다.<br/>설정 내용은 자동 저장되어 화물이 변경될 경우, 화물 중량만 변경하면 된다.</td>
-        </tr>
-    </tbody>
+<table width="66%">
+<thead>
+    <th>내 차 설정 前</th>
+    <th>내 차 설정 後</th>
+</thead>
+<tbody>
+    <tr>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2001.jpg"></td>
+        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2002.jpg"></td>
+        <td width="33%"></td>
+    </tr>
+    <tr>
+        <td colspan="2">사용자 화물차의 정보를 입력하여, 내비게이션에서 화물차가 원활히 지날 수 있는 경로를 추천한다.<br/>설정 내용은 화물이 변경될 경우, 화물 중량만 변경하면 된다.</td>
+    </tr>
+</tbody>
 </table>
 
 
