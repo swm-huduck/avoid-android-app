@@ -70,7 +70,6 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <thead>
     <th width="33%">거리뷰</th>
     <th width="33%">경로 안내</th>
-    <th width="33%">길 안내</th>
 </thead>
 <tbody>
     <tr>
@@ -81,7 +80,6 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
             <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2005.jpg">
         </td>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg">
         </td>
     </tr>
     <tr>
@@ -91,16 +89,14 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
         <td>
             7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.
         </td>
-        <td>
-        </td>
     </tr>
 </tbody>
 </table>
 
-|길 안내 구동 영상 (개발 중)|
-|:-|
-|![](https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/%E1%84%82%E1%85%A2%E1%84%87%E1%85%B5%E1%84%80%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%20%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A7%E1%86%AB.mov)|
-|현재 개발 중인 기능으로 좌측에 사용자 차의 속도, 하단의 현재 위치, 상단에 목표 지점을 표시한다.<br/>좌회전, 우회전과 같은 회전 이벤트들을 잘 받아오는 것도 확인할 수 있다.|
+|길 안내 시연 영상|
+|:-:|
+|[![시연 영상](http://img.youtube.com/vi/uEwq6NTwg50/0.jpg)](https://youtu.be/uEwq6NTwg50):|
+|자체 구현 내비게이션으로 사용자의 위치를 기반으로 길을 안내한다.<br/>AR 내비게이션을 위한 회전 이벤트(좌회전, 우회전 등)의 거리 정보를 실시간으로 HUD에 전송한다.|
 
 ## 2.2. 내 차 설정 🚚
 
