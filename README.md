@@ -42,14 +42,26 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 </thead>
 <tbody>
     <tr>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg"></td>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2002.jpg"></td>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2003.jpg"></td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg">
+        </td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2002.jpg">
+        </td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2003.jpg">
+        </td>
     </tr>
     <tr>
-        <td>현재 위치를 표시한다.</td>
-        <td>목적지를 검색할 수 있다.<br/>추천 검색어와 자음 검색을 지원한다.</td>
-        <td>검색된 목적지의 이름, 업종, 주소, 지도상 위치를 표시한다.</td>
+        <td>
+            현재 위치를 표시한다.
+        </td>
+        <td>
+            목적지를 검색할 수 있다.<br/>추천 검색어와 자음 검색을 지원한다.
+        </td>
+        <td>
+            검색된 목적지의 이름, 업종, 주소, 지도상 위치를 표시한다.
+        </td>
     </tr>
 </tbody>
 </table>
@@ -62,14 +74,25 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 </thead>
 <tbody>
     <tr>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2004.jpg"></td>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2005.jpg"></td>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg"></td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2004.jpg">
+        </td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2005.jpg">
+        </td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg">
+        </td>
     </tr>
     <tr>
-        <td>선택된 장소의 거리뷰를 보여준다.</td>
-        <td>7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.</td>
-        <td></td>
+        <td>
+            선택된 장소의 거리뷰를 보여준다.
+        </td>
+        <td>
+            7가지의 경로 탐색 옵션(고속도로 우선, 무료 우선 등)을 통해 경로를 추천한다.
+        </td>
+        <td>
+        </td>
     </tr>
 </tbody>
 </table>
@@ -100,19 +123,26 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.2.2. 구동 화면
 
-<table width="66%">
+<table>
 <thead>
     <th>내 차 설정 前</th>
     <th>내 차 설정 後</th>
 </thead>
 <tbody>
     <tr>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2001.jpg"></td>
-        <td><img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2002.jpg"></td>
-        <td width="33%"></td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2001.jpg">
+        </td>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2002.jpg">
+        </td>
+        <td width="33.3%">
+        </td>
     </tr>
     <tr>
-        <td colspan="2">사용자 화물차의 정보를 입력하여, 내비게이션에서 화물차가 원활히 지날 수 있는 경로를 추천한다.<br/>설정 내용은 화물이 변경될 경우, 화물 중량만 변경하면 된다.</td>
+        <td colspan="2">
+            사용자 화물차의 정보를 입력하여, 내비게이션에서 화물차가 원활히 지날 수 있는 경로를 추천한다.<br/>설정 내용은 화물이 변경될 경우, 화물 중량만 변경하면 된다.
+        </td>
     </tr>
 </tbody>
 </table>
@@ -135,10 +165,19 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
     </thead>
     <tbody>
         <tr>
-            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%EC%97%B0%EA%B2%B0.png"/></td>
+            <td width="33.3%">
+                <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%EC%97%B0%EA%B2%B0.png">
+            </td>
+            <td width="33.3%">
+            </td>
+            <td width="33.3%">
+            </td>
         </tr>
         <tr>
-            <td>스마트폰과 HUD의 블루투스 통신 상태를 확인할 수 있다.<br/>(본 기능 구현은 중간 발표 이후 진행될 예정)</td>
+            <td>
+                스마트폰과 HUD 디바이스의 블루투스 연결을 관리할 수 있다.
+                한 번 등록된 HUD 디바이스의 정보는 저장되어 AVOiD 실행 시 자동으로 연결된다.
+            </td>
         </tr>
     </tbody>
 </table>
@@ -165,16 +204,23 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Setting.png" width="300px">
 
 ### 2.4.2. 구동 화면
+
 <table>
     <thead>
         <th>HUD 표시 옵션 설정</th>
     </thead>
     <tbody>
         <tr>
-            <td><img height="460px" src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%ED%91%9C%EC%8B%9C%20%EC%98%B5%EC%85%98.png"/></td>
+            <td>
+                <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%ED%91%9C%EC%8B%9C%20%EC%98%B5%EC%85%98.png">
+            </td>
         </tr>
         <tr>
-            <td>HUD에 표시될 기능을 제어할 수 있다.<br/>이를 통해 운전자의 전방 주시를 최대화한다.</td>
+            <td>
+                HUD에 표시할 기능을 제어할 수 있다.<br/>
+                변경 내용은 즉시 HUD 디바이스에 전송되어 적용된다.<br/>
+                본 기능을 통해 운전자의 전방 주시를 최대화한다.
+            </td>
         </tr>
     </tbody>
 </table>
