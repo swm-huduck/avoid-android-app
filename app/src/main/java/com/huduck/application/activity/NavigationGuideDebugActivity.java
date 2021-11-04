@@ -37,6 +37,7 @@ import com.huduck.application.Navigation.NavigationTurnEventCalc;
 import com.huduck.application.Navigation.NavigationUiManager;
 import com.huduck.application.Navigation.Navigator;
 import com.huduck.application.R;
+import com.huduck.application.common.CommonMethod;
 import com.huduck.application.databinding.ActivityNavigationTestBinding;
 import com.huduck.application.device.DeviceService;
 import com.huduck.application.fragment.LoadingFragment;
@@ -312,7 +313,7 @@ public class NavigationGuideDebugActivity
     @Override
     public void onLocationChange(@NonNull Location location) {
         // 속도 업데이트
-        deviceService.updateSpeed(location.getSpeed());
+        deviceService.updateSpeed(location.getSpeed(), CommonMethod.MiliSecondToLocalTime(location.getTime()));
     }
 
     private boolean offRoute = false;

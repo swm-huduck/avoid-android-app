@@ -25,6 +25,7 @@ import com.huduck.application.notification.SMSReceiver;
 import com.huduck.application.setting.SettingConstants;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -34,6 +35,7 @@ import java.util.Queue;
 
 public class DeviceService extends Service {
     private static final String TAG = "DeviceService";
+    private static final String DELIMITER = "{]";
 
     private boolean isConnected = false;
     public boolean isConnected() {
@@ -161,11 +163,21 @@ public class DeviceService extends Service {
         return sharedPreferences.getString("deviceAddress", null);
     }
 
+    public void updateSpeed(float speedMs, LocalTime localTime) {
+        if(!centralManager.isConnected()) return;
+        // 전송 데이터
+        String data = new StringBuilder("s")
+                .append(speedMs).append(DELIMITER)
+                .append(localTime.toString()).append(DELIMITER)
+                .toString();
+        updateQueue(data);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateSpeed(float speedMs) {
         if(!centralManager.isConnected()) return;
         // 전송 데이터
-        String data = new StringBuilder("s").append(speedMs).toString();
-        updateQueue(data);
+        updateSpeed(speedMs, LocalTime.now());
     }
 
     public void updateCall(String name, int callState) {
@@ -187,7 +199,7 @@ public class DeviceService extends Service {
         Log.d(TAG, "(SMS) name: " + name + ", content: " + content);
         StringBuilder sb = new StringBuilder("m");
         sb
-                .append(CommonMethod.subStringBytes(name, 5 * 3, 3)).append("{]")
+                .append(CommonMethod.subStringBytes(name, 5 * 3, 3)).append(DELIMITER)
                 .append(CommonMethod.subStringBytes(content, 25 * 3, 3));
 
         updateQueue(sb.toString());
@@ -201,7 +213,7 @@ public class DeviceService extends Service {
         Log.d(TAG, "(KakaoTalk) name: " + name + ", content: " + content);
         StringBuilder sb = new StringBuilder("k");
         sb
-                .append(CommonMethod.subStringBytes(name, 5 * 3, 3)).append("{]")
+                .append(CommonMethod.subStringBytes(name, 5 * 3, 3)).append(DELIMITER)
                 .append(CommonMethod.subStringBytes(content, 25 * 3, 3));
 
         updateQueue(sb.toString());
@@ -213,12 +225,12 @@ public class DeviceService extends Service {
 
         if(!centralManager.isConnected()) return;
         String data = new StringBuilder("n")
-                .append(nextEventTurnType).append("{]")
-                .append(nextEventLeftDistanceM).append("{]")
-                .append(nextEventRelationalPositionX).append("{]")
-                .append(nextEventRelationalPositionY).append("{]")
-                .append(nextNextEventTurnType).append("{]")
-                .append(nextNextEventLeftDistanceM).append("{]").toString();
+                .append(nextEventTurnType).append(DELIMITER)
+                .append(nextEventLeftDistanceM).append(DELIMITER)
+                .append(nextEventRelationalPositionX).append(DELIMITER)
+                .append(nextEventRelationalPositionY).append(DELIMITER)
+                .append(nextNextEventTurnType).append(DELIMITER)
+                .append(nextNextEventLeftDistanceM).append(DELIMITER).toString();
 
         updateQueue(data);
     }
@@ -228,7 +240,7 @@ public class DeviceService extends Service {
         Log.d(TAG, "(Setting) item: " + settingItem + ", value: " + settingValue);
         StringBuilder sb = new StringBuilder("p");
         sb
-                .append(settingItem).append("{]")
+                .append(settingItem).append(DELIMITER)
                 .append(settingValue);
 
         updateQueue(sb.toString());
