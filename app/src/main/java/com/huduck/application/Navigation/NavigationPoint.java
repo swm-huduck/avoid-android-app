@@ -1,5 +1,7 @@
 package com.huduck.application.Navigation;
 
+import com.huduck.application.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -169,5 +171,24 @@ public class NavigationPoint implements NavigationFeature {
         put(217, "4시 방향 횡단보도");
         put(218, "엘리베이터");
         put(233, "직진 임시");
+    }};
+
+    public static HashMap<Integer, Integer> TurnIcon = new HashMap<Integer, Integer>() {{
+        put(11, R.drawable.turn_11);
+        put(12, R.drawable.turn_12);
+        put(13, R.drawable.turn_13);
+        put(14, R.drawable.turn_14);
+        put(16, R.drawable.turn_16);
+        put(17, R.drawable.turn_17);
+        put(18, R.drawable.turn_18);
+        put(19, R.drawable.turn_19);
+        put(117, R.drawable.turn_117);
+        put(118, R.drawable.turn_118);
+        put(119, R.drawable.turn_119);
+        put(120, R.drawable.turn_120);
+        put(121, R.drawable.turn_121);
+        put(123, R.drawable.turn_123);
+        put(124, R.drawable.turn_124);
+        put(201, R.drawable.turn_201);
     }};
 }
