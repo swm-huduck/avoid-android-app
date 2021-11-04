@@ -176,6 +176,10 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 </tbody>
 </table>
 
+## 2.3.3. 시연 영상
+
+[![시연 영상](http://img.youtube.com/vi/qQFVhA9BBH8/0.jpg)](https://youtu.be/qQFVhA9BBH8)
+
 ## 2.4. 옵션 설정 ⚙
 
 사용자가 HUD에 표시하고자 하는 옵션을 지정할 수 있습니다.
