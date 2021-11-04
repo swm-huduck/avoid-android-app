@@ -36,9 +36,9 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 <table>
 <thead>
-    <th width="33%">메인</th>
-    <th width="33%">검색</th>
-    <th width="33%">검색 결과</th>
+    <th>메인</th>
+    <th>검색</th>
+    <th>검색 결과</th>
 </thead>
 <tbody>
     <tr>
@@ -68,8 +68,8 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 <table>
 <thead>
-    <th width="33%">거리뷰</th>
-    <th width="33%">경로 안내</th>
+    <th>거리뷰</th>
+    <th>경로 안내</th>
 </thead>
 <tbody>
     <tr>
@@ -156,26 +156,24 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.3.2. 구동 화면
 <table>
-    <thead>
-        <th>HUD 디바이스 연결 확인</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td width="33.3%">
-                <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%EC%97%B0%EA%B2%B0.png">
-            </td>
-            <td width="33.3%">
-            </td>
-            <td width="33.3%">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                스마트폰과 HUD 디바이스의 블루투스 연결을 관리할 수 있다.
-                한 번 등록된 HUD 디바이스의 정보는 저장되어 AVOiD 실행 시 자동으로 연결된다.
-            </td>
-        </tr>
-    </tbody>
+<thead>
+    <th>HUD 디바이스 연결 확인</th>
+</thead>
+<tbody>
+    <tr>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Device%2001.png">
+        </td>
+        <td width="66.6%">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            스마트폰과 HUD 디바이스의 블루투스 연결을 관리할 수 있다.<br/>
+            한 번 등록된 HUD 디바이스의 정보는 저장되어 AVOiD 실행 시 자동으로 연결된다.
+        </td>
+    </tr>
+</tbody>
 </table>
 
 ## 2.4. 옵션 설정 ⚙
@@ -202,23 +200,25 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 ### 2.4.2. 구동 화면
 
 <table>
-    <thead>
-        <th>HUD 표시 옵션 설정</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/1-readme/readme/src/hud%20%ED%91%9C%EC%8B%9C%20%EC%98%B5%EC%85%98.png">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                HUD에 표시할 기능을 제어할 수 있다.<br/>
-                변경 내용은 즉시 HUD 디바이스에 전송되어 적용된다.<br/>
-                본 기능을 통해 운전자의 전방 주시를 최대화한다.
-            </td>
-        </tr>
-    </tbody>
+<thead>
+    <th>HUD 표시 옵션 설정</th>
+</thead>
+<tbody>
+    <tr>
+        <td width="33.3%">
+            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Setting%2001.png">
+        </td>
+        <td width="66.6%">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            HUD에 표시할 기능을 제어할 수 있다.<br/>
+            변경 내용은 즉시 HUD 디바이스에 전송되어 적용된다.<br/>
+            본 기능을 통해 운전자의 전방 주시를 최대화한다.
+        </td>
+    </tr>
+</tbody>
 </table>
 
 # 3. UI/UX
