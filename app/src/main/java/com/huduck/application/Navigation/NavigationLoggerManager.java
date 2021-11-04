@@ -65,14 +65,14 @@ public class NavigationLoggerManager implements LocationSource {
             if(routeIdx == logger.getRouteLogList().size()) return;
 
             NavigationLogger.RouteLog curRouteLog = logger.getRouteLogList().get(routeIdx);
-            int curTime = CommonMethod.LocalTimeToMiliSecond(curRouteLog.getTime());
+            long curTime = CommonMethod.LocalTimeToMiliSecond(curRouteLog.getTime());
 
             onRouteChangedCallback.onRouteChanged(curRouteLog.getRoute());
 
             routeIdx++;
             if(routeIdx < logger.getRouteLogList().size()) {
                 NavigationLogger.RouteLog nextRouteLog = logger.getRouteLogList().get(routeIdx);
-                int nextTime = CommonMethod.LocalTimeToMiliSecond(nextRouteLog.getTime());
+                long nextTime = CommonMethod.LocalTimeToMiliSecond(nextRouteLog.getTime());
 
                 handler.postDelayed(this, nextTime - curTime);
             }
@@ -93,14 +93,14 @@ public class NavigationLoggerManager implements LocationSource {
             if(locIdx == logger.getLocationLogList().size()) return;
 
             NavigationLogger.LocationLog curLocLog = logger.getLocationLogList().get(locIdx);
-            int curTime = CommonMethod.LocalTimeToMiliSecond(curLocLog.getTime());
+            long curTime = CommonMethod.LocalTimeToMiliSecond(curLocLog.getTime());
 
             listener.onLocationChanged(curLocLog.getLocation());
 
             locIdx++;
             if(locIdx < logger.getLocationLogList().size()) {
                 NavigationLogger.LocationLog nextLocLog = logger.getLocationLogList().get(locIdx);
-                int nextTime = CommonMethod.LocalTimeToMiliSecond(nextLocLog.getTime());
+                long nextTime = CommonMethod.LocalTimeToMiliSecond(nextLocLog.getTime());
 
                 handler.postDelayed(this, nextTime - curTime);
             }
@@ -121,10 +121,10 @@ public class NavigationLoggerManager implements LocationSource {
             listener.onLocationChanged(curLocLog.getLocation());
         }
 
-        int routeFirstTime  = CommonMethod.LocalTimeToMiliSecond(logger.getRouteLogList().get(0).getTime());
-        int locFirstTime    = CommonMethod.LocalTimeToMiliSecond(logger.getLocationLogList().get(0).getTime());
+        long routeFirstTime  = CommonMethod.LocalTimeToMiliSecond(logger.getRouteLogList().get(0).getTime());
+        long locFirstTime    = CommonMethod.LocalTimeToMiliSecond(logger.getLocationLogList().get(0).getTime());
 
-        int firstTime = Math.min(routeFirstTime, locFirstTime);
+        long firstTime = Math.min(routeFirstTime, locFirstTime);
 
         start = true;
 
