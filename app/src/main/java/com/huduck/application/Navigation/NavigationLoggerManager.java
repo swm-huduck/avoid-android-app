@@ -28,6 +28,8 @@ public class NavigationLoggerManager implements LocationSource {
 
     private Handler handler;
 
+    @Setter
+    private int speed = 1;
 
     public NavigationLoggerManager(@NonNull Context context, @NonNull NavigationLogger logger, @NonNull OnRouteChangedCallback onRouteChangedCallback) {
         this.context = context;
@@ -74,7 +76,7 @@ public class NavigationLoggerManager implements LocationSource {
                 NavigationLogger.RouteLog nextRouteLog = logger.getRouteLogList().get(routeIdx);
                 long nextTime = CommonMethod.LocalTimeToMiliSecond(nextRouteLog.getTime());
 
-                handler.postDelayed(this, nextTime - curTime);
+                handler.postDelayed(this, (long) ((nextTime - curTime) / speed));
             }
         }
     }
@@ -102,7 +104,7 @@ public class NavigationLoggerManager implements LocationSource {
                 NavigationLogger.LocationLog nextLocLog = logger.getLocationLogList().get(locIdx);
                 long nextTime = CommonMethod.LocalTimeToMiliSecond(nextLocLog.getTime());
 
-                handler.postDelayed(this, nextTime - curTime);
+                handler.postDelayed(this, (long) ((nextTime - curTime) / speed));
             }
         }
     }
@@ -114,10 +116,10 @@ public class NavigationLoggerManager implements LocationSource {
         if(start) return;
 
         if(logger.getRouteLogList().size()      <= 0) return;
-        if(logger.getLocationLogList().size()   <= 0) return;
+        if(logger.getLocationLogList().size()   <= 2) return;
 
         for (int i = 0; i < 2; i++) {
-            NavigationLogger.LocationLog curLocLog = logger.getLocationLogList().get(0);
+            NavigationLogger.LocationLog curLocLog = logger.getLocationLogList().get(i);
             listener.onLocationChanged(curLocLog.getLocation());
         }
 
@@ -128,8 +130,8 @@ public class NavigationLoggerManager implements LocationSource {
 
         start = true;
 
-        handler.postDelayed(routeRunnable,  routeFirstTime - firstTime);
-        handler.postDelayed(locRunnable,    locFirstTime - firstTime);
+        handler.postDelayed(routeRunnable,  (long) ((routeFirstTime - firstTime) / speed));
+        handler.postDelayed(locRunnable,    (long) ((locFirstTime - firstTime) / speed));
     }
 
     public void stop() {

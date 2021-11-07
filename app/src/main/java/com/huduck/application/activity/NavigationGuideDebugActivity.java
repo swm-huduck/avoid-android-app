@@ -49,6 +49,7 @@ import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import com.skt.Tmap.TMapAddressInfo;
 import com.skt.Tmap.TMapData;
@@ -209,10 +210,10 @@ public class NavigationGuideDebugActivity
         naverMap.setFpsLimit(30);
 
         // 위치 오버레이 지우기
-       /*handler.post(() -> {
+       handler.post(() -> {
             naverMap.getLocationOverlay().setCircleRadius(0);
             naverMap.getLocationOverlay().setIcon(OverlayImage.fromResource(R.drawable.icon_null));
-        });*/
+        });
 
         // 카메라 위치 초기화
         naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
@@ -230,8 +231,8 @@ public class NavigationGuideDebugActivity
                 naverMap.addOnLocationChangeListener(it);
             }
         });
-        naverMap.addOnLocationChangeListener(navigator);
         naverMap.addOnLocationChangeListener(LocationProvider.locationChangeListener);
+        naverMap.addOnLocationChangeListener(navigator);
         naverMap.addOnLocationChangeListener(renderer);
         naverMap.addOnLocationChangeListener(uiManager);
         naverMap.addOnLocationChangeListener(logger);
@@ -330,6 +331,10 @@ public class NavigationGuideDebugActivity
         lastOffRouteTime = currentTime;
         refreshRoute();
         */
+        /*Toast.makeText(this, "경로 이탈", Toast.LENGTH_SHORT).show();*/
+        /*navigator.setRoute(route);
+        navigator.startNavigator();
+        afterStartNavigation();*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
