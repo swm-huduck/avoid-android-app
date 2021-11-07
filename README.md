@@ -154,7 +154,11 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-HUD%20Device.png" width="1000px">
 
-### 2.3.2. 구동 화면
+### 2.3.2. Data Interface Description
+
+<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Central%20Data%20Interface%20Description.png">
+
+### 2.3.3. 구동 화면
 <table>
 <thead>
     <th>HUD 디바이스 연결 확인</th>
@@ -175,6 +179,10 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
     </tr>
 </tbody>
 </table>
+
+## 2.3.4. 시연 영상
+
+[![시연 영상](http://img.youtube.com/vi/qQFVhA9BBH8/0.jpg)](https://youtu.be/qQFVhA9BBH8)
 
 ## 2.4. 옵션 설정 ⚙
 
