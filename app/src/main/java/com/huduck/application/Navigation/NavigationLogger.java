@@ -51,27 +51,7 @@ public class NavigationLogger implements NaverMap.OnLocationChangeListener, Navi
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void writeFile(Activity activity) throws IOException, JSONException {
-        File dir = Environment.getExternalStorageDirectory();
-        String abPath = dir.getAbsolutePath();
-        String packageName = activity.getPackageName();
         String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")) + ".dat";
-        String path = abPath + "/android/data/" + packageName + "/" + fileName;
-/*
-        // 외부저장소 경로가 있는지 확인, 없으면 생성
-        File file = new File(path);
-        if(!file.exists()) {
-            file.mkdir();
-            file.createNewFile();
-        }
-
-        // 외부 저장소 저장
-        FileOutputStream fos = new FileOutputStream(path);
-        DataOutputStream dos = new DataOutputStream(fos);
-
-        //데이터를 쓴다.
-        dos.writeUTF(toJson().toString());
-        dos.flush();
-        dos.close();*/
 
         File file = new File(Environment.getExternalStorageDirectory(), fileName);
 

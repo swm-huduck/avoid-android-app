@@ -175,7 +175,7 @@ public class Navigator implements NaverMap.OnLocationChangeListener {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void setRoute(NavigationRoutes navigationRoute) {
         this.navigationRoute = modifyRouteByMoveDirection(navigationRoute);
-        lineStringSegmentList = navigationRouteToLineStringSegment(navigationRoute);
+        lineStringSegmentList = navigationRouteToLineStringSegment(this.navigationRoute);
 
         // init lineStringSeg parm
         currentLineStringSegIdx = 0;
@@ -188,11 +188,13 @@ public class Navigator implements NaverMap.OnLocationChangeListener {
 
         // Call event
         for (OnRouteChangedCallback onRouteChangedCallback : routeChangedCallbackList) {
-            onRouteChangedCallback.onRouteChanged(navigationRoute, routeTotalDistance, lineStringSegmentList);
+            onRouteChangedCallback.onRouteChanged(this.navigationRoute, routeTotalDistance, lineStringSegmentList);
         }
 
+        /*
+        // startNavigator()에서 호출해서 주석 처리함 (2중 호출)
         if (currentLocation != null)
-            onLocationChanged(currentLocation);
+            onLocationChanged(currentLocation);*/
     }
 
     /* LineString 리스트를 LineStringSegment 리스트로 바꿔 줌 */

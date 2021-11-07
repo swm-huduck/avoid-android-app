@@ -290,8 +290,7 @@ public class NavigationGuideActivity
     @Override
     public void onLocationChange(@NonNull Location location) {
         // 속도 업데이트
-        int speedKh = (int) (location.getSpeed() * 3.6);
-        deviceService.updateSpeed(speedKh);
+        deviceService.updateSpeed(location.getSpeed());
     }
 
     private boolean offRoute = false;

@@ -46,7 +46,12 @@ public class CommonMethod {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static int LocalTimeToMiliSecond(LocalTime localTime) {
-        return (int) (localTime.toSecondOfDay() * 1e+3);
+    public static long LocalTimeToMiliSecond(LocalTime localTime) {
+        return (long) (localTime.toNanoOfDay() * 1e-6);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static LocalTime MiliSecondToLocalTime(long miliSecond) {
+        return LocalTime.ofNanoOfDay((long) (miliSecond * 1e+6));
     }
 }

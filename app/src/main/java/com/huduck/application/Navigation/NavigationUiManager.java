@@ -130,7 +130,8 @@ public class NavigationUiManager
             @Override
             public void run() {
                 // 다음 회전 이벤트
-                String turnEvent = NavigationPoint.TurnType.get(nextTurnEvent.getProperties().getTurnType());
+                int turnEventIndex = nextTurnEvent.getProperties().getTurnType();
+                String turnEvent = NavigationPoint.TurnType.get(turnEventIndex);
                 binding.nextTurnEvent.setText(turnEvent);
 
                 int nextTurnEventLeftDistance = (int) (Math.floor(nextTurnEventLeftDistanceMeter / 10) * 10);   // 10m 단위로 변환
@@ -141,23 +142,40 @@ public class NavigationUiManager
                                     Math.round((nextTurnEventLeftDistance / 1000.0) * 100) / 100.0  // 소수점 아래 2자리까지
                             ) + "km"
                     );
+
                 }
                 else {
                     binding.nextTurnEventLeftDistance.setText(nextTurnEventLeftDistance + "m");
                 }
 
-                // 다다음 회전 이벤트
-                int nextNextTurnEventLeftDistance = (int) (Math.floor(nextNextTurnEventLeftDistanceMeter / 10) * 10);   // 10m 단위로 변환
-                if(nextNextTurnEventLeftDistance > 1000) {
-                    binding.nextNextTurnEventLeftDistance.setText(
-                            String.format(
-                                    "%.1f",
-                                    Math.round((nextNextTurnEventLeftDistance / 1000.0) * 10) / 10.0    // 소수점 아래 1자리까지
-                            ) + "km"
-                    );
+                if(NavigationPoint.TurnIcon.containsKey(turnEventIndex)) {
+                    binding.nextTurnEventIcon.setImageResource(NavigationPoint.TurnIcon.get(turnEventIndex));
                 }
                 else {
-                    binding.nextNextTurnEventLeftDistance.setText(nextNextTurnEventLeftDistance + "m");
+                    binding.nextTurnEventIcon.setImageResource(R.drawable.icon_null);
+                }
+
+                // 다다음 회전 이벤트
+                if(nextNextTurnEvent != null) {
+                    int nextNextTurnEventIndex = nextNextTurnEvent.getProperties().getTurnType();
+                    int nextNextTurnEventLeftDistance = (int) (Math.floor(nextNextTurnEventLeftDistanceMeter / 10) * 10);   // 10m 단위로 변환
+                    if (nextNextTurnEventLeftDistance > 1000) {
+                        binding.nextNextTurnEventLeftDistance.setText(
+                                String.format(
+                                        "%.1f",
+                                        Math.round((nextNextTurnEventLeftDistance / 1000.0) * 10) / 10.0    // 소수점 아래 1자리까지
+                                ) + "km"
+                        );
+                    } else {
+                        binding.nextNextTurnEventLeftDistance.setText(nextNextTurnEventLeftDistance + "m");
+                    }
+
+                    if (NavigationPoint.TurnIcon.containsKey(nextNextTurnEventIndex)) {
+                        binding.nextNextTurnEventIcon.setImageResource(NavigationPoint.TurnIcon.get(nextNextTurnEventIndex));
+                    }
+                    else {
+                        binding.nextNextTurnEventIcon.setImageResource(R.drawable.icon_null);
+                    }
                 }
 
                 // 총 남은 거리
@@ -176,7 +194,7 @@ public class NavigationUiManager
         activity.runOnUiThread(runnable);
     }
 
-    private String destination = "";
+    private String destination = "아남타워";
     public void setDestination(String destination) {
         this.destination = destination;
         swapBottomInfoBar();

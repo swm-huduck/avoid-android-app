@@ -100,7 +100,7 @@ public class DeviceDebugActivity extends AppCompatActivity {
             Test test = SpeedTest.builder()
                     .deviceService(deviceService)
                     .nextDelay(!binding.delaySpeed.getText().toString().isEmpty() ? Integer.parseInt(binding.delaySpeed.getText().toString()) : 0)
-                    .value(binding.seekbarSpeed.getProgress())
+                    .value(binding.seekbarSpeed.getProgress() * 0.277778f)
                     .build();
 
             addTestItem(test);
@@ -352,10 +352,10 @@ public class DeviceDebugActivity extends AppCompatActivity {
     }
 
     private static class SpeedTest extends Test {
-        private int value;
+        private float value;
 
         @Builder
-        public SpeedTest(DeviceService deviceService, int nextDelay, int value) {
+        public SpeedTest(DeviceService deviceService, int nextDelay, float value) {
             super(deviceService, nextDelay);
             this.value = value;
         }
@@ -370,7 +370,7 @@ public class DeviceDebugActivity extends AppCompatActivity {
             super.getView(context, container);
             if(!initView) {
                 ((TextView) view.findViewWithTag("header")).setText("[Speed]");
-                ((TextView) view.findViewWithTag("content")).setText(value + "km/h");
+                ((TextView) view.findViewWithTag("content")).setText(value + "m/s");
                 ((TextView) view.findViewWithTag("delay")).setText(nextDelay+"초 뒤, 다음 실행");
                 initView = true;
             }

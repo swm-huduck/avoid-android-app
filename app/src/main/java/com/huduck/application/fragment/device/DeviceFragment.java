@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -16,12 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.huduck.application.R;
 import com.huduck.application.activity.DeviceDebugActivity;
@@ -101,6 +105,7 @@ public class DeviceFragment extends PageFragment {
         deviceStateDescriptionTextView = view.findViewWithTag("device_state_description_textview");
 
         view.findViewWithTag("debug").setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 if(deviceService == null) return;
@@ -130,6 +135,12 @@ public class DeviceFragment extends PageFragment {
         });
 
         deviceListView = view.findViewById(R.id.device_list);
+        deviceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                deviceService.registerDevice((BluetoothDevice) deviceListAdapter.getItem(i));
+            }
+        });
 
         Intent intent = new Intent(
                 getActivity(),
@@ -210,13 +221,6 @@ public class DeviceFragment extends PageFragment {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.view_device_list_item, parent, false);
-
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        deviceService.registerDevice(deviceList.get(position));
-                    }
-                });
             }
 
             LinearLayout layout = convertView.findViewWithTag("device_list_item");
