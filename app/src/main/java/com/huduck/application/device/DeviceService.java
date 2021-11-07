@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -32,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.TimerTask;
 
 public class DeviceService extends Service {
     private static final String TAG = "DeviceService";
@@ -125,14 +127,19 @@ public class DeviceService extends Service {
 
     private boolean refresh = false;
     public void refreshDeviceList() {
-        if(!centralManager.isConnected()) {
-            refreshDevice();
-            return;
-        }
-
         refresh = true;
         isFirstScan = false;
-        centralManager.disconnectGattServer();
+
+        if(centralManager.isConnected()) {
+            centralManager.disconnectGattServer();
+        }
+
+        new Handler().postDelayed(new TimerTask() {
+            @Override
+            public void run() {
+                refreshDevice();
+            }
+        }, 100);
     }
 
     private void refreshDevice() {

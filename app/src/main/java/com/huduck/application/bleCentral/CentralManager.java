@@ -21,6 +21,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -107,10 +108,10 @@ public class CentralManager {
             return;
         }
 
-        /**
-         * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
-         */
-        stopScan();
+//        /**
+//         * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
+//         */
+//        stopScan();
 
 //        listener.onStatusMsg("Scanning...");
         /**
@@ -173,23 +174,37 @@ public class CentralManager {
     public void connectDevice(BluetoothDevice device) {
         stopScan();
 
-        // check if nothing found
-        if (scanResults.isEmpty()) {
+        new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                // check if nothing found
+                if (scanResults.isEmpty()) {
 //            listener.onStatusMsg("scan results is empty");
-            Log.d(TAG, "scan results is empty");
-            return;
-        }
+                    Log.d(TAG, "scan results is empty");
+                    return;
+                }
 
-        if(!scanResults.containsValue(device)) {
+                if(!scanResults.containsValue(device)) {
 //            listener.onStatusMsg("device is unknown");
-            Log.d(TAG, "device is unknown");
-            return;
-        }
+                    Log.d(TAG, "device is unknown");
+                    return;
+                }
 
-        // update the status
+                // update the status
 //        listener.onStatusMsg("Connecting to " + device.getAddress());
-        GattClientCallback gatt_client_cb = new GattClientCallback();
-        bleGatt = device.connectGatt(mContext, false, gatt_client_cb, 2);
+                GattClientCallback gatt_client_cb = new GattClientCallback();
+                /*bleGatt = device.connectGatt(mContext, false, gatt_client_cb, BluetoothDevice.TRANSPORT_LE);*/
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    bleGatt= device.connectGatt( mContext, false, gatt_client_cb, BluetoothDevice.TRANSPORT_LE);
+                }
+                else {
+                    bleGatt= device.connectGatt( mContext, false, gatt_client_cb);
+                }
+            }
+        }, 500);
     }
 
     /**
