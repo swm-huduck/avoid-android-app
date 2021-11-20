@@ -47,10 +47,10 @@ public class NavigationSpeaker implements Navigator.OnProgressChangedCallback, N
             spookGoStraight = true;
             if(refreshed) refreshed = false;
         }
-        if(nextTurnEventLeftDistanceMeter > 110) return;
+        if(nextTurnEventLeftDistanceMeter > 210) return;
         if(evnets.contains(nextTurnEvent)) return;
 
-        StringBuilder stringBuilder = new StringBuilder(((int)(nextTurnEventLeftDistanceMeter / 10) * 10) + "미터 앞에서 ");
+        StringBuilder stringBuilder = new StringBuilder(((int)(nextTurnEventLeftDistanceMeter / 10) * 10) + "미터 후, ");
         String desc = stringBuilder.append(nextTurnEvent.getProperties().getDescription()).append("합니다.").toString();
         CharSequence text = desc;
         tts.speak(text, speechType, null, "id1");

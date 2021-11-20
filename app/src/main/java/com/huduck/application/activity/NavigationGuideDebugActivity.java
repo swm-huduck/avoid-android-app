@@ -6,11 +6,13 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.backup.RestoreObserver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Build;
@@ -18,9 +20,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.huduck.application.Navigation.LatLngTool;
@@ -89,6 +93,8 @@ public class NavigationGuideDebugActivity
 
     private LoadingFragment loadingFragment = null;
 
+    private boolean openRoutesActivity = false;
+
     private NavigationLogger logger = new NavigationLogger();
     private NavigationLoggerManager loggerManager;
 
@@ -156,7 +162,7 @@ public class NavigationGuideDebugActivity
         navigator.addOnRouteChangedCallback(uiManager);
         navigator.addOnProgressChangedCallback(uiManager);
 
-        // 상단 목적지 출력
+        // 파일 불러오기 클릭
         NavigationGuideDebugActivity it = this;
         ChooserDialog chooserDialog = new ChooserDialog(it)
                 .withFilter(false, false, "dat", "txt")
@@ -166,8 +172,14 @@ public class NavigationGuideDebugActivity
                         try {
                             Toast.makeText(it, "정상적으로 불러왔습니다.", Toast.LENGTH_SHORT).show();
                             logger = NavigationLogger.readFile(dirFile);
-                            loggerManager.setLogger(logger);
-                            loggerManager.start();
+                            if(openRoutesActivity) {
+                                NavigationProvider.setNavigationRoute(logger.getRouteLogList().get(0).getRoute());
+                                startActivity(new Intent(it, NavigationRoutesDebugActivity.class));
+                            }
+                            else {
+                                loggerManager.setLogger(logger);
+                                loggerManager.start();
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             Toast.makeText(it, "불러오기 실패", Toast.LENGTH_SHORT).show();
@@ -179,20 +191,70 @@ public class NavigationGuideDebugActivity
                 })
                 .build();
 
+
         binding.nextTurnEventLeftDistance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                openRoutesActivity = false;
                 loggerManager.stop();
                 chooserDialog.show();
             }
         });
+
+        binding.nextNextTurnEventLeftDistance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openRoutesActivity = true;
+                loggerManager.stop();
+                chooserDialog.show();
+            }
+        });
+
+        // 기본 목적지 설정
+        SharedPreferences sharedPreferences = getSharedPreferences("destination", MODE_PRIVATE);
+        if(sharedPreferences.contains("destination")) {
+            String destination = sharedPreferences.getString("destination", "아남타워");
+            uiManager.setDestination(destination);
+        }
+
 
         // 로딩 프레그먼트 가져오기
         loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag("loading");
         loadingFragment.isVisible(false);
 
         binding.refreshButton.setOnClickListener(v -> {
-            // this.refreshRoute();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("목적지 설정");
+
+            // Set up the input
+            final EditText input = new EditText(this);
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(input.getText() == null) return;
+                    String destination = input.getText().toString();
+
+                    uiManager.setDestination(destination);
+
+                    SharedPreferences sharedPreferences = getSharedPreferences("destination", MODE_PRIVATE);
+                    sharedPreferences.edit()
+                            .putString("destination", destination)
+                            .commit();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
         });
 
         binding.exitButton.setOnClickListener(v -> {
@@ -210,7 +272,7 @@ public class NavigationGuideDebugActivity
         naverMap.setFpsLimit(30);
 
         // 위치 오버레이 지우기
-       handler.post(() -> {
+        handler.post(() -> {
             naverMap.getLocationOverlay().setCircleRadius(0);
             naverMap.getLocationOverlay().setIcon(OverlayImage.fromResource(R.drawable.icon_null));
         });
