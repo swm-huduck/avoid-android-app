@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -176,6 +177,9 @@ public class NavigationUiManager
                     else {
                         binding.nextNextTurnEventIcon.setImageResource(R.drawable.icon_null);
                     }
+                }
+                else {
+                    binding.nextNextTurnEventLayout.setVisibility(View.INVISIBLE);
                 }
 
                 // 총 남은 거리

@@ -402,6 +402,8 @@ public class DeviceService extends Service {
 
         @Override
         public void onFindNewDevice(BluetoothDevice bluetoothDevice) {
+            if(bluetoothDevice.getName() == null || bluetoothDevice.getName().isEmpty()) return;
+
             scanDeviceList.add(bluetoothDevice);
 
             for (CentralCallback centralCallback : centralCallbackList)
@@ -427,10 +429,14 @@ public class DeviceService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        centralManager.disconnectGattServer();
-        telephony.listen(callListener, PhoneStateListener.LISTEN_NONE);
-        unregisterReceiver(smsReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(kakaoTalkReceiver);
+        try {
+            centralManager.disconnectGattServer();
+            telephony.listen(callListener, PhoneStateListener.LISTEN_NONE);
+            unregisterReceiver(smsReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(kakaoTalkReceiver);
+        }
+        finally {
+            super.onDestroy();
+        }
     }
 }

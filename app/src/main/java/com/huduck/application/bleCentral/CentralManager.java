@@ -108,10 +108,11 @@ public class CentralManager {
             return;
         }
 
-//        /**
-//         * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
-//         */
-//        stopScan();
+        /**
+         * 이미 Gatt Server 와 연결된 상태일 수 있으니 호출해준다.
+         */
+        if(isScanning)
+            stopScan();
 
 //        listener.onStatusMsg("Scanning...");
         /**
@@ -132,10 +133,10 @@ public class CentralManager {
         //// scan settings
         // set low power scan mode
         ScanSettings settings = new ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build();
 
-        scanResults = new HashMap<>();
+        scanResults = new HashMap<String, BluetoothDevice>();
         scanCallback = new BLEScanCallback(scanResults);
 
         //// now ready to scan
@@ -385,6 +386,12 @@ public class CentralManager {
             // Set CharacteristicNotification
             BluetoothGattCharacteristic cmd_characteristic = BluetoothUtils.findCharacteristic(bleGatt, CHARACTERISTIC_UUID);
             _gatt.setCharacteristicNotification(cmd_characteristic, true);
+            /*BluetoothGattDescriptor descriptor = cmd_characteristic.getDescriptor(UUID.fromString(CONFIG_UUID));
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            boolean s = _gatt.writeDescriptor(descriptor);
+            if(s) {
+                s = false;
+            }*/
             listener.connectedGattServer();
         }
 
