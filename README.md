@@ -235,7 +235,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2001.png" width="100%">
 
-## 3.2. 스토리 보드
+## 3.2. 스토리보드
 
 <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2002.png" width="100%">
 
