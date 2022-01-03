@@ -1,4 +1,4 @@
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/AVOiD-background.png" width="100%">
+<img src="./readme_src/AVOiD-background.png" width="100%">
 
 # 1. AVOiD
 
@@ -23,7 +23,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.1.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Navigation.png" width="1100px">
+<img src="./readme_src/Android%20System%20Architecture-Navigation.png" width="1100px">
 
 ### 2.1.2. GPS 테스트 방법
 
@@ -43,13 +43,13 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <tbody>
     <tr>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2001.jpg">
+            <img src="./readme_src/Application%20Navigation%2001.jpg">
         </td>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2002.jpg">
+            <img src="./readme_src/Application%20Navigation%2002.jpg">
         </td>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2003.jpg">
+            <img src="./readme_src/Application%20Navigation%2003.jpg">
         </td>
     </tr>
     <tr>
@@ -74,10 +74,10 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <tbody>
     <tr>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2004.jpg">
+            <img src="./readme_src/Application%20Navigation%2004.jpg">
         </td>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Navigation%2005.jpg">
+            <img src="./readme_src/Application%20Navigation%2005.jpg">
         </td>
         <td width="33.3%">
         </td>
@@ -115,7 +115,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.2.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-My%20Car.png" width="600px">
+<img src="./readme_src/Android%20System%20Architecture-My%20Car.png" width="600px">
 
 ### 2.2.2. 구동 화면
 
@@ -127,10 +127,10 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <tbody>
     <tr>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2001.jpg">
+            <img src="./readme_src/Application%20My%20Car%2001.jpg">
         </td>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20My%20Car%2002.jpg">
+            <img src="./readme_src/Application%20My%20Car%2002.jpg">
         </td>
         <td width="33.3%">
         </td>
@@ -152,11 +152,11 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.3.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-HUD%20Device.png" width="1000px">
+<img src="./readme_src/Android%20System%20Architecture-HUD%20Device.png" width="1000px">
 
 ### 2.3.2. Data Interface Description
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Central%20Data%20Interface%20Description.png">
+<img src="./readme_src/Application%20Central%20Data%20Interface%20Description.png">
 
 ### 2.3.3. 구동 화면
 <table>
@@ -166,7 +166,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <tbody>
     <tr>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Device%2001.png">
+            <img src="./readme_src/Application%20Device%2001.png">
         </td>
         <td width="66.6%">
         </td>
@@ -203,7 +203,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ### 2.4.1. 플로우 차트
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Android%20System%20Architecture-Setting.png" width="300px">
+<img src="./readme_src/Android%20System%20Architecture-Setting.png" width="300px">
 
 ### 2.4.2. 구동 화면
 
@@ -214,7 +214,7 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 <tbody>
     <tr>
         <td width="33.3%">
-            <img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Setting%2001.png">
+            <img src="./readme_src/Application%20Setting%2001.png">
         </td>
         <td width="66.6%">
         </td>
@@ -233,15 +233,15 @@ HUDuck팀의 AR HUD와 운전자 사이의 징검다리, **AVOiD**입니다.
 
 ## 3.1. 와이어 프레임
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2001.png" width="100%">
+<img src="./readme_src/Application%20Wire%20Frame%2001.png" width="100%">
 
 ## 3.2. 스토리보드
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2002.png" width="100%">
+<img src="./readme_src/Application%20Wire%20Frame%2002.png" width="100%">
 
 ## 3.3. 흐름도
 
-<img src="https://git.swmgit.org/swm-12/12_swm35/application/-/raw/readme/readme_src/Application%20Wire%20Frame%2003.png" width="100%">
+<img src="./readme_src/Application%20Wire%20Frame%2003.png" width="100%">
 
 # 4. 프로젝트 시작하기
 
